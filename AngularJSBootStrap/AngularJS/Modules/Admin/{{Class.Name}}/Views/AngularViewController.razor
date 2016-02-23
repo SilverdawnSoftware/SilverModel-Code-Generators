@@ -1,0 +1,144 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+@{
+var primaryKey=GetPrimaryKey(Model.Class);
+var hasPrimaryKey=!string.IsNullOrEmpty(primaryKey);
+}
+
+module @Model.Model.QualifiedName {
+
+
+    export interface IButtonClick {
+    };
+
+    export interface I@{@Model.Class.Name}EditCtrlScope extends ng.IScope {
+
+        loaded: boolean;
+        @{@Model.Class.Name.LowerFirst()}View :I@{@Model.Class.Name}View;
+        @foreach (var att in Model.Class.OwnedAttributes)
+    	{
+		if (Model.RazorSupport.DataTypeIsElement(att.DataType))
+			{		
+	    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
+	    		{
+					var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);	    		
+	    			@refclass.Name.LowerFirst()@:s;
+	    		}
+	    	}
+    	}  
+        save: IButtonClick;
+    }
+
+	
+    export interface I@{@Model.Class.Name}EditCtrlScopeRouteParams extends ng.route.IRouteParamsService {
+      @if(hasPrimaryKey)
+      {
+       <text> @GetPrimaryKey(Model.Class).LowerFirst(): number;</text>
+       }
+    }
+
+    export class @{@Model.Class.Name}EditCtrl {
+        public static $inject = [
+            '$scope',
+            '$routeParams',
+            '$http',
+            '@Model.Class.Name.LowerFirst()Service'
+            @foreach (var att in Model.Class.OwnedAttributes)
+	    	{
+				if (Model.RazorSupport.DataTypeIsElement(att.DataType))
+				{		
+		    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
+		    		{
+		    		 	var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);
+<text>       '</text>@refclass.Name.LowerFirst()<text>Service',</text>	    		 	
+		    		}
+	    		}
+    		}		
+        ];
+
+      
+
+        constructor(private $scope: I@(Model.Class.Name)EditCtrlScope, private $routeParams: I@{@Model.Class.Name}EditCtrlScopeRouteParams, private $http: ng.IHttpService, private @Model.Class.Name.LowerFirst()Service: @{@Model.Class.Name}Service
+        @foreach (var att in Model.Class.OwnedAttributes)
+	    	{
+				if (Model.RazorSupport.DataTypeIsElement(att.DataType))
+				{		
+		    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
+		    		{
+		    		 	var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);
+<text>,private </text>@refclass.Name.LowerFirst()<text>Service':</text>@refclass.Name<text>Service'</text>    		 	
+		    		}
+	    		}
+    		}        
+        ) {
+        
+        
+           var count = 0;
+            var toLoad = 1;
+            $scope.loaded = false;
+
+            function dataLoaded() {
+                count++;
+                if (count >= toLoad) {
+                    $scope.loaded = true;
+                }
+            }
+
+			@if(hasPrimaryKey)
+			{
+
+           <text>  if (!isNaN($routeParams.@GetPrimaryKey(Model.Class).LowerFirst())) {
+                @(Model.Class.Name.LowerFirst())Service.get@(Model.Class.Name)($routeParams.@GetPrimaryKey(Model.Class).LowerFirst()).then(function(data: I@{@Model.Class.Name}View) {
+                    $scope.@{@Model.Class.Name.LowerFirst()}View = data;
+                    dataLoaded();
+                });
+            } </text>
+        
+        	}
+        
+        }
+    }
+    
+    angular.module("@Model.Model.QualifiedName").controller('@(Model.Class.Name.LowerFirst())EditCtrl', @(Model.Class.Name)EditCtrl).config([
+        "$routeProvider", function($routeProvider) {
+            $routeProvider
+                .when('/Admin/@Model.Model.QualifiedName/@Model.Class.Name/Edit/:@GetPrimaryKey(Model.Class).LowerFirst()', {
+                    templateUrl: '/AngularJS/Modules/Admin/@Model.Class.Name/Views/@(Model.Class.Name)View.html',
+                    controller: '@(Model.Class.Name.LowerFirst())EditCtrl'
+                })
+                .when('/Admin/@Model.Model.QualifiedName/@Model.Class.Name/Add', {
+                templateUrl: '/AngularJS/Modules/Admin/@Model.Class.Name/Views/@(Model.Class.Name)View.html',
+                controller: '@(Model.Class.Name.LowerFirst())EditCtrl'
+            });
+        }
+    ]);
+ }
+ 
+ @functions{
+
+string GetPrimaryKey(IClass iClass)
+{
+	foreach (var att2 in iClass.OwnedAttributes)
+   	{
+		if (att2["EF4","EF Primary Key"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+string GetDescriptor(IClass iClass)
+{
+	foreach (var att2 in iClass.OwnedAttributes)
+   	{
+		if (att2["EF4","Default Descriptor"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+}

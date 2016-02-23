@@ -1,0 +1,36 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+
+
+@@model @{@Model.Model.QualifiedName}.@{@Model.Classifier.Name}
+
+@@{
+    ViewBag.Title = "@{@Model.Classifier.Name}";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>@{@Model.Classifier.Name}</h4>
+    <hr />
+    <dl class="dl-horizontal">
+    @foreach (var att in Model.Classifier.Properties())
+    	{
+        <dt>
+            @@Html.DisplayNameFor(model => model.@att.Name)
+        </dt>
+}
+       
+    </dl>
+
+    @@using (Html.BeginForm()) {
+        @@Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @@Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

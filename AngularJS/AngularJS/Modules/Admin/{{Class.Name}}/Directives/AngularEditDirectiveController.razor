@@ -1,0 +1,39 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+module @Model.Model.QualifiedName {
+
+
+    export interface IButtonClick {
+    };
+
+    export interface ITextChange {
+    };
+
+
+    export interface I@(Model.Class.Name)EditDirectiveCtrlScope extends ng.IScope {
+
+        loaded: boolean;
+        component: any;
+    }
+
+
+    export class @(Model.Class.Name)EditDirectiveCtrl {
+        public static $inject = [
+            '$scope',
+            'usSpinnerService',
+            '@(Model.Class.Name.LowerFirst())Service'
+        ];
+
+		constructor(private $scope: I@(Model.Class.Name)EditDirectiveCtrlScope, private usSpinnerService: any,private @(Model.Class.Name.LowerFirst())Service: @(Model.Class.Name)Service) {
+			
+			
+			
+			
+		}
+		
+	}
+	angular.module("@Model.Model.QualifiedName").controller('@(Model.Class.Name.LowerFirst())EditDirectiveCtrl', @(Model.Class.Name)EditDirectiveCtrl);	
+}

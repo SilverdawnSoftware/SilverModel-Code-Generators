@@ -1,0 +1,120 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+
+namespace @(Model.Model.QualifiedName).Views.Model
+{
+
+    public class @(Model.Class.Name)View
+    {
+    	@foreach (var att in Model.Class.OwnedAttributes)
+    	{
+			if (Model.RazorSupport.DataTypeIsElement(att.DataType))
+			{		
+	    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
+	    		{
+					var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);	    		
+	    			foreach (var att2 in refclass.OwnedAttributes)
+			    	{
+			    		if (att2["EF4","Default Descriptor"]=="True")
+			    		{
+			    			<text>string </text>@refclass.Name<text>@att2.Name { get; set; } </text>  
+			    		}
+			    		if (att2["EF4","EF Primary Key"]=="True")
+			    		{
+			    		   @Model.RazorSupport.LookupDataType("C#",att2.DataType)<text> </text>@refclass.Name@att2.Name<text> { get; set; } </text>  
+			    		}
+			    	}
+	    		}
+	    	}
+	    	else
+	    	{
+	    	<text>public @Model.RazorSupport.LookupDataType("C#",att.DataType)</text> @att.Name <text> { get; set; } </text>	    	
+	    	}
+    	}
+    	@foreach (var association in Model.Class.GetTargetAssociation())
+    	{ 
+    	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+    			{
+		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
+		    	foreach (var assocaitedClassAtt in associatedClass.OwnedAttributes)
+					    	{
+					    		if (assocaitedClassAtt["EF4","Default Descriptor"]=="True")
+					    		{
+					  <text>public string @associatedClass.Name@assocaitedClassAtt.Name { get; set; } </text>  
+					    		}
+					    		if (assocaitedClassAtt["EF4","EF Primary Key"]=="True")
+					    		{
+					  <text>public @Model.RazorSupport.LookupDataType("C#",assocaitedClassAtt.DataType) @associatedClass.Name@assocaitedClassAtt.Name { get; set; } </text>  
+					    		}
+					    	}
+				}
+    	}
+    	
+    	
+    	
+    	public static explicit operator @(Model.Class.Name)View(Database.@Model.Class.Name item)
+    	{
+    	 var result=new @(Model.Class.Name)View();
+    	 
+      @foreach (var att in Model.Class.OwnedAttributes)
+    	{
+		if (Model.RazorSupport.DataTypeIsElement(att.DataType))
+			{		
+	    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
+	    		{
+					var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);	    		
+	    			foreach (var att2 in refclass.OwnedAttributes)
+			    	{
+			    		if (att2["EF4","Default Descriptor"]=="True")
+			    		{
+			    			<text>result.</text>@refclass.Name@att2.Name@:= item.@refclass.Name.@att2.Name;
+			    		}
+			    		if (att2["EF4","EF Primary Key"]=="True")
+			    		{
+			    		   <text>result.</text>@refclass.Name@att2.Name@:= item.@refclass.Name.@att2.Name;
+			    		 
+			    		}
+			    	}
+	    		}
+	    	}
+	    	else
+	    	{
+	    	<text>result.</text>@att.Name @:= item.@att.Name;   	
+	    	}    	
+    		
+    	}
+    	
+    	@foreach (var association in Model.Class.GetTargetAssociation())
+    	{ 
+    		if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+			{
+				IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
+	
+				foreach (var assocaitedClassAtt in associatedClass.OwnedAttributes)
+		    	{
+		    		if (assocaitedClassAtt["EF4","Default Descriptor"]=="True")
+		    		{
+		    			<text>result.@(associatedClass.Name)@assocaitedClassAtt.Name=item.@(associatedClass.Name).@(assocaitedClassAtt.Name); </text>  
+		    		}
+		    		if (assocaitedClassAtt["EF4","EF Primary Key"]=="True")
+		    		{
+		    		   <text>result.@(associatedClass.Name)@assocaitedClassAtt.Name=item.@(associatedClass.Name).@(assocaitedClassAtt.Name); </text>  
+		    		}
+		    	}
+		    }
+    	}
+    	
+    	
+    	return result;
+     }   
+    
+    }
+}

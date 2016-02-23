@@ -1,0 +1,64 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+<!-- ALLOWOVERWRITE -->
+
+<div class="box angularItemEdit angularSiteIndex">
+    <div class="box-header">
+        <h2><i class="fa fa-edit"></i>@(Model.Class.Name) List</h2>
+        <div class="box-icon">
+            <a href="/" class="btn-close"><i class="fa fa-times"></i></a>
+        </div>
+    </div>
+    <div class="box-content">
+
+        <table class="table table-striped" id="SearchResults">
+            <thead>
+                <tr>
+                    <th>@GetDescriptor(Model.Class)</th>
+                    <th>Edit</th>                   
+                </tr>
+            </thead>
+            <tbody >
+                <tr ng-repeat="item in @(Model.Class.Name.LowerFirst())Views">
+                    <td>{{item.Name}}  </td>
+                   
+                    <td>
+                        <!-- <a class="btn" href="#" id="ItemQuickSaveButton"><i class="icon-ok"></i></a>-->
+                        <a class="btn" href="#/Admin/@Model.Model.QualifiedName/@Model.Class.Name/Edit/{{item.@(GetPrimaryKey(Model.Class))}}"><i class="glyphicon glyphicon-pencil"></i></a>
+                        <!-- <a class="btn" ng-click="deleteItem(item)" ><i class="icon-trash"></i></a>-->
+                    </td>
+                    
+                </tr>
+            </tbody>
+        </table>
+
+        <a class="btn btn-primary" href="#/Admin/@Model.Model.QualifiedName/@Model.Class.Name/Add">Add</a>
+    </div>
+</div>
+
+@functions{
+
+string GetPrimaryKey(IClass iClass)
+{
+	foreach (var att2 in iClass.OwnedAttributes)
+   	{
+		if (att2["EF4","EF Primary Key"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+string GetDescriptor(IClass iClass)
+{
+	foreach (var att2 in iClass.OwnedAttributes)
+   	{
+		if (att2["EF4","Default Descriptor"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+}

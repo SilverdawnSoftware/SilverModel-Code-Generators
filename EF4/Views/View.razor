@@ -1,0 +1,72 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using @(Model.Model.QualifiedName).Views.Model;
+using @(Model.Model.QualifiedName).Database;
+
+namespace @(Model.Model.QualifiedName).Views
+{
+    public partial class @(Model.Class.Name)Views
+    {
+    	
+    	public async Task<@(Model.Class.Name)View> Get(int @(GetPrimaryKey(Model.Class).LowerFirst()))
+    	{
+    	
+    	using (CompareEngineDbContext db = new CompareEngineDbContext())
+            {
+            	if (await db.@(Model.Class.Name)s.AnyAsync(w=>w.@(GetPrimaryKey(Model.Class))==@(GetPrimaryKey(Model.Class).LowerFirst())))
+                {
+                	return (@(Model.Class.Name)View)await db.@(Model.Class.Name)s.FirstAsync(w=>w.@(GetPrimaryKey(Model.Class))==@(GetPrimaryKey(Model.Class).LowerFirst()));
+            	}
+            }
+    	
+    		return null;
+    	
+    	}
+    	
+    	
+    	@foreach (var att in Model.Class.GetTargetAssociation())
+    	{
+    		var parent=(IClass)att.GetSourceMemberEnd().Type;
+    		var parentKey=GetPrimaryKey(parent);
+		
+		<text>
+		public async Task<List<@(Model.Class.Name)View>> Get@(Model.Class.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))
+    	{
+    	
+    	using (CompareEngineDbContext db = new CompareEngineDbContext())
+            {
+            	var result= await db.@(Model.Class.Name)s.Where(w=>w.@(parent.Name).@(parentKey) ==@(parentKey.LowerFirst())).ToListAsync();
+            	return result.ConvertAll(w=>(@(Model.Class.Name)View) w);
+               
+            }
+    	}
+</text>    	
+    	}
+    }
+}
+
+@functions{
+ 
+    public static string GetPrimaryKey(IClass umlClass)
+    {
+    	foreach (var att in umlClass.OwnedAttributes)
+		{
+			if (att["EF4","EF Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}
+    	
+    	return "";
+    }
+ 
+}

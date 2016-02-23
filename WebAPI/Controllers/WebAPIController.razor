@@ -1,0 +1,103 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
+using transModel =@(Model.Model.QualifiedName).Transactions.Model;
+using trans =@(Model.Model.QualifiedName).Transactions;
+using viewModel =@(Model.Model.QualifiedName).Views.Model;
+using views =@(Model.Model.QualifiedName).Views;
+using database = @(Model.Model.QualifiedName).Database;
+
+namespace @(Model.Model.QualifiedName).Controllers
+{
+
+	
+    public partial class @(Model.Class.Name)APIController : ApiController
+    {
+    	//Get @(Model.Class.Name) View Model
+    	[Route("api/@(Model.Class.Name)/{@(GetPrimaryKey(Model.Class))}")]
+    	 [HttpGet]
+        public async Task<viewModel.@(Model.Class.Name)View> Get(int @(GetPrimaryKey(Model.Class).LowerFirst()))
+        {
+            var view=new views.@(Model.Class.Name)Views();            
+            return await view.Get(@(GetPrimaryKey(Model.Class).LowerFirst()));            
+        }
+    
+    
+    
+    
+    	//Add New @(Model.Class.Name)
+    	[Route("api/@(Model.Class.Name)")]
+    	 [HttpPost]
+        public async Task<viewModel.@(Model.Class.Name)View> Add(transModel.@(Model.Class.Name)Add add)
+        {
+            var addTrans=new trans.@(Model.Class.Name)Transactions();            
+            return await addTrans.Add(add);            
+        }
+        
+        //Update  @(Model.Class.Name)
+    	[Route("api/@(Model.Class.Name)/{@(GetPrimaryKey(Model.Class))}")]
+    	 [HttpPut]
+        public async Task Update(int @(GetPrimaryKey(Model.Class).LowerFirst()),transModel.@(Model.Class.Name)Update update)
+        {
+            var updateTrans=new trans.@(Model.Class.Name)Transactions();            
+            await updateTrans.Update(update);            
+        }
+        
+        
+         //Delete  @(Model.Class.Name)
+    	[Route("api/@(Model.Class.Name)/{@(GetPrimaryKey(Model.Class))}")]
+    	 [HttpDelete]
+        public async Task Delete(int @(GetPrimaryKey(Model.Class).LowerFirst()))
+        {
+            var deleteTrans=new trans.@(Model.Class.Name)Transactions();
+			var  @(Model.Class.Name.LowerFirst())Delete=new transModel.@(Model.Class.Name)Delete(){@(GetPrimaryKey(Model.Class))=@(GetPrimaryKey(Model.Class).LowerFirst()) };			
+            await deleteTrans.Delete(@(Model.Class.Name.LowerFirst())Delete);            
+        }
+        
+        
+        
+    	@foreach (var att in Model.Class.GetTargetAssociation())
+    	{
+    		var parent=(IClass)att.GetSourceMemberEnd().Type;
+    		var parentKey=GetPrimaryKey(parent);
+		
+		<text>
+		[Route("api/@(parent.Name)/{@(parentKey)}/@(Model.Class.Name)s")]
+    	 [HttpGet]
+        public async Task<List<viewModel.@(Model.Class.Name)View>> Get@(Model.Class.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))		
+    	{
+    		 var view=new views.@(Model.Class.Name)Views();            
+            return await view.Get@(Model.Class.Name)sFor@(parent.Name)(@(parentKey.LowerFirst())); 
+    	
+    	}
+</text>    	
+    	}
+        
+    }
+}
+
+@functions{
+ 
+    public static string GetPrimaryKey(IClass umlClass)
+    {
+    	foreach (var att in umlClass.OwnedAttributes)
+		{
+			if (att["EF4","EF Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}
+    	
+    	return "";
+    }
+ 
+}

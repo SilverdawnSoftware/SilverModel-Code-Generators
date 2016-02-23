@@ -1,0 +1,21 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+
+namespace @(Model.Model.QualifiedName).Transactions.Model
+{
+    public class @(Model.Classifier.Name)Update
+    {
+    	@foreach (var att in Model.Classifier.Properties())
+    	{ 
+    	<text>public @att.Type.AsPrimitiveType()["C#"] </text> @att.Name <text> { get; set; } </text>
+    	}
+    }
+}

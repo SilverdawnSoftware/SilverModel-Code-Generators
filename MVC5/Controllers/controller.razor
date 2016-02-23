@@ -1,0 +1,132 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using Invoice;
+
+namespace @{@Model.Model.QualifiedName}.Controllers
+{
+    public class @{@Model.Classifier.Name}sController : Controller
+    {
+        private @{@Model.Model.QualifiedName}DbContext db = new @{@Model.Model.QualifiedName}DbContext();
+
+        // GET: @{@Model.Classifier.Name}
+        public async Task<ActionResult> Index()
+        {
+            return View(await db.@{@Model.Classifier.Name}.ToListAsync());
+        }
+
+        // GET: @{@Model.Classifier.Name}ss/Details/5
+        public async Task<ActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            @{@Model.Classifier.Name} @{@Model.Classifier.Name.LowerFirst()} = await db.@{@Model.Classifier.Name}.FindAsync(id);
+            if (@{@Model.Classifier.Name.LowerFirst()} == null)
+            {
+                return HttpNotFound();
+            }
+            return View(@{@Model.Classifier.Name.LowerFirst()});
+        }
+
+        // GET: @{@Model.Classifier.Name}s/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: @{@Model.Classifier.Name}s/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create([Bind(Include = "@foreach (var att in Model.Classifier.Properties()){@att.Name<text>,</text>}")] @{@Model.Classifier.Name} @{@Model.Classifier.Name.LowerFirst()})
+        {
+            if (ModelState.IsValid)
+            {
+                db.@{@Model.Classifier.Name}.Add(@{@Model.Classifier.Name.LowerFirst()});
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+
+            return View(company);
+        }
+
+        // GET: @{@Model.Classifier.Name}/Edit/5
+        public async Task<ActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            @{@Model.Classifier.Name} @{@Model.Classifier.Name.LowerFirst()} = await db.@{@Model.Classifier.Name}.FindAsync(id);
+            if (@{@Model.Classifier.Name.LowerFirst()} == null)
+            {
+                return HttpNotFound();
+            }
+            return View(@{@Model.Classifier.Name.LowerFirst()});
+        }
+
+        // POST: @{@Model.Classifier.Name}/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit([Bind(Include = ""@foreach (var att in Model.Classifier.Properties()){@att.Name<text>,</text>}"")] @{@Model.Classifier.Name} @{@Model.Classifier.Name.LowerFirst()})
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(@{@Model.Classifier.Name.LowerFirst()}).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return View(@{@Model.Classifier.Name.LowerFirst()});
+        }
+
+        // GET: @{@Model.Classifier.Name}s/Delete/5
+        public async Task<ActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            @{@Model.Classifier.Name} @{@Model.Classifier.Name.LowerFirst()} = await db.@{@Model.Classifier.Name}.FindAsync(id);
+            if (@{@Model.Classifier.Name.LowerFirst()} == null)
+            {
+                return HttpNotFound();
+            }
+            return View(@{@Model.Classifier.Name.LowerFirst()});
+        }
+
+        // POST: @{@Model.Classifier.Name}/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeleteConfirmed(int id)
+        {
+            @{@Model.Classifier.Name} @{@Model.Classifier.Name.LowerFirst()} = await db.@{@Model.Classifier.Name}.FindAsync(id);
+            db.@{@Model.Classifier.Name}.Remove(@{@Model.Classifier.Name.LowerFirst()});
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+    }
+}

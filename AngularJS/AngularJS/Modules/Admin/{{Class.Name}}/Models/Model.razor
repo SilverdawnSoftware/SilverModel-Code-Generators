@@ -1,0 +1,108 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+module @Model.Model.QualifiedName {
+    export interface I@{@Model.Class.Name}View {
+      @foreach (var att in Model.Class.OwnedAttributes)
+    	{
+			if (Model.RazorSupport.DataTypeIsElement(att.DataType))
+			{		
+	    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
+	    		{
+					var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);	    		
+	    			foreach (var att2 in refclass.OwnedAttributes)
+			    	{
+			    		if (att2["EF4","Default Descriptor"]=="True")
+			    		{
+			    			
+<text>      </text>@att.Name@att2.Name@: @Model.RazorSupport.LookupDataType("TypeScript",att2.DataType);		    			
+			    		}
+			    		if (att2["EF4","EF Primary Key"]=="True")
+			    		{
+<text>      </text>@refclass.Name@att2.Name<text>: </text>@Model.RazorSupport.LookupDataType("TypeScript",att2.DataType)@:;
+			    		  
+			    		}
+			    	}
+	    		}
+	    	}
+	    	else
+	    	{
+<text>      </text>@att.Name<text>: </text>@Model.RazorSupport.LookupDataType("TypeScript",att.DataType)@:;    	
+	    	}    	
+    	}  
+
+	@foreach (var association in Model.Class.GetTargetAssociation())
+    	{ 
+    	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+    			{
+		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
+		    	foreach (var assocaitedClassAtt in associatedClass.OwnedAttributes)
+					    	{
+					    		if (assocaitedClassAtt["EF4","Default Descriptor"]=="True")
+					    		{
+					  <text>  @associatedClass.Name@assocaitedClassAtt.Name : string; </text>  
+					    		}
+					    		if (assocaitedClassAtt["EF4","EF Primary Key"]=="True")
+					    		{
+					  <text>  @associatedClass.Name@assocaitedClassAtt.Name : @Model.RazorSupport.LookupDataType("TypeScript",assocaitedClassAtt.DataType); </text>  
+					    		}
+					    	}
+				}
+    	}
+    }
+    
+    export class @{@Model.Class.Name}View implements I@{@Model.Class.Name}View {
+      @foreach (var att in Model.Class.OwnedAttributes)
+    	{
+			if (Model.RazorSupport.DataTypeIsElement(att.DataType))
+			{		
+	    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
+	    		{
+					var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);	    		
+	    			foreach (var att2 in refclass.OwnedAttributes)
+			    	{
+			    		if (att2["EF4","Default Descriptor"]=="True")
+			    		{
+			    			
+<text>      </text>@att.Name@att2.Name@: @Model.RazorSupport.LookupDataType("TypeScript",att2.DataType);		    			
+			    		}
+			    		if (att2["EF4","EF Primary Key"]=="True")
+			    		{
+<text>      </text>@refclass.Name@att2.Name<text>: </text>@Model.RazorSupport.LookupDataType("TypeScript",att2.DataType)@:;
+			    		  
+			    		}
+			    	}
+	    		}
+	    	}
+	    	else
+	    	{
+<text>      </text>@att.Name<text>: </text>@Model.RazorSupport.LookupDataType("TypeScript",att.DataType)@:;    	
+	    	}    	
+    	}  
+
+	@foreach (var association in Model.Class.GetTargetAssociation())
+    	{ 
+    	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+    			{
+		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
+		    	foreach (var assocaitedClassAtt in associatedClass.OwnedAttributes)
+					    	{
+					    		if (assocaitedClassAtt["EF4","Default Descriptor"]=="True")
+					    		{
+					  <text>  @associatedClass.Name@assocaitedClassAtt.Name : string; </text>  
+					    		}
+					    		if (assocaitedClassAtt["EF4","EF Primary Key"]=="True")
+					    		{
+					  <text>  @associatedClass.Name@assocaitedClassAtt.Name : @Model.RazorSupport.LookupDataType("TypeScript",assocaitedClassAtt.DataType); </text>  
+					    		}
+					    	}
+				}
+    	}
+
+
+	  constructor() {
+	  }
+    }
+}

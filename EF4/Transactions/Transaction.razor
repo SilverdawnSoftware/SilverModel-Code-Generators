@@ -1,0 +1,190 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CompareEngine.Extensions;
+using CompareEngine.Support;
+using CompareEngine.Transactions.Model;
+using CompareEngine.Views.Model;
+using data = @(Model.Model.QualifiedName).Database;
+
+namespace @(Model.Model.QualifiedName).Transactions
+{
+ public partial class @(Model.Class.Name)Transactions
+ {
+ 
+ 
+ 		// Add Transaction Code
+ 		public async Task<@(Model.Class.Name)View> Add(@(Model.Class.Name)Add add)
+        {
+            using (var db = new data.CompareEngineDbContext())
+            {
+                var result= await Add(db,add);
+                await db.SaveChangesAsync();
+                return (@(Model.Class.Name)View)result;
+            }
+        } 	
+ 	
+ 	
+ 	 public async Task<data.@(Model.Class.Name)> Add(data.CompareEngineDbContext db, @(Model.Class.Name)Add add)
+        {
+         try
+            {
+            
+               var new@(Model.Class.Name)=new data.@(Model.Class.Name)();
+            	@foreach (var att in Model.Class.OwnedAttributes)
+    	{
+		if (!Model.RazorSupport.DataTypeIsElement(att.DataType))			
+	    	{
+	    	if (att["EF4","EF Primary Key"]=="True")
+			    		{
+			    		}
+			    		else
+			    		{
+	    	<text>new</text>@(Model.Class.Name)<text>.</text>@(att.Name) @:= add.@att.Name;   	
+	    	}
+	    	}    	
+    		
+    	}
+    	
+    		// Add references to parent Classes
+    	   @foreach (var att in Model.Class.GetTargetAssociation())
+    		{ 
+    		
+    		
+    			if (!(att.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && att.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+    			{
+    			<text>var @(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup = await db.@(att.GetSourceMemberEnd().Type.Name)s.FirstOrDefaultAsync(w => w.@GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type) == add.@GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type));</text>   
+				<text>if (@(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup !=null)</text>    
+				<text>{ new@(Model.Class.Name).@(att.GetSourceMemberEnd().Type.Name)=@(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup;}</text>	
+				}				
+    		}
+    	
+    	
+    		db.@(Model.Class.Name)s.Add(new@(Model.Class.Name));
+    		
+    		return new@(Model.Class.Name);
+            }
+            
+             catch (Exception)
+            {
+                return null;
+              
+            }
+        }
+
+// Update Transaction Code
+ 		public async Task<@(Model.Class.Name)View> Update(@(Model.Class.Name)Update update)
+        {
+            using (var db = new data.CompareEngineDbContext())
+            {
+                var result= await Update(db,update);
+                await db.SaveChangesAsync();
+                return (@(Model.Class.Name)View)result;
+            }
+        } 	
+ 	
+ 	
+ 	 public async Task<data.@(Model.Class.Name)> Update(data.CompareEngineDbContext db, @(Model.Class.Name)Update update)
+        {
+         try
+            {
+            @{
+              <text>var </text>@(Model.Class.Name.LowerFirst())<text>ToUpdate = await db.</text>@(Model.Class.Name)<text>s.FirstOrDefaultAsync(w => w.@GetPrimaryKey(Model.Class) == update.@GetPrimaryKey(Model.Class));</text>
+            }
+               var new@(Model.Class.Name)=new data.@(Model.Class.Name)();
+            	@foreach (var att in Model.Class.OwnedAttributes)
+    	{
+		if (Model.RazorSupport.DataTypeIsElement(att.DataType))
+			{		
+	    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
+	    		{
+					var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);	    		
+	    			foreach (var att2 in refclass.OwnedAttributes)
+			    	{
+			    		if (att2["EF4","Default Descriptor"]=="True")
+			    		{
+			    			<text>result.</text>@refclass.Name@att2.Name@:= item.@refclass.Name.@att2.Name;
+			    		}
+			    		if (att2["EF4","EF Primary Key"]=="True")
+			    		{
+			    		   <text>result.</text>@refclass.Name@att2.Name@:= item.@refclass.Name.@att2.Name;
+			    		 
+			    		}
+			    	}
+	    		}
+	    	}
+	    	else
+	    	{
+	    	if (att["EF4","EF Primary Key"]=="True")
+			    		{
+			    		}
+			    		else
+			    		{
+	    	<text>new</text>@(Model.Class.Name)<text>.</text>@(att.Name) @:= update.@att.Name;   	
+	    	}
+	    	}    	
+    		
+    	}
+    	
+    		db.@(Model.Class.Name)s.Add(new@(Model.Class.Name));
+    		
+    		return new@(Model.Class.Name);
+            }
+            
+             catch (Exception)
+            {
+                return null;
+              
+            }
+        }
+
+ 		// Delete Transaction Code
+ 		public async Task Delete(@(Model.Class.Name)Delete delete)
+        {
+            using (var db = new data.CompareEngineDbContext())
+            {
+                await Delete(db,delete);
+                await db.SaveChangesAsync();
+                
+            }
+        } 	
+ 	
+ 	
+ 	 public async Task Delete(data.CompareEngineDbContext db, @(Model.Class.Name)Delete delete)
+        {
+         try
+            {
+            
+              var @(Model.Class.Name.LowerFirst())ToDelete = await db.@(Model.Class.Name)s.FirstOrDefaultAsync(w => w.@GetPrimaryKey(Model.Class) == delete.@GetPrimaryKey(Model.Class));
+            
+             	db.@(Model.Class.Name)s.Remove(@(Model.Class.Name.LowerFirst())ToDelete);    		
+    		}
+             catch (Exception)
+            {
+            }
+        }
+	}
+ }
+ 
+ @functions {
+    public static string GetPrimaryKey(IClass umlClass)
+    {
+    	foreach (var att in umlClass.OwnedAttributes)
+		{
+			if (att["EF4","EF Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}
+    	
+    	return "";
+    }
+ }
