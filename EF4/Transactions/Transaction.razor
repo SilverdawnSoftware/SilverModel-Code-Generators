@@ -13,33 +13,33 @@ using CompareEngine.Extensions;
 using CompareEngine.Support;
 using CompareEngine.Transactions.Model;
 using CompareEngine.Views.Model;
-using data = @(Model.Model.QualifiedName).Database;
+using data = @(Model.Model.Name).Database;
 
-namespace @(Model.Model.QualifiedName).Transactions
+namespace @(Model.Model.Name).Transactions
 {
- public partial class @(Model.Class.Name)Transactions
+ public partial class @(Model.Classifier.Name)Transactions
  {
  
  
  		// Add Transaction Code
- 		public async Task<@(Model.Class.Name)View> Add(@(Model.Class.Name)Add add)
+ 		public async Task<@(Model.Classifier.Name)View> Add(@(Model.Classifier.Name)Add add)
         {
             using (var db = new data.CompareEngineDbContext())
             {
                 var result= await Add(db,add);
                 await db.SaveChangesAsync();
-                return (@(Model.Class.Name)View)result;
+                return (@(Model.Classifier.Name)View)result;
             }
         } 	
  	
  	
- 	 public async Task<data.@(Model.Class.Name)> Add(data.CompareEngineDbContext db, @(Model.Class.Name)Add add)
+ 	 public async Task<data.@(Model.Classifier.Name)> Add(data.CompareEngineDbContext db, @(Model.Classifier.Name)Add add)
         {
          try
             {
             
-               var new@(Model.Class.Name)=new data.@(Model.Class.Name)();
-            	@foreach (var att in Model.Class.OwnedAttributes)
+               var new@(Model.Classifier.Name)=new data.@(Model.Classifier.Name)();
+            	@foreach (var att in Model.Classifier.AllProperties())
     	{
 		if (!Model.RazorSupport.DataTypeIsElement(att.DataType))			
 	    	{
@@ -48,14 +48,14 @@ namespace @(Model.Model.QualifiedName).Transactions
 			    		}
 			    		else
 			    		{
-	    	<text>new</text>@(Model.Class.Name)<text>.</text>@(att.Name) @:= add.@att.Name;   	
+	    	<text>new</text>@(Model.Classifier.Name)<text>.</text>@(att.Name) @:= add.@att.Name;   	
 	    	}
 	    	}    	
     		
     	}
     	
     		// Add references to parent Classes
-    	   @foreach (var att in Model.Class.GetTargetAssociation())
+    	   @foreach (var att in Model.Classifier.GetTargetAssociation())
     		{ 
     		
     		
@@ -63,14 +63,14 @@ namespace @(Model.Model.QualifiedName).Transactions
     			{
     			<text>var @(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup = await db.@(att.GetSourceMemberEnd().Type.Name)s.FirstOrDefaultAsync(w => w.@GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type) == add.@GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type));</text>   
 				<text>if (@(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup !=null)</text>    
-				<text>{ new@(Model.Class.Name).@(att.GetSourceMemberEnd().Type.Name)=@(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup;}</text>	
+				<text>{ new@(Model.Classifier.Name).@(att.GetSourceMemberEnd().Type.Name)=@(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup;}</text>	
 				}				
     		}
     	
     	
-    		db.@(Model.Class.Name)s.Add(new@(Model.Class.Name));
+    		db.@(Model.Classifier.Name)s.Add(new@(Model.Classifier.Name));
     		
-    		return new@(Model.Class.Name);
+    		return new@(Model.Classifier.Name);
             }
             
              catch (Exception)
@@ -81,33 +81,33 @@ namespace @(Model.Model.QualifiedName).Transactions
         }
 
 // Update Transaction Code
- 		public async Task<@(Model.Class.Name)View> Update(@(Model.Class.Name)Update update)
+ 		public async Task<@(Model.Classifier.Name)View> Update(@(Model.Classifier.Name)Update update)
         {
             using (var db = new data.CompareEngineDbContext())
             {
                 var result= await Update(db,update);
                 await db.SaveChangesAsync();
-                return (@(Model.Class.Name)View)result;
+                return (@(Model.Classifier.Name)View)result;
             }
         } 	
  	
  	
- 	 public async Task<data.@(Model.Class.Name)> Update(data.CompareEngineDbContext db, @(Model.Class.Name)Update update)
+ 	 public async Task<data.@(Model.Classifier.Name)> Update(data.CompareEngineDbContext db, @(Model.Classifier.Name)Update update)
         {
          try
             {
             @{
-              <text>var </text>@(Model.Class.Name.LowerFirst())<text>ToUpdate = await db.</text>@(Model.Class.Name)<text>s.FirstOrDefaultAsync(w => w.@GetPrimaryKey(Model.Class) == update.@GetPrimaryKey(Model.Class));</text>
+              <text>var </text>@(Model.Classifier.Name.LowerFirst())<text>ToUpdate = await db.</text>@(Model.Classifier.Name)<text>s.FirstOrDefaultAsync(w => w.@GetPrimaryKey(Model.Classifier) == update.@GetPrimaryKey(Model.Classifier));</text>
             }
-               var new@(Model.Class.Name)=new data.@(Model.Class.Name)();
-            	@foreach (var att in Model.Class.OwnedAttributes)
+               var new@(Model.Classifier.Name)=new data.@(Model.Classifier.Name)();
+            	@foreach (var att in Model.Classifier.AllProperties())
     	{
 		if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 			{		
 	    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
 	    		{
 					var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);	    		
-	    			foreach (var att2 in refclass.OwnedAttributes)
+	    			foreach (var att2 in refclass.AllProperties())
 			    	{
 			    		if (att2["EF4","Default Descriptor"]=="True")
 			    		{
@@ -128,15 +128,15 @@ namespace @(Model.Model.QualifiedName).Transactions
 			    		}
 			    		else
 			    		{
-	    	<text>new</text>@(Model.Class.Name)<text>.</text>@(att.Name) @:= update.@att.Name;   	
+	    	<text>new</text>@(Model.Classifier.Name)<text>.</text>@(att.Name) @:= update.@att.Name;   	
 	    	}
 	    	}    	
     		
     	}
     	
-    		db.@(Model.Class.Name)s.Add(new@(Model.Class.Name));
+    		db.@(Model.Classifier.Name)s.Add(new@(Model.Classifier.Name));
     		
-    		return new@(Model.Class.Name);
+    		return new@(Model.Classifier.Name);
             }
             
              catch (Exception)
@@ -147,7 +147,7 @@ namespace @(Model.Model.QualifiedName).Transactions
         }
 
  		// Delete Transaction Code
- 		public async Task Delete(@(Model.Class.Name)Delete delete)
+ 		public async Task Delete(@(Model.Classifier.Name)Delete delete)
         {
             using (var db = new data.CompareEngineDbContext())
             {
@@ -158,14 +158,14 @@ namespace @(Model.Model.QualifiedName).Transactions
         } 	
  	
  	
- 	 public async Task Delete(data.CompareEngineDbContext db, @(Model.Class.Name)Delete delete)
+ 	 public async Task Delete(data.CompareEngineDbContext db, @(Model.Classifier.Name)Delete delete)
         {
          try
             {
             
-              var @(Model.Class.Name.LowerFirst())ToDelete = await db.@(Model.Class.Name)s.FirstOrDefaultAsync(w => w.@GetPrimaryKey(Model.Class) == delete.@GetPrimaryKey(Model.Class));
+              var @(Model.Classifier.Name.LowerFirst())ToDelete = await db.@(Model.Classifier.Name)s.FirstOrDefaultAsync(w => w.@GetPrimaryKey(Model.Classifier) == delete.@GetPrimaryKey(Model.Classifier));
             
-             	db.@(Model.Class.Name)s.Remove(@(Model.Class.Name.LowerFirst())ToDelete);    		
+             	db.@(Model.Classifier.Name)s.Remove(@(Model.Classifier.Name.LowerFirst())ToDelete);    		
     		}
              catch (Exception)
             {
@@ -175,9 +175,9 @@ namespace @(Model.Model.QualifiedName).Transactions
  }
  
  @functions {
-    public static string GetPrimaryKey(IClass umlClass)
+    public static string GetPrimaryKey(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.OwnedAttributes)
+    	foreach (var att in umlClass.AllProperties())
 		{
 			if (att["EF4","EF Primary Key"]=="True")
 			{

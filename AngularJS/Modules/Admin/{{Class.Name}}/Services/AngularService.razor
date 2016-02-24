@@ -4,23 +4,23 @@
 // ALLOWOVERWRITE
 
 @{
-var primaryKey=GetPrimaryKey(Model.Class);
+var primaryKey=GetPrimaryKey(Model.Classifier);
 }
 
 module @Model.Model.QualifiedName {
 
 
-    export class @(Model.Class.Name)Service {
+    export class @(Model.Classifier.Name)Service {
 
         public static $inject = ['$http', '$q', '$log', '$rootScope'];
 
         constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $log: ng.ILogService) {}
 
 
-		get@(Model.Class.Name)s(): ng.IPromise<any> {
+		get@(Model.Classifier.Name)s(): ng.IPromise<any> {
 	            var deferred = this.$q.defer();
 	
-	            this.$http.get('api/@(Model.Class.Name)/All')
+	            this.$http.get('api/@(Model.Classifier.Name)/All')
 	                .success(function (data) {
 	                deferred.resolve(data);
 	            }).error(function (msg, code) {
@@ -33,10 +33,10 @@ module @Model.Model.QualifiedName {
 
 		@if (!string.IsNullOrEmpty(primaryKey))
 		{
-	 	<text>get@(Model.Class.Name)(@(GetPrimaryKey(Model.Class).LowerFirst()): number): ng.IPromise<any> {
+	 	<text>get@(Model.Classifier.Name)(@(GetPrimaryKey(Model.Classifier).LowerFirst()): number): ng.IPromise<any> {
 	            var deferred = this.$q.defer();
 	
-	            this.$http.get('api/@(Model.Class.Name)/'+@(GetPrimaryKey(Model.Class).LowerFirst()))
+	            this.$http.get('api/@(Model.Classifier.Name)/'+@(GetPrimaryKey(Model.Classifier).LowerFirst()))
 	                .success(function (data) {
 	                deferred.resolve(data);
 	            }).error(function (msg, code) {
@@ -46,16 +46,16 @@ module @Model.Model.QualifiedName {
 	            return deferred.promise;
 	        }
 	        
-		@foreach (var att in Model.Class.GetTargetAssociation())
+		@foreach (var att in Model.Classifier.GetTargetAssociation())
 	    	{
 	    		var parent=(IClass)att.GetSourceMemberEnd().Type;
 	    		var parentKey=GetPrimaryKey(parent);
 			
 			<text>
-			get@(Model.Class.Name)sFor@(parent.Name)(@(parentKey.LowerFirst()): number): ng.IPromise<any> {
+			get@(Model.Classifier.Name)sFor@(parent.Name)(@(parentKey.LowerFirst()): number): ng.IPromise<any> {
 	            var deferred = this.$q.defer();
 	
-	            this.$http.get('api/@(parent.Name)/'+@(parentKey.LowerFirst())+'/@(Model.Class.Name)s')
+	            this.$http.get('api/@(parent.Name)/'+@(parentKey.LowerFirst())+'/@(Model.Classifier.Name)s')
 	                .success(function (data) {
 	                deferred.resolve(data);
 	            }).error(function (msg, code) {
@@ -69,10 +69,10 @@ module @Model.Model.QualifiedName {
 	
 	
 	
-			add@(Model.Class.Name)(add: @(Model.Class.Name)View): ng.IPromise<any> {
+			add@(Model.Classifier.Name)(add: @(Model.Classifier.Name)View): ng.IPromise<any> {
 	            var deferred = this.$q.defer();
 	
-	            this.$http.post('api/@(Model.Class.Name)',add)
+	            this.$http.post('api/@(Model.Classifier.Name)',add)
 	                .success(function (data) {
 	                deferred.resolve(data);
 	            }).error(function (msg, code) {
@@ -82,10 +82,10 @@ module @Model.Model.QualifiedName {
 	            return deferred.promise;
 	        }
 
-			update@(Model.Class.Name)(update: @(Model.Class.Name)View): ng.IPromise<any> {
+			update@(Model.Classifier.Name)(update: @(Model.Classifier.Name)View): ng.IPromise<any> {
 	            var deferred = this.$q.defer();
 	
-	            this.$http.put('api/@(Model.Class.Name)/'+update.@(GetPrimaryKey(Model.Class)),update)
+	            this.$http.put('api/@(Model.Classifier.Name)/'+update.@(GetPrimaryKey(Model.Classifier)),update)
 	                .success(function (data) {
 	                deferred.resolve(data);
 	            }).error(function (msg, code) {
@@ -94,10 +94,10 @@ module @Model.Model.QualifiedName {
 	            });
 	            return deferred.promise;
 	        }	
-			delete@(Model.Class.Name)(@(GetPrimaryKey(Model.Class).LowerFirst()): number): ng.IPromise<any> {
+			delete@(Model.Classifier.Name)(@(GetPrimaryKey(Model.Classifier).LowerFirst()): number): ng.IPromise<any> {
 	            var deferred = this.$q.defer();
 	
-	            this.$http.delete('api/@(Model.Class.Name)/'+@(GetPrimaryKey(Model.Class).LowerFirst()))
+	            this.$http.delete('api/@(Model.Classifier.Name)/'+@(GetPrimaryKey(Model.Classifier).LowerFirst()))
 	                .success(function (data) {
 	                deferred.resolve(data);
 	            }).error(function (msg, code) {
@@ -111,7 +111,7 @@ module @Model.Model.QualifiedName {
 
 
     }
-   	angular.module("@Model.Model.QualifiedName").service('@(Model.Class.Name.LowerFirst())Service', @(Model.Class.Name)Service);
+   	angular.module("@Model.Model.QualifiedName").service('@(Model.Classifier.Name.LowerFirst())Service', @(Model.Classifier.Name)Service);
 
 }
 	
@@ -119,9 +119,9 @@ module @Model.Model.QualifiedName {
 
 @functions{
  
-    public static string GetPrimaryKey(IClass umlClass)
+    public static string GetPrimaryKey(IClassifier umlClassifier)
     {
-    	foreach (var att in umlClass.OwnedAttributes)
+    	foreach (var att in umlClassifier.AllProperties())
 		{
 			if (att["EF4","EF Primary Key"]=="True")
 			{

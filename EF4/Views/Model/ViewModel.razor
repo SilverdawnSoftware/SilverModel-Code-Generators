@@ -12,16 +12,16 @@ using System.Web;
 namespace @(Model.Model.QualifiedName).Views.Model
 {
 
-    public class @(Model.Class.Name)View
+    public class @(Model.Classifier.Name)View
     {
-    	@foreach (var att in Model.Class.OwnedAttributes)
+    	@foreach (var att in Model.Classifier.AllProperties())
     	{
 			if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 			{		
 	    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
 	    		{
 					var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);	    		
-	    			foreach (var att2 in refclass.OwnedAttributes)
+	    			foreach (var att2 in refclass.AllProperties())
 			    	{
 			    		if (att2["EF4","Default Descriptor"]=="True")
 			    		{
@@ -29,17 +29,20 @@ namespace @(Model.Model.QualifiedName).Views.Model
 			    		}
 			    		if (att2["EF4","EF Primary Key"]=="True")
 			    		{
-			    		   @Model.RazorSupport.LookupDataType("C#",att2.DataType)<text> </text>@refclass.Name@att2.Name<text> { get; set; } </text>  
+			    		   @att2.Type.AsPrimitiveType()["C#"] <text> </text>@refclass.Name@att2.Name<text> { get; set; } </text>  
 			    		}
 			    	}
 	    		}
 	    	}
 	    	else
 	    	{
-	    	<text>public @Model.RazorSupport.LookupDataType("C#",att.DataType)</text> @att.Name <text> { get; set; } </text>	    	
+	    	if (att.Type.IsPrimitiveType())
+			{
+	    	<text>public @att.Type.AsPrimitiveType()["C#"] </text> @att.Name <text> { get; set; } </text>	    	
+	    	}
 	    	}
     	}
-    	@foreach (var association in Model.Class.GetTargetAssociation())
+    	@foreach (var association in Model.Classifier.GetTargetAssociation())
     	{ 
     	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
     			{
@@ -60,11 +63,11 @@ namespace @(Model.Model.QualifiedName).Views.Model
     	
     	
     	
-    	public static explicit operator @(Model.Class.Name)View(Database.@Model.Class.Name item)
+    	public static explicit operator @(Model.Classifier.Name)View(Database.@Model.Classifier.Name item)
     	{
-    	 var result=new @(Model.Class.Name)View();
+    	 var result=new @(Model.Classifier.Name)View();
     	 
-      @foreach (var att in Model.Class.OwnedAttributes)
+      @foreach (var att in Model.Classifier.AllProperties())
     	{
 		if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 			{		
@@ -92,7 +95,7 @@ namespace @(Model.Model.QualifiedName).Views.Model
     		
     	}
     	
-    	@foreach (var association in Model.Class.GetTargetAssociation())
+    	@foreach (var association in Model.Classifier.GetTargetAssociation())
     	{ 
     		if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
 			{

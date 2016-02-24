@@ -4,8 +4,8 @@
 // ALLOWOVERWRITE
 
 module @Model.Model.QualifiedName {
-    export interface I@{@Model.Class.Name}View {
-      @foreach (var att in Model.Class.OwnedAttributes)
+    export interface I@{@Model.Classifier.Name}View {
+      @foreach (var att in Model.Classifier.AllProperties())
     	{
 			if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 			{		
@@ -33,35 +33,35 @@ module @Model.Model.QualifiedName {
 	    	}    	
     	}  
 
-	@foreach (var association in Model.Class.GetTargetAssociation())
+	@foreach (var association in Model.Classifier.GetTargetAssociation())
     	{ 
     	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
     			{
 		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
-		    	foreach (var assocaitedClassAtt in associatedClass.OwnedAttributes)
+		    	foreach (var assocaitedClassAtt in association.AllProperties())
 					    	{
 					    		if (assocaitedClassAtt["EF4","Default Descriptor"]=="True")
 					    		{
-					  <text>  @associatedClass.Name@assocaitedClassAtt.Name : string; </text>  
+					  <text>  @association.Name@assocaitedClassAtt.Name : string; </text>  
 					    		}
 					    		if (assocaitedClassAtt["EF4","EF Primary Key"]=="True")
 					    		{
-					  <text>  @associatedClass.Name@assocaitedClassAtt.Name : @Model.RazorSupport.LookupDataType("TypeScript",assocaitedClassAtt.DataType); </text>  
+					  <text>  @association.Name@assocaitedClassAtt.Name : @Model.RazorSupport.LookupDataType("TypeScript",assocaitedClassAtt.DataType); </text>  
 					    		}
 					    	}
 				}
     	}
     }
     
-    export class @{@Model.Class.Name}View implements I@{@Model.Class.Name}View {
-      @foreach (var att in Model.Class.OwnedAttributes)
+    export class @{@Model.Classifier.Name}View implements I@{@Model.Classifier.Name}View {
+      @foreach (var att in Model.Classifier.AllProperties())
     	{
 			if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 			{		
 	    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
 	    		{
 					var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);	    		
-	    			foreach (var att2 in refclass.OwnedAttributes)
+	    			foreach (var att2 in refclass.AllProperties())
 			    	{
 			    		if (att2["EF4","Default Descriptor"]=="True")
 			    		{
@@ -82,20 +82,20 @@ module @Model.Model.QualifiedName {
 	    	}    	
     	}  
 
-	@foreach (var association in Model.Class.GetTargetAssociation())
+	@foreach (var association in Model.Classifier.GetTargetAssociation())
     	{ 
     	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
     			{
 		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
-		    	foreach (var assocaitedClassAtt in associatedClass.OwnedAttributes)
+		    	foreach (var assocaitedClassAtt in association.AllProperties())
 					    	{
 					    		if (assocaitedClassAtt["EF4","Default Descriptor"]=="True")
 					    		{
-					  <text>  @associatedClass.Name@assocaitedClassAtt.Name : string; </text>  
+					  <text>  @association.Name@assocaitedClassAtt.Name : string; </text>  
 					    		}
 					    		if (assocaitedClassAtt["EF4","EF Primary Key"]=="True")
 					    		{
-					  <text>  @associatedClass.Name@assocaitedClassAtt.Name : @Model.RazorSupport.LookupDataType("TypeScript",assocaitedClassAtt.DataType); </text>  
+					  <text>  @association.Name@assocaitedClassAtt.Name : @Model.RazorSupport.LookupDataType("TypeScript",assocaitedClassAtt.DataType); </text>  
 					    		}
 					    	}
 				}

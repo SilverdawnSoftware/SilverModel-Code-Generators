@@ -21,7 +21,7 @@
  <tr><td>Name</td><td>Type</td><td>Description</td></tr> 
  </thead> 
  <tbody> 
-@foreach (var att in Model.Classifier.AllAttributes()) 
+@foreach (var att in Model.Classifier.AllProperties()) 
         {  
         var owner=(INamedElement)att.Owner;
     <tr> 

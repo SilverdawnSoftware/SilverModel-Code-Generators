@@ -1,0 +1,21 @@
+﻿// ALLOWOVERWRITE
+
+/// <reference path="../../../../../scripts/typings/angularjs/angular.d.ts" />
+module @Model.Model.Name {
+
+    
+
+    export function @(Model.Classifier.Name)EditDirective(): ng.IDirective {
+
+        return { 
+            templateUrl: '/AngularJS/Modules/Admin/@(Model.Classifier.Name)/Directives/@(Model.Classifier.Name)EditDirective.html',
+            replace: true,
+            controller: '@(Model.Classifier.Name.LowerFirst())EditDirectiveCtrl',
+            controllerAs: 'ctrl',
+            scope: true
+        }
+    }
+
+    angular.module("@Model.Model.QualifiedName").directive('@(Model.Classifier.Name.LowerFirst())Edit', @(Model.Classifier.Name)EditDirective);
+}
+ 

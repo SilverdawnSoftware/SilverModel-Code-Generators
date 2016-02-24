@@ -9,13 +9,16 @@ using System.Linq;
 using System.Web;
 
 
-namespace @(Model.Model.QualifiedName).Transactions.Model
+namespace @(Model.Model.Name).Transactions.Model
 {
     public class @(Model.Classifier.Name)Update
     {
-    	@foreach (var att in Model.Classifier.Properties())
-    	{ 
-    	<text>public @att.Type.AsPrimitiveType()["C#"] </text> @att.Name <text> { get; set; } </text>
+    	@foreach (var att in Model.Classifier.AllProperties())
+    	{
+			if (att.Type.IsPrimitiveType())
+			{		
+    			<text>public @att.Type.AsPrimitiveType()["C#"] </text> @att.Name <text> { get; set; } </text>
+    		}
     	}
     }
 }

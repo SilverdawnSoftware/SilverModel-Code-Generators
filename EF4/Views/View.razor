@@ -14,17 +14,17 @@ using @(Model.Model.QualifiedName).Database;
 
 namespace @(Model.Model.QualifiedName).Views
 {
-    public partial class @(Model.Class.Name)Views
+    public partial class @(Model.Classifier.Name)Views
     {
     	
-    	public async Task<@(Model.Class.Name)View> Get(int @(GetPrimaryKey(Model.Class).LowerFirst()))
+    	public async Task<@(Model.Classifier.Name)View> Get(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
     	{
     	
     	using (CompareEngineDbContext db = new CompareEngineDbContext())
             {
-            	if (await db.@(Model.Class.Name)s.AnyAsync(w=>w.@(GetPrimaryKey(Model.Class))==@(GetPrimaryKey(Model.Class).LowerFirst())))
+            	if (await db.@(Model.Classifier.Name)s.AnyAsync(w=>w.@(GetPrimaryKey(Model.Classifier))==@(GetPrimaryKey(Model.Classifier).LowerFirst())))
                 {
-                	return (@(Model.Class.Name)View)await db.@(Model.Class.Name)s.FirstAsync(w=>w.@(GetPrimaryKey(Model.Class))==@(GetPrimaryKey(Model.Class).LowerFirst()));
+                	return (@(Model.Classifier.Name)View)await db.@(Model.Classifier.Name)s.FirstAsync(w=>w.@(GetPrimaryKey(Model.Classifier))==@(GetPrimaryKey(Model.Classifier).LowerFirst()));
             	}
             }
     	
@@ -33,19 +33,19 @@ namespace @(Model.Model.QualifiedName).Views
     	}
     	
     	
-    	@foreach (var att in Model.Class.GetTargetAssociation())
+    	@foreach (var att in Model.Classifier.GetTargetAssociation())
     	{
     		var parent=(IClass)att.GetSourceMemberEnd().Type;
     		var parentKey=GetPrimaryKey(parent);
 		
 		<text>
-		public async Task<List<@(Model.Class.Name)View>> Get@(Model.Class.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))
+		public async Task<List<@(Model.Classifier.Name)View>> Get@(Model.Classifier.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))
     	{
     	
     	using (CompareEngineDbContext db = new CompareEngineDbContext())
             {
-            	var result= await db.@(Model.Class.Name)s.Where(w=>w.@(parent.Name).@(parentKey) ==@(parentKey.LowerFirst())).ToListAsync();
-            	return result.ConvertAll(w=>(@(Model.Class.Name)View) w);
+            	var result= await db.@(Model.Classifier.Name)s.Where(w=>w.@(parent.Name).@(parentKey) ==@(parentKey.LowerFirst())).ToListAsync();
+            	return result.ConvertAll(w=>(@(Model.Classifier.Name)View) w);
                
             }
     	}
@@ -56,9 +56,9 @@ namespace @(Model.Model.QualifiedName).Views
 
 @functions{
  
-    public static string GetPrimaryKey(IClass umlClass)
+    public static string GetPrimaryKey(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.OwnedAttributes)
+    	foreach (var att in umlClass.AllProperties())
 		{
 			if (att["EF4","EF Primary Key"]=="True")
 			{

@@ -16,67 +16,67 @@ using viewModel =@(Model.Model.QualifiedName).Views.Model;
 using views =@(Model.Model.QualifiedName).Views;
 using database = @(Model.Model.QualifiedName).Database;
 
-namespace @(Model.Model.QualifiedName).Controllers
+namespace @(Model.Model.Name).Controllers
 {
 
 	
-    public partial class @(Model.Class.Name)APIController : ApiController
+    public partial class @(Model.Classifier.Name)APIController : ApiController
     {
-    	//Get @(Model.Class.Name) View Model
-    	[Route("api/@(Model.Class.Name)/{@(GetPrimaryKey(Model.Class))}")]
+    	//Get @(Model.Classifier.Name) View Model
+    	[Route("api/@(Model.Classifier.Name)/{@(GetPrimaryKey(Model.Classifier))}")]
     	 [HttpGet]
-        public async Task<viewModel.@(Model.Class.Name)View> Get(int @(GetPrimaryKey(Model.Class).LowerFirst()))
+        public async Task<viewModel.@(Model.Classifier.Name)View> Get(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
         {
-            var view=new views.@(Model.Class.Name)Views();            
-            return await view.Get(@(GetPrimaryKey(Model.Class).LowerFirst()));            
+            var view=new views.@(Model.Classifier.Name)Views();            
+            return await view.Get(@(GetPrimaryKey(Model.Classifier).LowerFirst()));            
         }
     
     
     
     
-    	//Add New @(Model.Class.Name)
-    	[Route("api/@(Model.Class.Name)")]
+    	//Add New @(Model.Classifier.Name)
+    	[Route("api/@(Model.Classifier.Name)")]
     	 [HttpPost]
-        public async Task<viewModel.@(Model.Class.Name)View> Add(transModel.@(Model.Class.Name)Add add)
+        public async Task<viewModel.@(Model.Classifier.Name)View> Add(transModel.@(Model.Classifier.Name)Add add)
         {
-            var addTrans=new trans.@(Model.Class.Name)Transactions();            
+            var addTrans=new trans.@(Model.Classifier.Name)Transactions();            
             return await addTrans.Add(add);            
         }
         
-        //Update  @(Model.Class.Name)
-    	[Route("api/@(Model.Class.Name)/{@(GetPrimaryKey(Model.Class))}")]
+        //Update  @(Model.Classifier.Name)
+    	[Route("api/@(Model.Classifier.Name)/{@(GetPrimaryKey(Model.Classifier))}")]
     	 [HttpPut]
-        public async Task Update(int @(GetPrimaryKey(Model.Class).LowerFirst()),transModel.@(Model.Class.Name)Update update)
+        public async Task Update(int @(GetPrimaryKey(Model.Classifier).LowerFirst()),transModel.@(Model.Classifier.Name)Update update)
         {
-            var updateTrans=new trans.@(Model.Class.Name)Transactions();            
+            var updateTrans=new trans.@(Model.Classifier.Name)Transactions();            
             await updateTrans.Update(update);            
         }
         
         
-         //Delete  @(Model.Class.Name)
-    	[Route("api/@(Model.Class.Name)/{@(GetPrimaryKey(Model.Class))}")]
+         //Delete  @(Model.Classifier.Name)
+    	[Route("api/@(Model.Classifier.Name)/{@(GetPrimaryKey(Model.Classifier))}")]
     	 [HttpDelete]
-        public async Task Delete(int @(GetPrimaryKey(Model.Class).LowerFirst()))
+        public async Task Delete(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
         {
-            var deleteTrans=new trans.@(Model.Class.Name)Transactions();
-			var  @(Model.Class.Name.LowerFirst())Delete=new transModel.@(Model.Class.Name)Delete(){@(GetPrimaryKey(Model.Class))=@(GetPrimaryKey(Model.Class).LowerFirst()) };			
-            await deleteTrans.Delete(@(Model.Class.Name.LowerFirst())Delete);            
+            var deleteTrans=new trans.@(Model.Classifier.Name)Transactions();
+			var  @(Model.Classifier.Name.LowerFirst())Delete=new transModel.@(Model.Classifier.Name)Delete(){@(GetPrimaryKey(Model.Classifier))=@(GetPrimaryKey(Model.Classifier).LowerFirst()) };			
+            await deleteTrans.Delete(@(Model.Classifier.Name.LowerFirst())Delete);            
         }
         
         
         
-    	@foreach (var att in Model.Class.GetTargetAssociation())
+    	@foreach (var att in Model.Classifier.GetTargetAssociation())
     	{
     		var parent=(IClass)att.GetSourceMemberEnd().Type;
     		var parentKey=GetPrimaryKey(parent);
 		
 		<text>
-		[Route("api/@(parent.Name)/{@(parentKey)}/@(Model.Class.Name)s")]
+		[Route("api/@(parent.Name)/{@(parentKey)}/@(Model.Classifier.Name)s")]
     	 [HttpGet]
-        public async Task<List<viewModel.@(Model.Class.Name)View>> Get@(Model.Class.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))		
+        public async Task<List<viewModel.@(Model.Classifier.Name)View>> Get@(Model.Classifier.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))		
     	{
-    		 var view=new views.@(Model.Class.Name)Views();            
-            return await view.Get@(Model.Class.Name)sFor@(parent.Name)(@(parentKey.LowerFirst())); 
+    		 var view=new views.@(Model.Classifier.Name)Views();            
+            return await view.Get@(Model.Classifier.Name)sFor@(parent.Name)(@(parentKey.LowerFirst())); 
     	
     	}
 </text>    	
@@ -87,9 +87,9 @@ namespace @(Model.Model.QualifiedName).Controllers
 
 @functions{
  
-    public static string GetPrimaryKey(IClass umlClass)
+    public static string GetPrimaryKey(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.OwnedAttributes)
+    	foreach (var att in umlClass.AllProperties())
 		{
 			if (att["EF4","EF Primary Key"]=="True")
 			{

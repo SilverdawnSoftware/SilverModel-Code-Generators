@@ -5,7 +5,7 @@
 
 <div class="box angularItemEdit angularSiteIndex">
     <div class="box-header">
-        <h2><i class="fa fa-edit"></i>@(Model.Class.Name) List</h2>
+        <h2><i class="fa fa-edit"></i>@(Model.Classifier.Name) List</h2>
         <div class="box-icon">
             <a href="/" class="btn-close"><i class="fa fa-times"></i></a>
         </div>
@@ -15,17 +15,17 @@
         <table class="table table-striped" id="SearchResults">
             <thead>
                 <tr>
-                    <th>@GetDescriptor(Model.Class)</th>
+                    <th>@GetDescriptor(Model.Classifier)</th>
                     <th>Edit</th>                   
                 </tr>
             </thead>
             <tbody >
-                <tr ng-repeat="item in @(Model.Class.Name.LowerFirst())Views">
+                <tr ng-repeat="item in @(Model.Classifier.Name.LowerFirst())Views">
                     <td>{{item.Name}}  </td>
                    
                     <td>
                         <!-- <a class="btn" href="#" id="ItemQuickSaveButton"><i class="icon-ok"></i></a>-->
-                        <a class="btn" href="#/Admin/@Model.Model.QualifiedName/@Model.Class.Name/Edit/{{item.@(GetPrimaryKey(Model.Class))}}"><i class="glyphicon glyphicon-pencil"></i></a>
+                        <a class="btn" href="#/Admin/@Model.Model.QualifiedName/@Model.Classifier.Name/Edit/{{item.@(GetPrimaryKey(Model.Classifier))}}"><i class="glyphicon glyphicon-pencil"></i></a>
                         <!-- <a class="btn" ng-click="deleteItem(item)" ><i class="icon-trash"></i></a>-->
                     </td>
                     
@@ -33,15 +33,15 @@
             </tbody>
         </table>
 
-        <a class="btn btn-primary" href="#/Admin/@Model.Model.QualifiedName/@Model.Class.Name/Add">Add</a>
+        <a class="btn btn-primary" href="#/Admin/@Model.Model.QualifiedName/@Model.Classifier.Name/Add">Add</a>
     </div>
 </div>
 
 @functions{
 
-string GetPrimaryKey(IClass iClass)
+string GetPrimaryKey(IClassifier iClass)
 {
-	foreach (var att2 in iClass.OwnedAttributes)
+	foreach (var att2 in iClass.AllProperties())
    	{
 		if (att2["EF4","EF Primary Key"]=="True")
 		 return att2.Name;
@@ -50,9 +50,9 @@ string GetPrimaryKey(IClass iClass)
 	return "";
 }
 
-string GetDescriptor(IClass iClass)
+string GetDescriptor(IClassifier iClass)
 {
-	foreach (var att2 in iClass.OwnedAttributes)
+	foreach (var att2 in iClass.AllProperties())
    	{
 		if (att2["EF4","Default Descriptor"]=="True")
 		 return att2.Name;

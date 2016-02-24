@@ -6,7 +6,7 @@
 
 <div class="box">
     <div class="box-header">
-        <h2><i class="fa fa-edit"></i>@Model.Class.Name Edit</h2>
+        <h2><i class="fa fa-edit"></i>@Model.Classifier.Name Edit</h2>
         <div class="box-icon">
 
             <a href="/" class="btn-close"><i class="fa fa-times"></i></a>
@@ -35,7 +35,7 @@
 
         <div ng-show="loaded">
         	 <form class="form-horizontal css-form" role="form" novalidate>
-        	  @foreach (var att in Model.Class.OwnedAttributes)
+        	  @foreach (var att in Model.Classifier.AllProperties())
     	{
 		if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 			{		
@@ -49,10 +49,10 @@
 					if (!string.IsNullOrEmpty(pKey) && !string.IsNullOrEmpty(descriptor))
 					{
 					 <div class="form-group">
-                            <label for="@Model.Class.Name.LowerFirst()@att.Name" class="col-sm-2 control-label">Retailer</label>
+                            <label for="@Model.Classifier.Name.LowerFirst()@att.Name" class="col-sm-2 control-label">Retailer</label>
                             <div class="col-sm-10">
 
-                                <select id="@Model.Class.Name.LowerFirst()@att.Name" class="form-control" ng-model="@{@Model.Class.Name.LowerFirst()}.@{@refclass.Name}@pKey" ng-options="@{@refclass.Name.LowerFirst()}.@pKey as @{@refclass.Name.LowerFirst()}.@descriptor for @refclass.Name.LowerFirst() in @{@refclass.Name.LowerFirst()}s" required>
+                                <select id="@Model.Classifier.Name.LowerFirst()@att.Name" class="form-control" ng-model="@{@Model.Classifier.Name.LowerFirst()}.@{@refclass.Name}@pKey" ng-options="@{@refclass.Name.LowerFirst()}.@pKey as @{@refclass.Name.LowerFirst()}.@descriptor for @refclass.Name.LowerFirst() in @{@refclass.Name.LowerFirst()}s" required>
                                     <option value="">-- Choose @refclass.Name --</option>
                                 </select>
                             </div>
@@ -65,13 +65,13 @@
 	    	}
 	    	else
 	    	{
-	    	if (@att.Name!=GetPrimaryKey(Model.Class))
+	    	if (@att.Name!=GetPrimaryKey(Model.Classifier))
 	    	{
 	    	
 	    				<div class="form-group">
-                            <label for="@Model.Class.Name.LowerFirst()@att.Name" class="col-sm-2 control-label">@att.Name</label>
+                            <label for="@Model.Classifier.Name.LowerFirst()@att.Name" class="col-sm-2 control-label">@att.Name</label>
                             <div class="col-sm-10">
-                                <input id="@Model.Class.Name.LowerFirst()@att.Name" type="text" class="form-control" ng-model="@(Model.Class.Name.LowerFirst())View.@att.Name" required/>
+                                <input id="@Model.Classifier.Name.LowerFirst()@att.Name" type="text" class="form-control" ng-model="@(Model.Classifier.Name.LowerFirst())View.@att.Name" required/>
                             </div>
                         </div>
                         }
@@ -86,9 +86,9 @@
 </div>
 @functions{
 
-string GetPrimaryKey(IClass iClass)
+string GetPrimaryKey(IClassifier iClass)
 {
-	foreach (var att2 in iClass.OwnedAttributes)
+	foreach (var att2 in iClass.AllProperties())
    	{
 		if (att2["EF4","EF Primary Key"]=="True")
 		 return att2.Name;
@@ -97,9 +97,9 @@ string GetPrimaryKey(IClass iClass)
 	return "";
 }
 
-string GetDescriptor(IClass iClass)
+string GetDescriptor(IClassifier iClass)
 {
-	foreach (var att2 in iClass.OwnedAttributes)
+	foreach (var att2 in iClass.AllProperties())
    	{
 		if (att2["EF4","Default Descriptor"]=="True")
 		 return att2.Name;

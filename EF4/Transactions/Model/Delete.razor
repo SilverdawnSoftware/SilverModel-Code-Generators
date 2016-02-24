@@ -9,11 +9,11 @@ using System.Linq;
 using System.Web;
 
 
-namespace @(Model.Model.QualifiedName).Transactions.Model
+namespace @(Model.Model.Name).Transactions.Model
 {
     public class @(Model.Classifier.Name)Delete
     {
-    	@foreach (var att in Model.Classifier.Properties())
+    	@foreach (var att in Model.Classifier.AllProperties())
     	{ 
     	if ((@att["EF4","EF Primary Key"]=="True"))
     	{
