@@ -1,0 +1,206 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+
+
+namespace @(Model.Diagram.Name).Views.Model
+{
+
+    public class @(Model.Classifier.Name)View
+    {
+    
+   
+    
+    	@foreach (var att in Model.Classifier.AllProperties())     	{
+    	
+			if (!att.Type.IsPrimitiveType())
+			{		
+	    		if (att.Type is IClass)
+	    		{
+					var refclass=(IClass)att.Type;	    		
+	    			foreach (var att2 in refclass.AllProperties()) {
+			    		if (att2["Entity Framework Core","Default Descriptor"]=="True")
+			    		{
+			    		<text>
+			    		/// <summary>
+                        /// @att.Description
+                         /// </summary>	
+			    		public @att2.Type.TypeName("C#") </text>@att.Name<text>@att2.Name { get; set; } </text>  
+			    		}
+			    		if (att2["Entity Framework Core","EF Primary Key"]=="True")
+			    		{
+			    		<text>
+			    		/// <summary>
+                        ///  @att.Description
+                        /// </summary>	
+			    		
+			    		public @att2.Type.TypeName("C#") </text>@att.Name@att2.Name<text> { get; set; } </text>  
+			    		}
+			    	}
+	    		}
+	    	}
+	    	else
+	    	{
+	    	if (att.Type.IsPrimitiveType())
+			{
+	    	<text>
+	    	
+	    	/// <summary>
+            /// @att.Description
+            /// </summary>	
+	    	public @att.Type.TypeName("C#") </text> @att.Name <text> { get; set; } </text>	    	
+	    	}
+	    	}
+    	}
+    	@foreach (var association in Model.Classifier.GetTargetAssociation()) { 
+    	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+    			{
+		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
+		    	foreach (var assocaitedClassAtt in associatedClass.Properties()) {
+					    		if (assocaitedClassAtt["Entity Framework Core","Default Descriptor"]=="True")
+					    		{
+					  <text>
+					  /// <summary>
+                      /// Reference to  @associatedClass.Name @assocaitedClassAtt.Name Property
+                      /// </summary>	
+					  public string @associatedClass.Name@assocaitedClassAtt.Name { get; set; } </text>  
+					    		}
+					    		if (assocaitedClassAtt["Entity Framework Core","EF Primary Key"]=="True")
+					    		{
+					  <text>
+					   /// <summary>
+                      /// Reference of PrimaryKey for @associatedClass.Name
+                      /// </summary>
+					  public  @GetPrimaryType((IClassifier)association.GetSourceMemberEnd().Type) @associatedClass.Name@assocaitedClassAtt.Name { get; set; } </text>  
+					    		}
+					    	}
+				}
+		
+    	}
+    	
+    	
+    	
+    	public static explicit operator @(Model.Classifier.Name)View(Database.@Model.Classifier.Name item)
+    	{
+    	 var result=new @(Model.Classifier.Name)View();
+    	 
+      @foreach (var att in Model.Classifier.AllProperties()) {
+		if (att.Type.IsPrimitiveType())
+			{		
+	    	<text>result.</text>@att.Name @:= item.@att.Name;     
+	    	}
+	    	 
+		if (att.Type is IClass)
+	    		{
+	    		
+					var refclass=(IClass)att.Type;	    		
+	    			foreach (var att2 in refclass.Properties())
+			    	{
+			    	if (att2["Entity Framework Core","Default Descriptor"]=="True" ||att2["Entity Framework Core","EF Primary Key"]=="True" )
+			    	{
+			    	<text>if (item.@(att.Name) != null) 
+			    			{   	</text>
+			    		if (att2["Entity Framework Core","Default Descriptor"]=="True")
+			    		{
+			    			<text>result.</text>@att.Name@att2.Name@:= item.@att.Name.@att2.Name;
+			    		}
+			    		if (att2["Entity Framework Core","EF Primary Key"]=="True")
+			    		{
+			    		   <text>result.</text>@att.Name@att2.Name@:= item.@att.Name.@att2.Name;
+			    		 
+			    		}
+			    		
+			    		<text>} </text>
+			    	  }
+			    	}
+	    		}	    	 
+    		
+    	}
+    	
+    	@foreach (var association in Model.Classifier.GetTargetAssociation())     	{ 
+    		if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+			{
+				IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
+	
+				foreach (var assocaitedClassAtt in associatedClass.Properties())
+		    	{
+		    		if (assocaitedClassAtt["Entity Framework Core","Default Descriptor"]=="True")
+		    		{
+		    		<text>if (item.@(associatedClass.Name) != null) 
+			    			{   	
+		    			result.@(associatedClass.Name)@assocaitedClassAtt.Name=item.@(associatedClass.Name).@(assocaitedClassAtt.Name); 
+		    			} </text>
+		    		}
+		    		if (assocaitedClassAtt["Entity Framework Core","EF Primary Key"]=="True")
+		    		{<text>if (item.@(associatedClass.Name) != null) 
+			    			{   
+		    		   result.@(associatedClass.Name)@assocaitedClassAtt.Name=item.@(associatedClass.Name).@(assocaitedClassAtt.Name);
+		    		   } </text>
+		    		}
+		    	}
+		    }
+    	}
+    	
+    	
+    	return result;
+     }   
+   
+    }
+}
+
+@functions{
+ 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Properties())
+		{
+			if (att["Entity Framework Core","EF Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Properties())
+		{
+			if (att["Entity Framework Core","EF Primary Key"]=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+ 
+}
+

@@ -1,0 +1,86 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+
+using @(Model.Diagram.Name).Views.Model;
+using @(Model.Diagram.Name).Database;
+
+namespace @(Model.Diagram.Name).Views
+{
+    public partial class @(Model.Classifier.Name)Views
+    {
+    
+    
+    	public async Task<List<@(Model.Classifier.Name)View>> GetAll()
+        {
+            using (var db = new @(Model.Diagram["Entity Framework","DBContextName"])())
+            {
+                var temp = await db.@(Model.Classifier.Name)s.ToListAsync();
+                return temp.ConvertAll(w => (@(Model.Classifier.Name)View)w);
+            }
+        }
+    
+    
+    	@if (!string.IsNullOrEmpty(GetPrimaryKey(Model.Classifier))){
+    	<text>
+    	public async Task<@(Model.Classifier.Name)View> Get(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
+    	{
+    	
+    	using (var db = new @(Model.Diagram["Entity Framework","DBContextName"])())
+            {
+            	if (await db.@(Model.Classifier.Name)s.AnyAsync(w=>w.@(GetPrimaryKey(Model.Classifier))==@(GetPrimaryKey(Model.Classifier).LowerFirst())))
+                {
+                	return (@(Model.Classifier.Name)View)await db.@(Model.Classifier.Name)s.FirstAsync(w=>w.@(GetPrimaryKey(Model.Classifier))==@(GetPrimaryKey(Model.Classifier).LowerFirst()));
+            	}
+            }
+    	
+    		return null;
+    	
+    	}
+    	
+    	
+    	@foreach (var att in Model.Classifier.GetTargetAssociation()) {
+    		var parent=(IClass)att.GetSourceMemberEnd().Type;
+    		var parentKey=GetPrimaryKey(parent);
+		
+		<text>
+		public async Task<List<@(Model.Classifier.Name)View>> Get@(Model.Classifier.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))
+    	{
+    	
+    	using (var db = new @(Model.Diagram["Entity Framework","DBContextName"])())
+            {
+            	var result= await db.@(Model.Classifier.Name)s.Where(w=>w.@(parent.Name).@(parentKey) ==@(parentKey.LowerFirst())).ToListAsync();
+            	return result.ConvertAll(w=>(@(Model.Classifier.Name)View) w);
+               
+            }
+    	}
+</text>    	
+    	}
+    	</text>
+    	}
+    }
+}
+
+@functions{
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.AllProperties())
+		{
+			if (att["Entity Framework","EF Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}
+    	
+    	return "";
+    }
+ 
+}

@@ -1,0 +1,76 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+import {Component, OnInit} from '@@angular/core';
+import {@(Model.Classifier.Name)Service} from '../Services/@(Model.Classifier.Name)Service';
+import {@(Model.Classifier.Name)View,I@(Model.Classifier.Name)View} from '../models/@(Model.Classifier.Name)View';
+
+
+@@Component({
+
+  templateUrl: `./@(Model.Classifier.Name)Index.html`,
+  providers: [
+    @(Model.Classifier.Name)Service  ]
+})
+
+export class @(Model.Classifier.Name)Index implements OnInit{
+
+  rows: any;
+
+  constructor(private @(Model.Classifier.Name.LowerFirst())Service: @(Model.Classifier.Name)Service) {
+
+  }
+
+
+  ngOnInit() {
+
+    this.@(Model.Classifier.Name.LowerFirst())Service.getAll().then(value => this.rows=value);
+  }
+
+  delete(@(GetPrimaryKey(Model.Classifier).LowerFirst()): number)
+  {
+    if (confirm('Are you sure you want to delete this?'))
+    {
+      this.@(Model.Classifier.Name.LowerFirst())Service.remove(@(GetPrimaryKey(Model.Classifier).LowerFirst())).then();
+
+      for(var i = this.rows.length - 1; i >= 0; i--) {
+        if(this.rows[i].@(GetPrimaryKey(Model.Classifier).LowerFirst()) === @(GetPrimaryKey(Model.Classifier).LowerFirst())) {
+          this.rows.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+
+
+}
+
+
+@functions{
+
+string GetPrimaryKey(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Properties())
+   	{
+		if (att2["Entity Framework","EF Primary Key"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+string GetDescriptor(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Properties())
+   	{
+		if (att2["Entity Framework","Default Descriptor"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+}
+

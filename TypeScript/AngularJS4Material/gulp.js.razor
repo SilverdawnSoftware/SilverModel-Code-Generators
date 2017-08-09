@@ -1,0 +1,71 @@
+﻿/// <binding />
+
+var ts = require('gulp-typescript');
+var eventStream = require('event-stream');
+var gulp = require('gulp');
+var less = require('gulp-less');
+var path = require('path');
+var concat = require('gulp-concat-sourcemap');
+var sourcemaps = require('gulp-sourcemaps');
+var using = require('gulp-using');
+var plumber = require('gulp-plumber');
+var watch = require('gulp-watch');
+var inject = require('gulp-inject');
+
+var tsProject = ts.createProject({
+    declarationFiles: true,
+    noExternalResolve: true
+});
+
+gulp.task('scripts', function () {
+    var tsResult = gulp.src(['Angularjs/**/*.ts', 'Scripts/**/*.ts'])
+        .pipe(sourcemaps.init())
+        .pipe(tsProject());
+
+    return eventStream.merge(
+        tsResult.dts.pipe(gulp.dest('release/definitions')),
+        tsResult.pipe(sourcemaps.write()),
+        tsResult.js.pipe(gulp.dest('Angularjs')),
+        tsResult.js.pipe(using())
+    );
+});
+
+gulp.task('less', function () {
+
+    var tsResult = gulp.src(['Angularjs/**/*.less'])
+        .pipe(using())
+        .pipe(plumber())
+        .pipe(sourcemaps.init())
+        .pipe(less());
+
+
+    return tsResult.pipe(concat('modules.css'))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('release/css'));
+
+});
+
+
+
+gulp.task('watch', ['scripts', 'less'], function () {
+    watch(['Angularjs/**/*.ts', 'Scripts/**/*.ts'], function () {
+        gulp.start('scripts', 'include');
+
+    });
+    watch(['Angularjs/**/*.less'], function () {
+        gulp.start('less');
+    });
+
+});
+
+gulp.task('include', function () {
+
+    //gulp.src('../RetailerPortalAdvanced/AngularJS/Modules/**/*.*').pipe(gulp.dest('./AngularJS/Modules'));
+
+    var target = gulp.src('./Views/Shared/_Layout.cshtml');
+
+    var sources = gulp.src(['Angularjs/Modules/**/*.js'], { read: false });
+
+    return target.pipe(inject(sources))
+        .pipe(gulp.dest('./Views/Shared/'));
+});

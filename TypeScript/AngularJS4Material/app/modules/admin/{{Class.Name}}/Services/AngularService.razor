@@ -1,0 +1,169 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+@{
+var primaryKey=GetPrimaryKey(Model.Classifier);
+}
+
+
+import {Injectable} from '@@angular/core';
+import {RequestOptions, Request, RequestMethod, Headers, Http, Response} from '@@angular/http';
+
+import {@(Model.Classifier.Name)View} from '../Models/@(Model.Classifier.Name)View';
+import {Observable} from 'rxjs/Observable';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/toPromise';
+
+
+@@Injectable()
+export class @(Model.Classifier.Name)Service {
+  constructor(private http: Http) {
+  }
+
+
+
+  baseURL: string='http://localhost:54631';
+
+  getAll(): Promise<@(Model.Classifier.Name)View[]> {
+    return this.http.get(this.baseURL + `/api/@(Model.Classifier.Name)/All`)
+      .toPromise()
+      .then(response => response.json() as @(Model.Classifier.Name)View[])
+      .catch(this.handleError);
+  }
+  
+  
+  @if (!string.IsNullOrEmpty(primaryKey)){
+	 	<text>
+  	get(id: number | string): Promise<@(Model.Classifier.Name)View> {
+     return this.http.get(this.baseURL + `/api/@(Model.Classifier.Name)/${id}`).toPromise()
+       .then(response => response.json() as @(Model.Classifier.Name)View)
+       .catch(this.handleError);
+ 	 }
+ 	 
+ 	 
+ 	 add(userView: @(Model.Classifier.Name)View): Promise<@(Model.Classifier.Name)View> {
+    return this.http.post(this.baseURL + '/api/user', @(Model.Classifier.Name.LowerFirst())View)
+      .toPromise()
+      .then(response =>  response.json() as @(Model.Classifier.Name)View)
+      .catch(this.handleError);
+  }
+ 	 
+ 	 
+ 	 update(@(Model.Classifier.Name.LowerFirst())Id}: number,  user: @(Model.Classifier.Name)View): Promise<@(Model.Classifier.Name)View> {
+    return this.http.put(this.baseURL + `/api/@(Model.Classifier.Name)/${@(Model.Classifier.Name.LowerFirst())Id}`, @(Model.Classifier.Name.LowerFirst()))
+      .toPromise()
+      .then(response => response.json() as @(Model.Classifier.Name)View)
+      .catch(this.handleError);
+  }
+ 	 
+ 	 remove(@(Model.Classifier.Name.LowerFirst())Id: number): Promise<any> {
+      return this.http.delete(this.baseURL + `/api/@(Model.Classifier.Name)/${@(Model.Classifier.Name.LowerFirst())Id}`).toPromise();
+  }
+ 	 
+ 	 
+  		</text>
+   }
+  
+ private handleError(error: Response | any) {
+    // In a real world app, you might use a remote logging infrastructure
+    let errMsg: string;
+    if (error instanceof Response) {
+      const body = error.json() || '';
+      const err = body.error || JSON.stringify(body);
+      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+    } else {
+      errMsg = error.message ? error.message : error.toString();
+    }
+    console.error(errMsg);
+    return Observable.throw(errMsg);
+  }
+  
+  }
+
+    
+  
+
+	
+
+
+@functions{
+ 
+ 
+ 
+ public static string GetDescriptor(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetDescriptor(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Properties())
+		{
+			if (att["Entity Framework","Default Descriptor"]=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Properties())
+		{
+			if (att["Entity Framework","EF Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Properties())
+		{
+			if (att["Entity Framework","EF Primary Key"]=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+ 
+}
+

@@ -1,0 +1,244 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using @(Model.Diagram.Name).Transactions.Model;
+using @(Model.Diagram.Name).Views.Model;
+using data = @(Model.Diagram.Name).Database;
+
+namespace @(Model.Diagram.Name).Transactions
+{
+ public partial class @(Model.Classifier.Name)Transactions
+ {
+     
+ 
+ 		// Add Transaction Code
+ 		public async Task<@(Model.Classifier.Name)View> Add(@(Model.Classifier.Name)Add add)
+        {
+            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+            {
+                var result= await Add(db,add);
+                await db.SaveChangesAsync();
+                return (@(Model.Classifier.Name)View)result;
+            }
+        } 	
+ 	
+ 	
+ 	 public async Task<data.@(Model.Classifier.Name)> Add(data.@(Model.Diagram["Entity Framework Core","DBContextName"]) db, @(Model.Classifier.Name)Add add)
+        {
+         try
+            {
+            
+               var new@(Model.Classifier.Name)=new data.@(Model.Classifier.Name)();
+            	@foreach (var att in Model.Classifier.AllProperties()) {
+            		switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.PrimitiveType:
+			
+	    		if (att["Entity Framework Core","EF Primary Key"]=="True")
+			    		{
+			    		}
+			    		else
+			    		{
+	    	<text>new</text>@(Model.Classifier.Name)<text>.</text>@(att.Name) @:= add.@att.Name;   	
+	    				}
+				break;
+				
+				
+				case UmlTypeEnum.Class:
+				var primaryKey=GetPrimaryKey(att.Type);
+				<text>
+				  if (db.@att.Type.TypeName("C#")s.Any(w => w.@primaryKey == add.@(att.Name)@primaryKey))
+                {
+                    new@(Model.Classifier.Name).@(att.Name) = db.@att.Type.TypeName("C#")s.First(w => w.@primaryKey == add. @(att.Name)@primaryKey);
+                }    
+				
+				 </text>				
+				break;
+				}
+	    	   
+            	
+					if (att.Type.IsPrimitiveType())
+					{
+	    				
+	    			}    	    		
+    			}
+    	
+    		// Add references to parent Classes
+    	   @foreach (var att in Model.Classifier.GetTargetAssociation())      	   { 
+    		
+    		
+    			if (!(att.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && att.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+    			{
+    			<text>var @(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup = await db.@(att.GetSourceMemberEnd().Type.Name)s.FirstOrDefaultAsync(w => w.@GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type) == add.@(((IClass)att.GetSourceMemberEnd().Type).Name)@GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type));</text>   
+				<text>if (@(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup !=null)</text>    
+				<text>{ new@(Model.Classifier.Name).@(att.GetSourceMemberEnd().Type.Name)=@(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup;}</text>	
+				}				
+    		}
+    	
+    	
+    		db.@(Model.Classifier.Name)s.Add(new@(Model.Classifier.Name));
+    		
+    		return new@(Model.Classifier.Name);
+            }
+            
+             catch (Exception)
+            {
+                return null;
+              
+            }
+        }
+
+
+@if (!string.IsNullOrEmpty(GetPrimaryKey(Model.Classifier))){
+<text>
+// Update Transaction Code
+ 		public async Task<@(Model.Classifier.Name)View> Update(@(Model.Classifier.Name)Update update)
+        {
+            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+            {
+                var result= await Update(db,update);
+                await db.SaveChangesAsync();
+                return (@(Model.Classifier.Name)View)result;
+            }
+        } 	
+ 	
+ 	
+ 	 public async Task<data.@(Model.Classifier.Name)> Update(data.@(Model.Diagram["Entity Framework Core","DBContextName"]) db, @(Model.Classifier.Name)Update update)
+        {
+         try
+            {
+            @{
+              <text>var </text>@(Model.Classifier.Name.LowerFirst())<text>ToUpdate = await db.</text>@(Model.Classifier.Name)<text>s.FirstOrDefaultAsync(w => w.@GetPrimaryKey(Model.Classifier) == update.@GetPrimaryKey(Model.Classifier));</text>
+            }
+               
+            	
+            	@foreach (var att in Model.Classifier.AllProperties()) {
+            		switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.PrimitiveType:
+			
+	    		if (att["Entity Framework","EF Primary Key"]=="True")
+			    		{
+			    		}
+			    		else
+			    		{
+	    	   @(Model.Classifier.Name.LowerFirst())<text>ToUpdate.</text>@(att.Name) @:= update.@att.Name;   	
+	    				}
+				break;
+				
+				
+				case UmlTypeEnum.Class:
+				var primaryKey=GetPrimaryKey(att.Type);
+				<text>
+				  if (db.@att.Type.TypeName("C#")s.Any(w => w.@primaryKey == update.@(att.Name)@primaryKey))
+                {
+                    @(Model.Classifier.Name.LowerFirst())ToUpdate.@(att.Name) = db.@att.Type.TypeName("C#")s.First(w => w.@primaryKey == update.@(att.Name)@primaryKey);
+                }    
+				
+				 </text>				
+				break;
+				}
+				}
+            	
+    	
+    		
+    		
+    		return @(Model.Classifier.Name.LowerFirst())ToUpdate;
+            }
+            
+             catch (Exception)
+            {
+                return null;
+              
+            }
+        }
+
+
+	// Delete Transaction Code
+ 		public async Task Delete(@(Model.Classifier.Name)Delete delete)
+        {
+            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+            {
+                await Delete(db,delete);
+                await db.SaveChangesAsync();
+                
+            }
+        } 	
+ 	
+ 	
+ 	 public async Task Delete(data.@(Model.Diagram["Entity Framework Core","DBContextName"]) db, @(Model.Classifier.Name)Delete delete)
+        {
+         try
+            {
+            
+              var @(Model.Classifier.Name.LowerFirst())ToDelete = await db.@(Model.Classifier.Name)s.FirstOrDefaultAsync(w => w.@GetPrimaryKey(Model.Classifier) == delete.@GetPrimaryKey(Model.Classifier));
+            
+             	db.@(Model.Classifier.Name)s.Remove(@(Model.Classifier.Name.LowerFirst())ToDelete);    		
+    		}
+             catch (Exception)
+            {
+            }
+        }
+        </text>
+   }
+
+	}
+ }
+ 
+@functions{
+ 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Properties())
+		{
+			if (att["Entity Framework Core","EF Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Properties())
+		{
+			if (att["Entity Framework Core","EF Primary Key"]=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+ 
+}

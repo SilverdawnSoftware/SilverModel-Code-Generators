@@ -1,0 +1,145 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+<!-- ALLOWOVERWRITE -->
+
+
+<div class="box">
+    <div class="box-header">
+        <h2><i class="fa fa-edit"></i>@Model.Classifier.Name Edit</h2>
+        <div class="box-icon">
+
+            <a href="/" class="btn-close"><i class="fa fa-times"></i></a>
+        </div>
+    </div>
+    <div class="box-content">
+
+        <div class="well" ng-show="!loaded">
+
+            <div class="row">
+                <div class="col-sm-4">
+                </div>
+                <div class="col-sm-4">
+                    <h4>Loading</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                </div>
+                <div class="col-sm-4">
+                    <img src="/Images/loader.gif" />
+                </div>
+            </div>
+        </div>
+
+        <div ng-show="loaded">
+        <uib-tabset active="active">
+        <uib-tab heading="Main">
+        	 <form class="form-horizontal css-form" role="form" novalidate>
+        	  @foreach (var att in Model.Classifier.AllProperties())  	{		
+			  switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.Class:				
+	    		
+					var refclass=(IClass)att.Type;	
+
+					var pKey=GetPrimaryKey(refclass);
+					var descriptor=GetDescriptor(refclass);
+					
+					if (!string.IsNullOrEmpty(pKey) && !string.IsNullOrEmpty(descriptor))
+					{
+					 <div class="form-group">
+                            <label for="@Model.Classifier.Name.LowerFirst()@att.Name" class="col-sm-2 control-label">@(att.Name)</label>
+                            <div class="col-sm-10">
+
+                                <select id="@Model.Classifier.Name.LowerFirst()@att.Name" class="form-control" ng-model="@(Model.Classifier.Name.LowerFirst())View.@(att.Name.LowerFirst())@pKey" ng-options="@(refclass.Name.LowerFirst()).@(pKey.LowerFirst()) as @(refclass.Name.LowerFirst()).@(descriptor.LowerFirst()) for @refclass.Name.LowerFirst() in @(refclass.Name.LowerFirst())s" required>
+                                    <option value="">-- Choose @refclass.Name --</option>
+                                </select>
+                            </div>
+                        </div>
+					}
+					break;
+				   default:
+				  	if (@att.Name!=GetPrimaryKey(Model.Classifier))
+	    				{
+	    	
+	    				<div class="form-group">
+                            <label for="@Model.Classifier.Name.LowerFirst()@att.Name" class="col-sm-2 control-label">@att.Name</label>
+                            <div class="col-sm-10">
+                                <input id="@Model.Classifier.Name.LowerFirst()@att.Name" type="@(att.Type.TypeName("HtmlInput"))" class="form-control" ng-model="@(Model.Classifier.Name.LowerFirst())View.@(att.Name.LowerFirst())" required/>
+                            </div>
+                        </div>
+                        }
+	    			
+	    			break;
+	    		}    	
+    		
+    			}
+        	 	 	 	<div class="form-group">
+	              	 		<div class="col-sm-2"></div>
+                  	  		<div class="col-sm-10">
+                        		<button class="btn btn-primary" ng-click="save()">Save</button>
+                   	 		</div>
+	            	 	</div>
+        	 </form>
+        	 </uib-tab>
+        	 @foreach (var att in Model.Classifier.GetSourceAssociation()) { 
+    	<text>	<uib-tab heading="@(att.GetTargetMemberEnd().Type.Name)"> </text>
+    				var count=0;
+    				@:<table class="table">
+						@:<thead>
+							@:<tr>
+    				foreach (var att2 in ((IClassifier)att.GetTargetMemberEnd().Type).Properties())
+   					{
+   								@:<td>@(att2.Name)</td>
+   					}
+   							@:</tr>
+   						@:</thead>
+   						@:<tbody>
+   						var child=(IClassifier)att.GetTargetMemberEnd().Type;
+   						@:<tr ng-repeat="item in @(child.Name.LowerFirst())s">
+   						foreach (var att2 in ((IClassifier)att.GetTargetMemberEnd().Type).Properties())
+   						{
+   						@:<td>{{item.@(att2.Name.LowerFirst())}}</td>
+   						}
+   						@:<td><a class="btn" href="#/Admin/@child.Name/Edit/{{item.@(GetPrimaryKey(child).LowerFirst())}}"><i class="glyphicon glyphicon-pencil"></i></a></td>
+   						@:</tr>
+   						@:</tbody>
+   						
+    				@:</table>
+    				 <a class="btn btn-primary" href="#/Admin/@(att.GetTargetMemberEnd().Type.Name)/Add?@(Model.Classifier.Name.LowerFirst())@(GetPrimaryKey(Model.Classifier))={{@(Model.Classifier.Name.LowerFirst())View.@(GetPrimaryKey(Model.Classifier).LowerFirst())}}">Add</a>
+    		@:</uib-tab>	
+    	}
+    	
+        	 
+        	 
+        	 </uib-tabset>
+        </div>
+    </div>
+</div>
+@functions{
+
+string GetPrimaryKey(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Properties())
+   	{
+		if (att2["Entity Framework","EF Primary Key"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+string GetDescriptor(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Properties())
+   	{
+		if (att2["Entity Framework","Default Descriptor"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+}

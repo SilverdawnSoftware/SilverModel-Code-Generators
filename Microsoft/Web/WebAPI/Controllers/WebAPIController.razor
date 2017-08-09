@@ -1,0 +1,131 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
+using transModel =@(Model.Diagram.Name).Transactions.Model;
+using trans =@(Model.Diagram.Name).Transactions;
+using viewModel =@(Model.Diagram.Name).Views.Model;
+using views =@(Model.Diagram.Name).Views;
+using database = @(Model.Diagram.Name).Database;
+
+namespace @(Model.Diagram["WebAPI","Web API Namespace"])
+{
+
+	
+    public partial class @(Model.Classifier.Name)APIController : ApiController
+    {
+    
+        /// <summary>
+        /// Get All Objects for @(Model.Classifier.Name)
+        /// </summary>	
+        [Route("api/@(Model.Classifier.Name)/All")]
+        [HttpGet]
+        public async Task<List<viewModel.@(Model.Classifier.Name)View>> All()
+        {
+            var views = new views.@(Model.Classifier.Name)Views();
+            return await views.GetAll();
+        }
+    
+      
+    	 /// <summary>
+        /// Get @(Model.Classifier.Name) By @(GetPrimaryKey(Model.Classifier))
+        /// </summary>	
+    	//Get @(Model.Classifier.Name) View Model
+    	[Route("api/@(Model.Classifier.Name)/{@(GetPrimaryKey(Model.Classifier))}")]
+    	[HttpGet]
+        public async Task<viewModel.@(Model.Classifier.Name)View> Get(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
+        {
+            var view=new views.@(Model.Classifier.Name)Views();            
+            return await view.Get(@(GetPrimaryKey(Model.Classifier).LowerFirst()));            
+        }
+    
+    
+    	 /// <summary>
+        /// Add New @(Model.Classifier.Name)
+        /// </summary>	
+    
+    	//Add New @(Model.Classifier.Name)
+    	[Route("api/@(Model.Classifier.Name)")]
+    	[HttpPost]
+        public async Task<viewModel.@(Model.Classifier.Name)View> Add(transModel.@(Model.Classifier.Name)Add add)
+        {
+            var addTrans=new trans.@(Model.Classifier.Name)Transactions();            
+            return await addTrans.Add(add);            
+        }
+        
+         /// <summary>
+        /// Update @(Model.Classifier.Name) By @(GetPrimaryKey(Model.Classifier))
+        /// </summary>	
+        
+        //Update  @(Model.Classifier.Name)
+    	[Route("api/@(Model.Classifier.Name)/{@(GetPrimaryKey(Model.Classifier))}")]
+    	[HttpPut]
+        public async Task<viewModel.@(Model.Classifier.Name)View> Update(int @(GetPrimaryKey(Model.Classifier).LowerFirst()),transModel.@(Model.Classifier.Name)Update update)
+        {
+            var updateTrans=new trans.@(Model.Classifier.Name)Transactions();            
+            return await updateTrans.Update(update);            
+        }
+        
+         /// <summary>
+        /// Delete @(Model.Classifier.Name) By @(GetPrimaryKey(Model.Classifier))
+        /// </summary>
+         //Delete  @(Model.Classifier.Name)
+    	[Route("api/@(Model.Classifier.Name)/{@(GetPrimaryKey(Model.Classifier))}")]
+    	[HttpDelete]
+        public async Task Delete(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
+        {
+            var deleteTrans=new trans.@(Model.Classifier.Name)Transactions();
+			var  @(Model.Classifier.Name.LowerFirst())Delete=new transModel.@(Model.Classifier.Name)Delete(){@(GetPrimaryKey(Model.Classifier))=@(GetPrimaryKey(Model.Classifier).LowerFirst()) };			
+            await deleteTrans.Delete(@(Model.Classifier.Name.LowerFirst())Delete);            
+        }
+        
+        
+        
+    	@foreach (var att in Model.Classifier.GetTargetAssociation())
+    	{
+    		var parent=(IClass)att.GetSourceMemberEnd().Type;
+    		var parentKey=GetPrimaryKey(parent);
+		
+		<text>
+		 /// <summary>
+        /// Find all @(Model.Classifier.Name)s for @(parent.Name)
+        /// </summary>
+		
+		[Route("api/@(parent.Name)/{@(parentKey)}/@(Model.Classifier.Name)s")]
+    	 [HttpGet]
+        public async Task<List<viewModel.@(Model.Classifier.Name)View>> Get@(Model.Classifier.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))		
+    	{
+    		 var view=new views.@(Model.Classifier.Name)Views();            
+            return await view.Get@(Model.Classifier.Name)sFor@(parent.Name)(@(parentKey.LowerFirst())); 
+    	
+    	}
+</text>    	
+    	}
+        
+    }
+}
+
+@functions{
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.AllProperties())
+		{
+			if (att["Entity Framework","EF Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}
+    	
+    	return "";
+    }
+ 
+}

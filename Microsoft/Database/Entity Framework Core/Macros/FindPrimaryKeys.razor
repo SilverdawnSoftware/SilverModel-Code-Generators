@@ -1,0 +1,19 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+
+@foreach (var classifier in Model.Diagram.Classifiers())
+{
+
+foreach (var prop in classifier.AllProperties())
+		{
+		
+		
+		if  (prop.Name!=null && classifier.Name.ToUpper()==prop.Name.ToUpper().Replace("ID",""))
+		{
+		@:PrimaryKey Set Classifier:@classifier.Name  Property:@prop.Name
+			prop["Entity Framework  Core","EF Primary Key"]="True";
+		}
+}
+
+}

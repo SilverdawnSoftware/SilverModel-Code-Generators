@@ -1,0 +1,42 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+import { IHttpService, IPromise, IScope, IQService, ILogService } from 'angular';
+
+import * as angular from "angular";
+
+import {@(Model.Classifier.Name)Service} from "../Services/@(Model.Classifier.Name)Service"
+
+
+    export interface IButtonClick {
+    };
+
+    export interface ITextChange {
+    };
+
+
+    export interface I@(Model.Classifier.Name)EditDirectiveCtrlScope extends IScope {
+
+        loaded: boolean;
+        component: any;
+    }
+
+
+    export class @(Model.Classifier.Name)EditDirectiveCtrl {
+        public static $inject = [
+            '$scope',
+            'usSpinnerService',
+            '@(Model.Classifier.Name.LowerFirst())Service'
+        ];
+
+		constructor(private $scope: I@(Model.Classifier.Name)EditDirectiveCtrlScope, private usSpinnerService: any,private @(Model.Classifier.Name.LowerFirst())Service: @(Model.Classifier.Name)Service) {
+			
+			
+			
+			
+		}
+		
+	}
+	angular.module("@(Model.Diagram.Name).Admin").controller('@(Model.Classifier.Name.LowerFirst())EditDirectiveCtrl', @(Model.Classifier.Name)EditDirectiveCtrl);	

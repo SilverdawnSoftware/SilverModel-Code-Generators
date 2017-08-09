@@ -1,0 +1,85 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+import { IHttpService, IPromise, IScope } from 'angular';
+
+import * as angular from "angular";
+import * as route2 from "angular-route";
+
+ @foreach (var att in @Model.Diagram.Classes())    {        
+    	<text>import {@(att.Name)Service} from "./@(att.Name)/Services/@(att.Name)Service";
+        import {@(att.Name)IndexCtrl} from "./@(att.Name)/Views/@(att.Name)IndexCtrl";
+        import {@(att.Name)EditCtrl} from "./@(att.Name)/Views/@(att.Name)EditCtrl";</text>        
+    }
+
+
+export function CompareAdminInit(angular) {
+    
+  var app= angular.module("admin", ['ngRoute','ngAnimate', 'ngSanitize','ui.bootstrap'])
+        .config(function ($logProvider) {
+        $logProvider.debugEnabled(true);
+    });
+
+@foreach (var att in @Model.Diagram.Classes())    {
+   <text>angular.module("admin").service('@(att.Name.LowerFirst())Service', @(att.Name)Service);  
+    angular.module("admin").controller("@(att.Name.LowerFirst())IndexCtrl",@(att.Name)IndexCtrl); 
+    angular.module("admin").controller("@(att.Name.LowerFirst())EditCtrl",@(att.Name)EditCtrl);</text>    
+    }
+    
+    
+   app.config([
+        "$routeProvider", function($routeProvider) {
+        @foreach (var att in @Model.Diagram.Classes())    {
+        	var primaryKey= GetPrimaryKey(att).LowerFirst();
+       
+        
+           <text> 
+               $routeProvider.when("/Admin/@(att.Name)/Index", {
+                	templateUrl: "/AngularJS/Modules/Admin/@(att.Name)/Views/@(att.Name)Index.html",
+                	controller: "@(att.Name.LowerFirst())IndexCtrl"})
+                .when('/Admin/@(att.Name)/Edit/:@(primaryKey)', {
+                    templateUrl: '/AngularJS/Modules/Admin/@(att.Name)/Views/@(att.Name)Edit.html',
+                    controller: '@(att.Name.LowerFirst())EditCtrl' })
+                .when('/Admin/@(att.Name)/Add', {
+                	templateUrl: '/AngularJS/Modules/Admin/@(att.Name)/Views/@(att.Name)Edit.html',
+                	controller: '@(att.Name.LowerFirst())EditCtrl'  });
+            </text>
+            
+            
+            
+            }
+            $routeProvider.otherwise({redirectTo: "/Admin/Account/Index"});
+        }
+    ]);
+
+    return app;
+
+}
+
+@functions{
+
+string GetPrimaryKey(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Properties())
+   	{
+		if (att2["Entity Framework","EF Primary Key"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+string GetDescriptor(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Properties())
+   	{
+		if (att2["Entity Framework","Default Descriptor"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+}

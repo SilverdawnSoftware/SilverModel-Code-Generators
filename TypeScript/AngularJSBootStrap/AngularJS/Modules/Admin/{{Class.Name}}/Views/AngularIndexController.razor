@@ -1,0 +1,75 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+
+import * as angular from "angular";
+
+import {I@(Model.Classifier.Name)View} from "../Models/@(Model.Classifier.Name)View"
+
+import {@(Model.Classifier.Name)Service} from "../Services/@(Model.Classifier.Name)Service"
+
+    export interface I@(Model.Classifier.Name)IndexCtrlScope extends ng.IScope {
+        loaded: boolean;
+        @(Model.Classifier.Name.LowerFirst())Views: I@(Model.Classifier.Name)View[];
+      
+    }
+
+    export class @(Model.Classifier.Name)IndexCtrl {
+        public static $inject = [
+            '$scope',
+            '@(Model.Classifier.Name.LowerFirst())Service'        
+        ];
+
+        constructor(private $scope: I@(Model.Classifier.Name)IndexCtrlScope, private @(Model.Classifier.Name.LowerFirst())Service: @(Model.Classifier.Name)Service) {
+            var count = 0;
+            var toLoad = 1;
+            $scope.loaded = false;
+
+            function dataLoaded() {
+                count++;
+                if (count >= toLoad) {
+                    $scope.loaded = true;
+                }
+            }
+
+           
+            @(Model.Classifier.Name.LowerFirst())Service.get@(Model.Classifier.Name)s().then(function(data: I@(Model.Classifier.Name)View[]) {
+                $scope.@(Model.Classifier.Name.LowerFirst())Views = data;
+                dataLoaded();
+            });
+            
+        
+        }
+    }
+
+  
+
+
+@functions{
+
+string GetPrimaryKey(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Properties())
+   	{
+		if (att2["Entity Framework","EF Primary Key"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+string GetDescriptor(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Properties())
+   	{
+		if (att2["Entity Framework","Default Descriptor"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+}
+

@@ -1,0 +1,31 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+
+namespace @Model.Diagram.QualifiedName
+{
+    public class @Model.Classifier.Name
+    {
+    	@if (Model.Classifier["Default","CanSerialize"]=="True")
+			{
+			@:[DataContract]
+			}
+    	@foreach (var att in Model.Classifier.Properties())
+    	{ 
+    	
+    		if (att["C#Serialization","CanSerialize"]=="True")
+			{
+			@:[DataMember]
+			}
+			
+			<text>public @Model.RazorSupport.LookupDataType("C#",att.DataTypeId)</text> @att.Name <text> { get; set; } </text>
+    	}
+    }
+}

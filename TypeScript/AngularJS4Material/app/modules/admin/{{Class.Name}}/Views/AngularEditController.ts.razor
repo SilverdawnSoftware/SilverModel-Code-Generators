@@ -1,0 +1,218 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+import { Component,OnInit } from '@@angular/core';
+import { FormGroup, FormControl, FormBuilder } from '@@angular/forms';
+import { ActivatedRoute, Params }   from '@@angular/router';
+import { Location }                 from '@@angular/common';
+
+import {I@(Model.Classifier.Name)View} from "../Models/@(Model.Classifier.Name)View";
+import {@(Model.Classifier.Name)View} from "../Models/@(Model.Classifier.Name)View";
+import {@(Model.Classifier.Name)Service} from "../Services/@(Model.Classifier.Name)Service";
+@{
+var UsedCheck=new List<string>();
+}
+// Add service imports
+ @foreach (var att in Model.Classifier.AllProperties())	    	{
+						
+		    		if (att.Type is IClass && att.Type.ElementId!=Model.Classifier.ElementId)
+		    		{
+		    		    
+		    		 	var refclass=(IClass)att.Type;
+		    		 	if (!UsedCheck.Any(w=>w==refclass.Name))
+		    		 	{
+<text>import {@(refclass.Name)Service} from "../../@(refclass.Name)/Services/@(refclass.Name)Service"</text>	
+							UsedCheck.Add(refclass.Name);
+						}
+		    		}
+	    		
+    		}	
+    		
+//Add Target Assoications    
+
+   					
+  @foreach (var att in Model.Classifier.GetSourceAssociation())	    	{						
+		    		 	if (!UsedCheck.Any(w=>w==att.GetTargetMemberEnd().Type.Name))
+		    		 	{
+<text>import {@(att.GetTargetMemberEnd().Type.Name)Service} from "../../@(att.GetTargetMemberEnd().Type.Name)/Services/@(att.GetTargetMemberEnd().Type.Name)Service"</text>	
+							UsedCheck.Add(att.GetTargetMemberEnd().Type.Name);
+						}
+		    			    		
+    		}	   		
+    		
+// Add view Models Imports
+ @{UsedCheck=new List<string>();}
+        @foreach (var att in Model.Classifier.AllProperties())	    	{
+						
+		    		if (att.Type is IClass && att.Type.ElementId!=Model.Classifier.ElementId)
+		    		{
+		    		 	var refclass=(IClass)att.Type;
+		    		 	if (!UsedCheck.Any(w=>w==refclass.Name))
+		    			{
+<text> import { I@(refclass.Name)View } from "../../@(refclass.Name)/Models/@(refclass.Name)View";</text>
+						UsedCheck.Add(refclass.Name);
+						}
+		    		}
+	    		
+    		}       
+
+// Add  Target Assoications view Models
+        @foreach (var att in Model.Classifier.GetSourceAssociation())	    	{
+						
+		    		
+		    		 	if (!UsedCheck.Any(w=>w==att.GetTargetMemberEnd().Type.Name))
+		    			{
+<text> import { I@(att.GetTargetMemberEnd().Type.Name)View } from "../../@(att.GetTargetMemberEnd().Type.Name)/Models/@(att.GetTargetMemberEnd().Type.Name)View";</text>
+						UsedCheck.Add(att.GetTargetMemberEnd().Type.Name);
+						}
+		    		}	    	
+@{
+var primaryKey=GetPrimaryKey(Model.Classifier);
+var hasPrimaryKey=!string.IsNullOrEmpty(primaryKey);
+var loadCount=0;
+} 
+
+@@Component({
+
+  templateUrl: `./@(Model.Classifier.Name)Edit.html`,
+  providers: [
+    @(Model.Classifier.Name)Service 
+	 @{UsedCheck=new List<string>();}
+ 	@foreach (var att in Model.Classifier.GetSourceAssociation())	    	{
+		    		 	if (!UsedCheck.Any(w=>w==att.GetTargetMemberEnd().Type.Name))
+		    			{
+<text>,</text>@att.GetTargetMemberEnd().Type.Name<text>Service</text>
+loadCount++;
+						UsedCheck.Add(att.GetTargetMemberEnd().Type.Name);
+						}
+    		} 
+]
+})
+
+
+
+
+        @{UsedCheck=new List<string>();}
+        export class @(Model.Classifier.Name)Edit implements OnInit {
+  @(Model.Classifier.Name.LowerFirst())Form: FormGroup;
+  @(Model.Classifier.Name.LowerFirst())View: IUserView;
+  @(Model.Classifier.Name.LowerFirst())Id: number=0;
+  constructor(private formBuilder: FormBuilder, private @(Model.Classifier.Name.LowerFirst())Service: @(Model.Classifier.Name)Service, private route: ActivatedRoute, private location: Location
+  @foreach (var att in Model.Classifier.GetSourceAssociation())	    	{
+		    		 	if (!UsedCheck.Any(w=>w==att.GetTargetMemberEnd().Type.Name))
+		    			{
+<text>,private </text>@att.GetTargetMemberEnd().Type.Name.LowerFirst()<text>Service: </text>@att.GetTargetMemberEnd().Type.Name<text>Service</text>
+loadCount++;
+						UsedCheck.Add(att.GetTargetMemberEnd().Type.Name);
+						}
+    		} 
+  ) {
+
+    this.@(Model.Classifier.Name.LowerFirst())View=new @(Model.Classifier.Name)View();
+    //route.params.subscribe(params2 => {console.log(params2['id'])});
+  }
+        
+        
+        
+         ngOnInit() {
+    this.@(Model.Classifier.Name.LowerFirst())Form = this.formBuilder.group({
+     @foreach (var att in Model.Classifier.AllProperties())  	{		
+			  switch (att.Type.GetUMLType())
+			  {
+			  case UmlTypeEnum.Class:	break;
+			  
+			  
+			  
+			  default:
+				  	if (@att.Name!=GetPrimaryKey(Model.Classifier))	{
+	    	
+	    				<text>@att.Name.LowerFirst(): '', </text>
+                        }
+	    			
+	    			break;
+	    			}
+	  }
+      
+    });
+         
+       this.route.params.subscribe(params => {
+        this.@(GetPrimaryKey(Model.Classifier).LowerFirst()) =params['id'];
+          if (this.@(GetPrimaryKey(Model.Classifier).LowerFirst())>0) {
+        	this.@(Model.Classifier.Name.LowerFirst())Service.get(+params['id'])
+          		.then(@(Model.Classifier.Name.LowerFirst()) => this.display@(Model.Classifier.Name)(@(Model.Classifier.Name.LowerFirst())));
+      		}
+      	});
+		
+    }
+
+  update() {
+        const @(Model.Classifier.Name.LowerFirst())Model = this.@(Model.Classifier.Name.LowerFirst())Form.value;
+          if (this.@(GetPrimaryKey(Model.Classifier).LowerFirst())>0)
+          {
+            this.@(Model.Classifier.Name.LowerFirst())Service.update(this.@(GetPrimaryKey(Model.Classifier).LowerFirst()),@(Model.Classifier.Name.LowerFirst())Model).then(value => this.display@(Model.Classifier.Name)(value));
+          }
+          else
+          {
+            this.@(Model.Classifier.Name.LowerFirst())Service.add(@(Model.Classifier.Name.LowerFirst())Model).then(value => this.display@(Model.Classifier.Name)(value));
+          }
+      }
+
+    display@(Model.Classifier.Name)(@(Model.Classifier.Name.LowerFirst())View: @(Model.Classifier.Name)View) {
+
+    this.@(Model.Classifier.Name.LowerFirst())Form.reset(@(Model.Classifier.Name.LowerFirst())View);  
+                
+    }
+    
+ }  
+ 
+ 
+ @functions{
+
+string GetPrimaryKey(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Properties())
+   	{
+		if (att2["Entity Framework","EF Primary Key"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+string GetDescriptor(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Properties())
+   	{
+		if (att2["Entity Framework","Default Descriptor"]=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+public static string GetPrimaryType(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Properties())
+		{
+			if (att["Entity Framework","EF Primary Key"]=="True")
+			{
+				return  @att.Type.TypeName("TypeScript");
+				
+			}
+		}    	
+    	return "";
+    }
+
+}

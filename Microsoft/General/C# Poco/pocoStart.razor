@@ -1,0 +1,23 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+
+namespace @Model.Diagram.QualifiedName
+{
+    public class @Model.Classifier.Name
+    {
+    	@foreach (var property in Model.Classifier.Properties())
+    	{     	
+    	<text>/// <summary>@property.Description</summary></text>   
+    	<text>/// <remarks>@Raw(property.Notes)</remarks></text>   
+    	<text>public @property.Type.TypeName("C#")</text> @property.Name <text> { get; set; } </text>
+    	}
+    }
+}

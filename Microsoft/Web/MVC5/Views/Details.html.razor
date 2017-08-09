@@ -1,0 +1,31 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+
+@@model @{@Model.Diagram.dName}.@{@Model.Classifier.Name}
+
+
+@@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>@{@Model.Classifier.Name}</h4>
+    <hr />
+    <dl class="dl-horizontal">
+    @foreach (var att in Model.Classifier.Properties())
+    	{
+        <dt>
+            @@Html.DisplayNameFor(model => model.@att.Name)
+        </dt>
+}
+      
+
+    </dl>
+</div>
+<p>
+    @@Html.ActionLink("Edit", "Edit", new { id = Model.@Model.Classifier.Properties().First().Name }) |
+    @@Html.ActionLink("Back to List", "Index")
+</p>
