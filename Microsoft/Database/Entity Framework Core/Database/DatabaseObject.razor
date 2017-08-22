@@ -13,7 +13,7 @@ namespace @(Model.Diagram.Name).Database
 {
     public class @Model.Classifier.Name
     {
-    	@foreach (var att in Model.Classifier.Properties()) { 
+    	@foreach (var att in Model.Classifier.Attributes()) { 
     	switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.PrimitiveType:			

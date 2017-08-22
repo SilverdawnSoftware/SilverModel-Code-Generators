@@ -51,7 +51,7 @@ namespace @{@Model.Diagram.QualifiedName}.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "@foreach (var att in Model.Classifier.Properties()){@att.Name<text>,</text>}")] @{@Model.Classifier.Name} @{@Model.Classifier.Name.LowerFirst()})
+        public async Task<ActionResult> Create([Bind(Include = "@foreach (var att in Model.Classifier.Attributes()){@att.Name<text>,</text>}")] @{@Model.Classifier.Name} @{@Model.Classifier.Name.LowerFirst()})
         {
             if (ModelState.IsValid)
             {
@@ -83,7 +83,7 @@ namespace @{@Model.Diagram.QualifiedName}.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = ""@foreach (var att in Model.Classifier.Properties()){@att.Name<text>,</text>}"")] @{@Model.Classifier.Name} @{@Model.Classifier.Name.LowerFirst()})
+        public async Task<ActionResult> Edit([Bind(Include = ""@foreach (var att in Model.Classifier.Attributes()){@att.Name<text>,</text>}"")] @{@Model.Classifier.Name} @{@Model.Classifier.Name.LowerFirst()})
         {
             if (ModelState.IsValid)
             {

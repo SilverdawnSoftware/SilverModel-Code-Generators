@@ -23,7 +23,7 @@
 
 		@{
 		bool skippedfirst=false;
-		foreach (var att in Model.Classifier.Properties())
+		foreach (var att in Model.Classifier.Attributes())
     	{
     		if (skippedfirst)
     		{
@@ -62,9 +62,9 @@
      public string GetPrimaryField(IClassifier iClass)
      {
      	
-     	foreach (var att in iClass.Properties())
+     	foreach (var att in iClass.Attributes())
     	{
-    		if (att["EF","EF Primary Key"].IsTrue())
+    		if (att["Database General Metadata","Primary Key"].IsTrue())
     		{
     			return att.Name;
     		}

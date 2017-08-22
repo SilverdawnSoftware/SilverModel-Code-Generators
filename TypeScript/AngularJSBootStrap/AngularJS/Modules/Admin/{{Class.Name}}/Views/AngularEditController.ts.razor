@@ -16,7 +16,7 @@ var UsedCheck=new List<string>();
 }
 
 // Add service imports
- @foreach (var att in Model.Classifier.AllProperties())	    	{
+ @foreach (var att in Model.Classifier.AllAttributes())	    	{
 						
 		    		if (att.Type is IClass && att.Type.ElementId!=Model.Classifier.ElementId)
 		    		{
@@ -45,7 +45,7 @@ var UsedCheck=new List<string>();
     		
 // Add view Models Imports
  @{UsedCheck=new List<string>();}
-        @foreach (var att in Model.Classifier.AllProperties())	    	{
+        @foreach (var att in Model.Classifier.AllAttributes())	    	{
 						
 		    		if (att.Type is IClass && att.Type.ElementId!=Model.Classifier.ElementId)
 		    		{
@@ -89,7 +89,7 @@ var loadCount=0;
         loaded: boolean;
         @(Model.Classifier.Name.LowerFirst())View :I@(Model.Classifier.Name)View;
         @{UsedCheck=new List<string>();}
-        @foreach (var att in Model.Classifier.AllProperties())    	{
+        @foreach (var att in Model.Classifier.AllAttributes())    	{
 				
 	    		if (att.Type is IClass && att.Type.ElementId!=Model.Classifier.ElementId)
 	    		{
@@ -131,7 +131,7 @@ var loadCount=0;
             '$http',
             '@Model.Classifier.Name.LowerFirst()Service'
             @{UsedCheck=new List<string>();}
-            @foreach (var att in Model.Classifier.AllProperties())	    	{
+            @foreach (var att in Model.Classifier.AllAttributes())	    	{
 						
 		    		if (att.Type is IClass && att.Type.ElementId!=Model.Classifier.ElementId)
 		    		{
@@ -162,7 +162,7 @@ var loadCount=0;
 
         constructor(private $scope: I@(Model.Classifier.Name)EditCtrlScope, private $routeParams: I@(Model.Classifier.Name)EditCtrlScopeRouteParams, private $http: ng.IHttpService, private @(Model.Classifier.Name.LowerFirst())Service: @(Model.Classifier.Name)Service
          @{UsedCheck=new List<string>();}
-        @foreach (var att in Model.Classifier.AllProperties())	    	{
+        @foreach (var att in Model.Classifier.AllAttributes())	    	{
 						
 		    		if (att.Type is IClass && att.Type.ElementId!=Model.Classifier.ElementId)
 		    		{
@@ -209,7 +209,7 @@ loadCount++;
        $scope.@(Model.Classifier.Name.LowerFirst())View = new @(Model.Classifier.Name)View();
         // Load Data for drop downs
          @{UsedCheck=new List<string>();}
-        @foreach (var att in Model.Classifier.AllProperties())	    	{
+        @foreach (var att in Model.Classifier.AllAttributes())	    	{
 						
 		    		if (att.Type is IClass && att.Type.ElementId!=Model.Classifier.ElementId)
 		    		{
@@ -293,7 +293,7 @@ loadCount++;
 
 string GetPrimaryKey(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
 		if (att2["Entity Framework","EF Primary Key"]=="True")
 		 return att2.Name;
@@ -304,7 +304,7 @@ string GetPrimaryKey(IClassifier iClass)
 
 string GetDescriptor(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
 		if (att2["Entity Framework","Default Descriptor"]=="True")
 		 return att2.Name;
@@ -325,7 +325,7 @@ public static string GetPrimaryType(IType iType)
  
     public static string GetPrimaryType(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
 			if (att["Entity Framework","EF Primary Key"]=="True")
 			{

@@ -15,7 +15,7 @@
     <h4>@{@Model.Classifier.Name}</h4>
     <hr />
     <dl class="dl-horizontal">
-    @foreach (var att in Model.Classifier.Properties())
+    @foreach (var att in Model.Classifier.Attributes())
     	{
         <dt>
             @@Html.DisplayNameFor(model => model.@att.Name)
@@ -26,6 +26,6 @@
     </dl>
 </div>
 <p>
-    @@Html.ActionLink("Edit", "Edit", new { id = Model.@Model.Classifier.Properties().First().Name }) |
+    @@Html.ActionLink("Edit", "Edit", new { id = Model.@Model.Classifier.Attributes().First().Name }) |
     @@Html.ActionLink("Back to List", "Index")
 </p>

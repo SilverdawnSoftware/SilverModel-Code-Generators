@@ -14,9 +14,9 @@ namespace @(Model.Diagram.Name).Transactions.Model
 {
     public class @(Model.Classifier.Name)Add
     {
-    	@foreach (var att in Model.Classifier.AllProperties())    	{ 
+    	@foreach (var att in Model.Classifier.AllAttributes())    	{ 
     	
-	    	if (!(@att["Entity Framework","EF Primary Key"]=="True"))
+	    	if (!(@att["Database General Metadata","Primary Key"]=="True"))
 	    	{
 	    	
 	    	switch (att.Type.GetUMLType())
@@ -70,9 +70,9 @@ namespace @(Model.Diagram.Name).Transactions.Model
  
     public static string GetPrimaryKey(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return att.Name;
 			}
@@ -82,9 +82,9 @@ namespace @(Model.Diagram.Name).Transactions.Model
  
  	 public static string GetPrimaryDescription(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return att.Description;
 			}
@@ -105,9 +105,9 @@ namespace @(Model.Diagram.Name).Transactions.Model
  
     public static string GetPrimaryType(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

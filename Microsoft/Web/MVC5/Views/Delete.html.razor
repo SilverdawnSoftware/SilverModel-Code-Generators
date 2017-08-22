@@ -16,7 +16,7 @@
     <h4>@{@Model.Classifier.Name}</h4>
     <hr />
     <dl class="dl-horizontal">
-    @foreach (var att in Model.Classifier.Properties())
+    @foreach (var att in Model.Classifier.Attributes())
     	{
         <dt>
             @@Html.DisplayNameFor(model => model.@att.Name)

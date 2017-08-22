@@ -24,7 +24,7 @@
 
     <div ng-show="loaded">
     	 <form class="form-horizontal css-form" role="form" novalidate>
-    	  @foreach (var att in Model.Classifier.AllProperties())
+    	  @foreach (var att in Model.Classifier.AllAttributes())
 	{
 	if (att.Type is IElement)
 		{		
@@ -76,7 +76,7 @@
 
 string GetPrimaryKey(IClassifier iClass)
 {
-	foreach (var att2 in iClass.AllProperties())
+	foreach (var att2 in iClass.AllAttributes())
    	{
 		if (att2["EF4","EF Primary Key"]=="True")
 		 return att2.Name;
@@ -87,7 +87,7 @@ string GetPrimaryKey(IClassifier iClass)
 
 string GetDescriptor(IClassifier iClass)
 {
-	foreach (var att2 in iClass.AllProperties())
+	foreach (var att2 in iClass.AllAttributes())
    	{
 		if (att2["EF4","Default Descriptor"]=="True")
 		 return att2.Name;

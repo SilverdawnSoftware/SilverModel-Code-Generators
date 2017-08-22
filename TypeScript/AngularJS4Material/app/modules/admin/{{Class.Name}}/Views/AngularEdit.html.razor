@@ -4,40 +4,11 @@
 <!-- ALLOWOVERWRITE -->
 
 
-<div class="box">
-    <div class="box-header">
-        <h2><i class="fa fa-edit"></i>@Model.Classifier.Name Edit</h2>
-        <div class="box-icon">
 
-            <a href="/" class="btn-close"><i class="fa fa-times"></i></a>
-        </div>
-    </div>
-    <div class="box-content">
-
-        <div class="well" [hidden]="!loaded">
-
-            <div class="row">
-                <div class="col-sm-4">
-                </div>
-                <div class="col-sm-4">
-                    <h4>Loading</h4>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-4">
-                </div>
-                <div class="col-sm-4">
-                    <img src="/Images/loader.gif" />
-                </div>
-            </div>
-        </div>
-
-        <div ng-show="loaded">
         <md-tab-group >
         <md-tab label="Main">
         	 <form [formGroup]="@(Model.Classifier.Name.LowerFirst())Form" class="form-horizontal css-form" role="form" (ngSubmit)="update()">
-        	  @foreach (var att in Model.Classifier.AllProperties())  	{		
+        	  @foreach (var att in Model.Classifier.AllAttributes())  	{		
 			  switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.Class:				
@@ -89,46 +60,54 @@
         	 </form>
         	 </md-tab>
         	 @foreach (var att in Model.Classifier.GetSourceAssociation()) { 
-    	<text>	<md-tab label="@(att.GetTargetMemberEnd().Type.Name)"> </text>
+        	 IClass associatedClass=(IClass)att.GetTargetMemberEnd().Type;
+    	<text>	
+    	
+    	
+    	
+    	<md-tab label="@(att.GetTargetMemberEnd().Type.Name)"> </text>
     				var count=0;
     				<text> <ngx-datatable
             class='material'
-            [rows]='rows'
+            [rows]='@(associatedClass.Name.LowerFirst())rows'
             [columnMode]="'force'"
             [headerHeight]="50"
             [footerHeight]="50"
-            [rowHeight]="getRowHeight"
+            [rowHeight]="40"
             [scrollbarV]="true"
             (page)="onPage($event)"></text>
-    				foreach (var att2 in ((IClassifier)att.GetTargetMemberEnd().Type).Properties())
-   					{
-   						<text>
-   						<ngx-datatable-column name="@(att2.Name)" width="300">
-            	 		 	<ng-template let-column="row" ngx-datatable-cell-template>
-                				{{row.@(att2.Name)}}
-              				</ng-template>
-           			 	</ngx-datatable-column>
-   							</text>
-   							
+    				foreach (var att2 in ((IClassifier)att.GetTargetMemberEnd().Type).Attributes()){
+   						<text><ngx-datatable-column name="@att2.Name" width="300"></ngx-datatable-column></text> 
    					}
+   					
+   			<ngx-datatable-column name="Edit" width="300" prop="@(GetPrimaryKey(associatedClass).LowerFirst())">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+      <button md-icon-button	routerLink="/admin/@(associatedClass.Name.LowerFirst())/edit/{{value}}" color="primary"><md-icon>edit</md-icon></button>
+
+    </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column name="Delete" width="300" prop="@(GetPrimaryKey(associatedClass).LowerFirst())">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+        <button md-icon-button	(click)="delete@(associatedClass.Name)(value)" color="warn"><md-icon>delete</md-icon></button>
+
+      </ng-template>
+    </ngx-datatable-column>			
    			@:</ngx-datatable>
-    				 <a md-raised-button color="primary" href="#/Admin/@(att.GetTargetMemberEnd().Type.Name)/Add?@(Model.Classifier.Name.LowerFirst())@(GetPrimaryKey(Model.Classifier))={{@(Model.Classifier.Name.LowerFirst())View.@(GetPrimaryKey(Model.Classifier).LowerFirst())}}">Add</a>
+    				 <a md-raised-button color="primary" href="/admin/@(att.GetTargetMemberEnd().Type.Name.LowerFirst())/add?@(Model.Classifier.Name.LowerFirst())@(GetPrimaryKey(Model.Classifier))={{@(Model.Classifier.Name.LowerFirst())View.@(GetPrimaryKey(Model.Classifier).LowerFirst())}}">Add</a>
     		@:</md-tab>	
     	}
     	
         	 
         	 
         	 </md-tab-group>
-        </div>
-    </div>
-</div>
+  
 @functions{
 
 string GetPrimaryKey(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
-		if (att2["Entity Framework","EF Primary Key"]=="True")
+		if (att2["Database General Metadata","Primary Key"]=="True")
 		 return att2.Name;
 	}
 	
@@ -137,9 +116,9 @@ string GetPrimaryKey(IClassifier iClass)
 
 string GetDescriptor(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
-		if (att2["Entity Framework","Default Descriptor"]=="True")
+		if (att2["Database General Metadata","Default Descriptor"]=="True")
 		 return att2.Name;
 	}
 	

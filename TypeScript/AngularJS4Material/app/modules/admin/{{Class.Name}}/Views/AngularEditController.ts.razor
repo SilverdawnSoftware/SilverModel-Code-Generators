@@ -5,7 +5,7 @@
 
 import { Component,OnInit } from '@@angular/core';
 import { FormGroup, FormControl, FormBuilder } from '@@angular/forms';
-import { ActivatedRoute, Params }   from '@@angular/router';
+import { ActivatedRoute, Params, Router }   from '@@angular/router';
 import { Location }                 from '@@angular/common';
 
 import {I@(Model.Classifier.Name)View} from "../Models/@(Model.Classifier.Name)View";
@@ -15,7 +15,7 @@ import {@(Model.Classifier.Name)Service} from "../Services/@(Model.Classifier.Na
 var UsedCheck=new List<string>();
 }
 // Add service imports
- @foreach (var att in Model.Classifier.AllProperties())	    	{
+ @foreach (var att in Model.Classifier.AllAttributes())	    	{
 						
 		    		if (att.Type is IClass && att.Type.ElementId!=Model.Classifier.ElementId)
 		    		{
@@ -44,7 +44,7 @@ var UsedCheck=new List<string>();
     		
 // Add view Models Imports
  @{UsedCheck=new List<string>();}
-        @foreach (var att in Model.Classifier.AllProperties())	    	{
+        @foreach (var att in Model.Classifier.AllAttributes())	    	{
 						
 		    		if (att.Type is IClass && att.Type.ElementId!=Model.Classifier.ElementId)
 		    		{
@@ -97,9 +97,28 @@ loadCount++;
         @{UsedCheck=new List<string>();}
         export class @(Model.Classifier.Name)Edit implements OnInit {
   @(Model.Classifier.Name.LowerFirst())Form: FormGroup;
-  @(Model.Classifier.Name.LowerFirst())View: IUserView;
+  @(Model.Classifier.Name.LowerFirst())View: I@(Model.Classifier.Name)View;
   @(Model.Classifier.Name.LowerFirst())Id: number=0;
-  constructor(private formBuilder: FormBuilder, private @(Model.Classifier.Name.LowerFirst())Service: @(Model.Classifier.Name)Service, private route: ActivatedRoute, private location: Location
+  @foreach (var association in Model.Classifier.GetTargetAssociation()) { 
+    	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+    			{
+		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
+		    	foreach (var assocaitedClassAtt in associatedClass.Attributes()) {
+					    		
+					    		if (assocaitedClassAtt["Database General Metadata","Primary Key"]=="True")
+					    		{
+<text>  @associatedClass.Name.LowerFirst()@assocaitedClassAtt.Name : @assocaitedClassAtt.Type.TypeName("TypeScript"); </text>  
+					    		}
+					    	}
+				}
+		
+    	}
+  @foreach (var att in Model.Classifier.GetSourceAssociation()) { 
+   IClass sourceClass=(IClass)att.GetTargetMemberEnd().Type;
+  <text>@(sourceClass.Name.LowerFirst())rows: any;</text> 
+  }
+  
+  constructor(private formBuilder: FormBuilder, private @(Model.Classifier.Name.LowerFirst())Service: @(Model.Classifier.Name)Service, private route: ActivatedRoute, private router: Router, private location: Location
   @foreach (var att in Model.Classifier.GetSourceAssociation())	    	{
 		    		 	if (!UsedCheck.Any(w=>w==att.GetTargetMemberEnd().Type.Name))
 		    			{
@@ -118,7 +137,7 @@ loadCount++;
         
          ngOnInit() {
     this.@(Model.Classifier.Name.LowerFirst())Form = this.formBuilder.group({
-     @foreach (var att in Model.Classifier.AllProperties())  	{		
+     @foreach (var att in Model.Classifier.AllAttributes())  	{		
 			  switch (att.Type.GetUMLType())
 			  {
 			  case UmlTypeEnum.Class:	break;
@@ -128,7 +147,7 @@ loadCount++;
 			  default:
 				  	if (@att.Name!=GetPrimaryKey(Model.Classifier))	{
 	    	
-	    				<text>@att.Name.LowerFirst(): '', </text>
+	    				<text>@att.Name.LowerFirst(): @Raw(att.Type.TypeNew("TypeScript")), </text>
                         }
 	    			
 	    			break;
@@ -140,31 +159,91 @@ loadCount++;
        this.route.params.subscribe(params => {
         this.@(GetPrimaryKey(Model.Classifier).LowerFirst()) =params['id'];
           if (this.@(GetPrimaryKey(Model.Classifier).LowerFirst())>0) {
-        	this.@(Model.Classifier.Name.LowerFirst())Service.get(+params['id'])
-          		.then(@(Model.Classifier.Name.LowerFirst()) => this.display@(Model.Classifier.Name)(@(Model.Classifier.Name.LowerFirst())));
+        	this.@(Model.Classifier.Name.LowerFirst())Service.get(+params['id']).then(@(Model.Classifier.Name.LowerFirst()) => this.display@(Model.Classifier.Name)(@(Model.Classifier.Name.LowerFirst())));
+          		 @foreach (var att in Model.Classifier.GetSourceAssociation()) { 
+  				 IClass sourceClass=(IClass)att.GetTargetMemberEnd().Type;
+  			<text> this.@(sourceClass.Name.LowerFirst())Service.get@(sourceClass.Name)sBy@(Model.Classifier.Name)(this.@(GetPrimaryKey(Model.Classifier).LowerFirst())).then(value => this.@(sourceClass.Name.LowerFirst())rows=value);</text> 
+  				}
       		}
       	});
+      	
+      	@foreach (var att in Model.Classifier.GetTargetAssociation()) { 
+    IClass sourceClass=(IClass)att.GetSourceMemberEnd().Type;
+    var sourcepk=GetPrimaryKey(sourceClass);
+    <text>
+    	 this.route.queryParams.subscribe( params=>{
+         this.@(sourceClass.Name.LowerFirst())@(sourcepk)=params['@(sourceClass.Name.LowerFirst())@(sourcepk)'];
+       });
+    </text>
+    	}
+      	
+      	
 		
     }
 
   update() {
-        const @(Model.Classifier.Name.LowerFirst())Model = this.@(Model.Classifier.Name.LowerFirst())Form.value;
+          const @(Model.Classifier.Name.LowerFirst())Model = this.@(Model.Classifier.Name.LowerFirst())Form.value;
           if (this.@(GetPrimaryKey(Model.Classifier).LowerFirst())>0)
           {
             this.@(Model.Classifier.Name.LowerFirst())Service.update(this.@(GetPrimaryKey(Model.Classifier).LowerFirst()),@(Model.Classifier.Name.LowerFirst())Model).then(value => this.display@(Model.Classifier.Name)(value));
           }
           else
           {
-            this.@(Model.Classifier.Name.LowerFirst())Service.add(@(Model.Classifier.Name.LowerFirst())Model).then(value => this.display@(Model.Classifier.Name)(value));
+          @foreach (var association in Model.Classifier.GetTargetAssociation()) { 
+    	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+    			{
+		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
+		    	foreach (var assocaitedClassAtt in associatedClass.Attributes()) {
+					    		
+					    		if (assocaitedClassAtt["Entity Framework Core","EF Primary Key"]=="True")
+					    		{
+<text>        if (this.userUserId>0)
+            {
+              @(Model.Classifier.Name.LowerFirst())Model.@associatedClass.Name.LowerFirst()@assocaitedClassAtt.Name=this.@associatedClass.Name.LowerFirst()@assocaitedClassAtt.Name;
+            } </text>  
+					    		}
+					    	}
+				}
+		
+    	}
+          
+          
+            this.@(Model.Classifier.Name.LowerFirst())Service.add(@(Model.Classifier.Name.LowerFirst())Model).then(value => this.router.navigateByUrl("/admin/@(Model.Classifier.Name.LowerFirst())/edit/"+value.@(GetPrimaryKey(Model.Classifier).LowerFirst())));
           }
       }
 
     display@(Model.Classifier.Name)(@(Model.Classifier.Name.LowerFirst())View: @(Model.Classifier.Name)View) {
-
-    this.@(Model.Classifier.Name.LowerFirst())Form.reset(@(Model.Classifier.Name.LowerFirst())View);  
-                
+	 @foreach (var att in Model.Classifier.AllAttributes()){
+	 	if (att.Type.Name=="DateTime")
+	 	{
+	 	<text>@(Model.Classifier.Name.LowerFirst())View.@(att.Name.LowerFirst())=new Date(@(Model.Classifier.Name.LowerFirst())View.@(att.Name.LowerFirst())).toISOString().substring(0, 10);</text>
+	 	}
+	 
+	 }
+    this.@(Model.Classifier.Name.LowerFirst())Form.reset(@(Model.Classifier.Name.LowerFirst())View);  	
+	this.@(Model.Classifier.Name.LowerFirst())View=@(Model.Classifier.Name.LowerFirst())View;	    
     }
     
+     @foreach (var att in Model.Classifier.GetSourceAssociation()) { 
+    IClass sourceClass=(IClass)att.GetTargetMemberEnd().Type;
+    var sourcepk=GetPrimaryKey(sourceClass);
+    <text>
+    delete@(sourceClass.Name)(@(sourcepk.LowerFirst()): number)
+  	{
+	    if (confirm('Are you sure you want to delete this?'))
+	    {
+	      this.@(sourceClass.Name.LowerFirst())Service.remove(@(sourcepk.LowerFirst())).then();
+	
+	      for(var i = this.@(sourceClass.Name.LowerFirst())rows.length - 1; i >= 0; i--) {
+	        if(this.@(sourceClass.Name.LowerFirst())rows[i].@(sourcepk.LowerFirst()) === @(sourcepk.LowerFirst())) {
+	          this.@(sourceClass.Name.LowerFirst())rows.splice(i, 1);
+	          break;
+	        }
+	      }
+	    }
+  	}
+  	</text>
+    }
  }  
  
  
@@ -172,9 +251,9 @@ loadCount++;
 
 string GetPrimaryKey(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
-		if (att2["Entity Framework","EF Primary Key"]=="True")
+		if (att2["Database General Metadata","Primary Key"]=="True")
 		 return att2.Name;
 	}
 	
@@ -183,9 +262,9 @@ string GetPrimaryKey(IClassifier iClass)
 
 string GetDescriptor(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
-		if (att2["Entity Framework","Default Descriptor"]=="True")
+		if (att2["Database General Metadata","Default Descriptor"]=="True")
 		 return att2.Name;
 	}
 	
@@ -204,9 +283,9 @@ public static string GetPrimaryType(IType iType)
  
     public static string GetPrimaryType(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return  @att.Type.TypeName("TypeScript");
 				

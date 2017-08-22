@@ -27,7 +27,7 @@ export class @(Model.Classifier.Name)Service {
 
 
 
-  baseURL: string='http://localhost:54631';
+  baseURL: string='@Model.Diagram["AngularJS4Material","RestAPIURL"]';
 
   getAll(): Promise<@(Model.Classifier.Name)View[]> {
     return this.http.get(this.baseURL + `/api/@(Model.Classifier.Name)/All`)
@@ -46,15 +46,15 @@ export class @(Model.Classifier.Name)Service {
  	 }
  	 
  	 
- 	 add(userView: @(Model.Classifier.Name)View): Promise<@(Model.Classifier.Name)View> {
-    return this.http.post(this.baseURL + '/api/user', @(Model.Classifier.Name.LowerFirst())View)
+ 	 add(@(Model.Classifier.Name.LowerFirst()): @(Model.Classifier.Name)View): Promise<@(Model.Classifier.Name)View> {
+    return this.http.post(this.baseURL + '/api/@(Model.Classifier.Name)', @(Model.Classifier.Name.LowerFirst()))
       .toPromise()
       .then(response =>  response.json() as @(Model.Classifier.Name)View)
       .catch(this.handleError);
   }
  	 
  	 
- 	 update(@(Model.Classifier.Name.LowerFirst())Id}: number,  user: @(Model.Classifier.Name)View): Promise<@(Model.Classifier.Name)View> {
+ 	 update(@(Model.Classifier.Name.LowerFirst())Id: number,  @(Model.Classifier.Name.LowerFirst()): @(Model.Classifier.Name)View): Promise<@(Model.Classifier.Name)View> {
     return this.http.put(this.baseURL + `/api/@(Model.Classifier.Name)/${@(Model.Classifier.Name.LowerFirst())Id}`, @(Model.Classifier.Name.LowerFirst()))
       .toPromise()
       .then(response => response.json() as @(Model.Classifier.Name)View)
@@ -64,9 +64,28 @@ export class @(Model.Classifier.Name)Service {
  	 remove(@(Model.Classifier.Name.LowerFirst())Id: number): Promise<any> {
       return this.http.delete(this.baseURL + `/api/@(Model.Classifier.Name)/${@(Model.Classifier.Name.LowerFirst())Id}`).toPromise();
   }
- 	 
+ 	 	 
  	 
   		</text>
+  		
+  		foreach (var association in Model.Classifier.GetTargetAssociation())    	{ 
+    	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+    			{
+		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
+		    	var associatedPK=GetPrimaryKey(associatedClass);
+		    	if (!string.IsNullOrEmpty(primaryKey)){
+		    	<text>
+		    	get@(Model.Classifier.Name)sBy@(associatedClass.Name)(@(associatedPK.LowerFirst()): number): Promise<@(Model.Classifier.Name)View[]> {
+    return this.http.get(this.baseURL + `/api/@(associatedClass.Name)/${@(associatedPK.LowerFirst())}/@(Model.Classifier.Name)s`)
+      .toPromise()
+      .then(response => response.json() as @(Model.Classifier.Name)View[])
+      .catch(this.handleError);
+  }
+		    	</text>
+		    		}
+				}
+    	}
+  		
    }
   
  private handleError(error: Response | any) {
@@ -108,9 +127,9 @@ export class @(Model.Classifier.Name)Service {
  
     public static string GetDescriptor(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework","Default Descriptor"]=="True")
+			if (att["Database General Metadata","Default Descriptor"]=="True")
 			{
 				return att.Name;
 			}
@@ -132,9 +151,9 @@ export class @(Model.Classifier.Name)Service {
  
     public static string GetPrimaryKey(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return att.Name;
 			}
@@ -154,9 +173,9 @@ export class @(Model.Classifier.Name)Service {
  
     public static string GetPrimaryType(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

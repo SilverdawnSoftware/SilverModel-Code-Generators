@@ -13,7 +13,7 @@
     <tr>
     @{
 		bool skippedfirst=false;
-		foreach (var att in Model.Classifier.Properties())
+		foreach (var att in Model.Classifier.Attributes())
     	{
     	
     		if (skippedfirst)
@@ -30,7 +30,7 @@
     <tr>
      @{
 		 skippedfirst=false;
-		foreach (var att in Model.Classifier.Properties())
+		foreach (var att in Model.Classifier.Attributes())
     	{
     		if (skippedfirst)
     		{

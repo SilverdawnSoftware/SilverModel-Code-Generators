@@ -24,7 +24,7 @@
 
     <div ng-show="loaded">
     	 <form class="form-horizontal css-form" role="form" novalidate>
-    	  @foreach (var att in Model.Classifier.Properties()) {
+    	  @foreach (var att in Model.Classifier.Attributes()) {
 			if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 				{		
 	    			if (att.Type.GetUMLType() == UmlTypeEnum.Class)
@@ -85,7 +85,7 @@
  
     public static string GetDescriptor(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
 			if (att["Entity Framework","Default Descriptor"]=="True")
 			{
@@ -109,7 +109,7 @@
  
     public static string GetPrimaryKey(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
 			if (att["Entity Framework","EF Primary Key"]=="True")
 			{
@@ -131,7 +131,7 @@
  
     public static string GetPrimaryType(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
 			if (att["Entity Framework","EF Primary Key"]=="True")
 			{

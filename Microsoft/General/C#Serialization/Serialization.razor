@@ -17,7 +17,7 @@ namespace @Model.Diagram.QualifiedName
 			{
 			@:[DataContract]
 			}
-    	@foreach (var att in Model.Classifier.Properties())
+    	@foreach (var att in Model.Classifier.Attributes())
     	{ 
     	
     		if (att["C#Serialization","CanSerialize"]=="True")

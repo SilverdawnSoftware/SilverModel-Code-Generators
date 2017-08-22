@@ -121,7 +121,7 @@ module @Model.Model.QualifiedName {
  
     public static string GetPrimaryKey(IClassifier umlClassifier)
     {
-    	foreach (var att in umlClassifier.AllProperties())
+    	foreach (var att in umlClassifier.AllAttributes())
 		{
 			if (att["EF4","EF Primary Key"]=="True")
 			{

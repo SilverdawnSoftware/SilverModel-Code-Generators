@@ -13,7 +13,7 @@ namespace @Model.Diagram.QualifiedName
 {
     public class @Model.Classifier.Name
     {
-    	@foreach (var property in Model.Classifier.Properties())
+    	@foreach (var property in Model.Classifier.Attributes())
     	{     	
     	<text>/// <summary>@property.Description</summary></text>   
     	<text>/// <remarks>@Raw(property.Notes)</remarks></text>   

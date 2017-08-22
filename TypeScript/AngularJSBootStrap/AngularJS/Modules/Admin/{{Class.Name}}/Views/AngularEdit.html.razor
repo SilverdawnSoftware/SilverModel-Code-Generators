@@ -37,7 +37,7 @@
         <uib-tabset active="active">
         <uib-tab heading="Main">
         	 <form class="form-horizontal css-form" role="form" novalidate>
-        	  @foreach (var att in Model.Classifier.AllProperties())  	{		
+        	  @foreach (var att in Model.Classifier.AllAttributes())  	{		
 			  switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.Class:				
@@ -90,7 +90,7 @@
     				@:<table class="table">
 						@:<thead>
 							@:<tr>
-    				foreach (var att2 in ((IClassifier)att.GetTargetMemberEnd().Type).Properties())
+    				foreach (var att2 in ((IClassifier)att.GetTargetMemberEnd().Type).Attributes())
    					{
    								@:<td>@(att2.Name)</td>
    					}
@@ -99,7 +99,7 @@
    						@:<tbody>
    						var child=(IClassifier)att.GetTargetMemberEnd().Type;
    						@:<tr ng-repeat="item in @(child.Name.LowerFirst())s">
-   						foreach (var att2 in ((IClassifier)att.GetTargetMemberEnd().Type).Properties())
+   						foreach (var att2 in ((IClassifier)att.GetTargetMemberEnd().Type).Attributes())
    						{
    						@:<td>{{item.@(att2.Name.LowerFirst())}}</td>
    						}
@@ -122,7 +122,7 @@
 
 string GetPrimaryKey(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
 		if (att2["Entity Framework","EF Primary Key"]=="True")
 		 return att2.Name;
@@ -133,7 +133,7 @@ string GetPrimaryKey(IClassifier iClass)
 
 string GetDescriptor(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
 		if (att2["Entity Framework","Default Descriptor"]=="True")
 		 return att2.Name;

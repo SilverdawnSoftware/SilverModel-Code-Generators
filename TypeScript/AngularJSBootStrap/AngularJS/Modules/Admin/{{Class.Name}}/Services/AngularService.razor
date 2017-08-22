@@ -137,7 +137,7 @@ import {@(Model.Classifier.Name)View} from "../Models/@(Model.Classifier.Name)Vi
  
     public static string GetDescriptor(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
 			if (att["Entity Framework","Default Descriptor"]=="True")
 			{
@@ -161,7 +161,7 @@ import {@(Model.Classifier.Name)View} from "../Models/@(Model.Classifier.Name)Vi
  
     public static string GetPrimaryKey(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
 			if (att["Entity Framework","EF Primary Key"]=="True")
 			{
@@ -183,7 +183,7 @@ import {@(Model.Classifier.Name)View} from "../Models/@(Model.Classifier.Name)Vi
  
     public static string GetPrimaryType(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
 			if (att["Entity Framework","EF Primary Key"]=="True")
 			{

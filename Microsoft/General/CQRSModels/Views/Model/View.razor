@@ -17,15 +17,15 @@ namespace @(Model.Diagram.Name).Views.Model
     
    
     
-    	@foreach (var att in Model.Classifier.AllProperties())     	{
+    	@foreach (var att in Model.Classifier.AllAttributes())     	{
     	
 			if (!att.Type.IsPrimitiveType())
 			{		
 	    		if (att.Type is IClass)
 	    		{
 					var refclass=(IClass)att.Type;	    		
-	    			foreach (var att2 in refclass.AllProperties()) {
-			    		if (att2["Entity Framework","Default Descriptor"]=="True")
+	    			foreach (var att2 in refclass.AllAttributes()) {
+			    		if (att2["Database General Metadata","Default Descriptor"]=="True")
 			    		{
 			    		<text>
 			    		/// <summary>
@@ -33,7 +33,7 @@ namespace @(Model.Diagram.Name).Views.Model
                          /// </summary>	
 			    		public @att2.Type.TypeName("C#") </text>@att.Name<text>@att2.Name { get; set; } </text>  
 			    		}
-			    		if (att2["Entity Framework","EF Primary Key"]=="True")
+			    		if (att2["Database General Metadata","Primary Key"]=="True")
 			    		{
 			    		<text>
 			    		/// <summary>
@@ -62,8 +62,8 @@ namespace @(Model.Diagram.Name).Views.Model
     	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
     			{
 		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
-		    	foreach (var assocaitedClassAtt in associatedClass.Properties()) {
-					    		if (assocaitedClassAtt["Entity Framework","Default Descriptor"]=="True")
+		    	foreach (var assocaitedClassAtt in associatedClass.Attributes()) {
+					    		if (assocaitedClassAtt["Database General Metadata","Default Descriptor"]=="True")
 					    		{
 					  <text>
 					  /// <summary>
@@ -71,7 +71,7 @@ namespace @(Model.Diagram.Name).Views.Model
                       /// </summary>	
 					  public string @associatedClass.Name@assocaitedClassAtt.Name { get; set; } </text>  
 					    		}
-					    		if (assocaitedClassAtt["Entity Framework","EF Primary Key"]=="True")
+					    		if (assocaitedClassAtt["Database General Metadata","Primary Key"]=="True")
 					    		{
 					  <text>
 					   /// <summary>
@@ -106,9 +106,9 @@ namespace @(Model.Diagram.Name).Views.Model
  
     public static string GetPrimaryKey(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return att.Name;
 			}
@@ -128,9 +128,9 @@ namespace @(Model.Diagram.Name).Views.Model
  
     public static string GetPrimaryType(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

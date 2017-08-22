@@ -5,14 +5,14 @@
 @foreach (var classifier in Model.Diagram.Classifiers())
 {
 
-foreach (var prop in classifier.AllProperties())
+foreach (var prop in classifier.AllAttributes())
 		{
 		
 		
 		if  (prop.Name!=null && classifier.Name.ToUpper()==prop.Name.ToUpper().Replace("ID",""))
 		{
 		@:PrimaryKey Set Classifier:@classifier.Name  Property:@prop.Name
-			prop["Entity Framework  Core","EF Primary Key"]="True";
+			prop["Database General Metadata","Primary Key"]="True";
 		}
 }
 

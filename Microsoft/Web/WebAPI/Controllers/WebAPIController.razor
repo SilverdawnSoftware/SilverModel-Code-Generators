@@ -117,9 +117,9 @@ namespace @(Model.Diagram["WebAPI","Web API Namespace"])
  
     public static string GetPrimaryKey(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.AllProperties())
+    	foreach (var att in umlClass.AllAttributes())
 		{
-			if (att["Entity Framework","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return att.Name;
 			}

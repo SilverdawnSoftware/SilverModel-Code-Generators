@@ -42,7 +42,7 @@
 
 string GetPrimaryKey(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
 		if (att2["Entity Framework","EF Primary Key"]=="True")
 		 return att2.Name;
@@ -53,7 +53,7 @@ string GetPrimaryKey(IClassifier iClass)
 
 string GetDescriptor(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
 		if (att2["Entity Framework","Default Descriptor"]=="True")
 		 return att2.Name;

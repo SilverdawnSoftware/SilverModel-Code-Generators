@@ -3,7 +3,7 @@
 @using SilvaDawn.SilvaModel.UML.Classes;
 // ALLOWOVERWRITE
 
-@foreach (var att in Model.Classifier.AllProperties())  {
+@foreach (var att in Model.Classifier.AllAttributes())  {
 			switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.Enumeration:		
@@ -13,13 +13,13 @@
 }
 
     export interface I@(Model.Classifier.Name)View {
-      @foreach (var att in Model.Classifier.AllProperties()) 	{
+      @foreach (var att in Model.Classifier.AllAttributes()) 	{
 			switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.Class:		
 	    		
 					var refclass=(IClass)att.Type;	    		
-	    			foreach (var att2 in refclass.AllProperties())
+	    			foreach (var att2 in refclass.AllAttributes())
 			    	{
 			    		if (att2["Entity Framework","Default Descriptor"]=="True")
 			    		{
@@ -45,7 +45,7 @@
     	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
     			{
 		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
-		    	foreach (var assocaitedClassAtt in associatedClass.AllProperties())
+		    	foreach (var assocaitedClassAtt in associatedClass.AllAttributes())
 					    	{
 					    		if (assocaitedClassAtt["Entity Framework","Default Descriptor"]=="True")
 					    		{
@@ -61,13 +61,13 @@
     }
     
     export class @(Model.Classifier.Name)View implements I@(Model.Classifier.Name)View {
-      @foreach (var att in Model.Classifier.AllProperties())
+      @foreach (var att in Model.Classifier.AllAttributes())
     	{
 			if (att.Type.GetUMLType() == UmlTypeEnum.Class)
 			{		
 	    		
 					var refclass=(IClass)att.Type;	    		
-	    			foreach (var att2 in refclass.AllProperties())
+	    			foreach (var att2 in refclass.AllAttributes())
 			    	{
 			    		if (att2["Entity Framework","Default Descriptor"]=="True")
 			    		{
@@ -93,7 +93,7 @@
     	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
     			{
 		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
-		    	foreach (var assocaitedClassAtt in associatedClass.AllProperties())
+		    	foreach (var assocaitedClassAtt in associatedClass.AllAttributes())
 					    	{
 					    		if (assocaitedClassAtt["Entity Framework","Default Descriptor"]=="True")
 					    		{

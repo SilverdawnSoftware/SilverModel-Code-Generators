@@ -1,0 +1,42 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+import { platformBrowserDynamic } from '@@angular/platform-browser-dynamic';
+import { NgModule } from '@@angular/core';
+import { BrowserModule } from '@@angular/platform-browser';
+import { ReactiveFormsModule } from '@@angular/forms';
+import { BrowserAnimationsModule } from '@@angular/platform-browser/animations';
+import { MaterialModule, MdNativeDateModule, MdTabsModule } from '@@angular/material';
+import { HttpModule }    from '@@angular/http';
+import { NgxDatatableModule } from '@@swimlane/ngx-datatable';
+
+import { AppComponent } from './app.component';
+
+
+import { AdminRoutingModule } from "./modules/admin/AdminRoutingModule";
+
+import {AppShell} from "./modules/shell/appshell";
+
+@foreach (var att in @Model.Diagram.Classes())    {
+<text>
+import {@(att.Name)Index} from './modules/admin/@(att.Name)/Views/@(att.Name)Index';
+import {@(att.Name)Edit} from './modules/admin/@(att.Name)/Views/@(att.Name)Edit';
+</text>
+}
+
+@@NgModule({
+  imports: [BrowserModule, ReactiveFormsModule, BrowserAnimationsModule, MaterialModule, MdNativeDateModule, MdTabsModule, HttpModule, AdminRoutingModule],
+  declarations: [AppShell 
+  @foreach (var att in @Model.Diagram.Classes())    {
+  <text>,@(att.Name)Edit,@(att.Name)Index</text>
+  }
+  
+  
+  ],
+  bootstrap: [AppShell]
+})
+export class AppModule {}
+
+//platformBrowserDynamic().bootstrapModule(AppModule);

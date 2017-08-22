@@ -18,7 +18,7 @@ module @Model.Model.QualifiedName {
 
         loaded: boolean;
         @{@Model.Classifier.Name.LowerFirst()}View :I@{@Model.Classifier.Name}View;
-        @foreach (var att in Model.Classifier.AllProperties())
+        @foreach (var att in Model.Classifier.AllAttributes())
     	{
 		if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 			{		
@@ -46,7 +46,7 @@ module @Model.Model.QualifiedName {
             '$routeParams',
             '$http',
             '@Model.Classifier.Name.LowerFirst()Service'
-            @foreach (var att in Model.Classifier.AllProperties())
+            @foreach (var att in Model.Classifier.AllAttributes())
 	    	{
 				if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 				{		
@@ -62,7 +62,7 @@ module @Model.Model.QualifiedName {
       
 
         constructor(private $scope: I@(Model.Classifier.Name)EditCtrlScope, private $routeParams: I@{@Model.Classifier.Name}EditCtrlScopeRouteParams, private $http: ng.IHttpService, private @Model.Classifier.Name.LowerFirst()Service: @{@Model.Classifier.Name}Service
-        @foreach (var att in Model.Classifier.AllProperties())
+        @foreach (var att in Model.Classifier.AllAttributes())
 	    	{
 				if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 				{		
@@ -121,7 +121,7 @@ module @Model.Model.QualifiedName {
 
 string GetPrimaryKey(IClassifier iClass)
 {
-	foreach (var att2 in iClass.AllProperties())
+	foreach (var att2 in iClass.AllAttributes())
    	{
 		if (att2["EF4","EF Primary Key"]=="True")
 		 return att2.Name;
@@ -132,7 +132,7 @@ string GetPrimaryKey(IClassifier iClass)
 
 string GetDescriptor(IClassifier iClass)
 {
-	foreach (var att2 in iClass.AllProperties())
+	foreach (var att2 in iClass.AllAttributes())
    	{
 		if (att2["EF4","Default Descriptor"]=="True")
 		 return att2.Name;

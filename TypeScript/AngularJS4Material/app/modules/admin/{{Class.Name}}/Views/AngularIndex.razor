@@ -10,21 +10,21 @@
   [columnMode]="'force'"
   [headerHeight]="50"
   [footerHeight]="50"
-  [rowHeight]="20"
+  [rowHeight]="40"
   [scrollbarV]="true"
   [limit]="10"
   (page)="onPage($event)" style="width: 100%; height: 100%; position: relative" >
-  @foreach (var att in Model.Classifier.AllProperties()) 	{
+  @foreach (var att in Model.Classifier.AllAttributes()) 	{
   <text><ngx-datatable-column name="@att.Name" width="300"></ngx-datatable-column></text> 
   }
   
-  <ngx-datatable-column name="Edit" width="300" prop="userId">
+  <ngx-datatable-column name="Edit" width="300" prop="@(GetPrimaryKey(Model.Classifier).LowerFirst())">
       <ng-template let-value="value" ngx-datatable-cell-template>
       <button md-icon-button	routerLink="/admin/user/edit/{{value}}" color="primary"><md-icon>edit</md-icon></button>
 
     </ng-template>
     </ngx-datatable-column>
-    <ngx-datatable-column name="Delete" width="300" prop="userId">
+    <ngx-datatable-column name="Delete" width="300" prop="@(GetPrimaryKey(Model.Classifier).LowerFirst())">
       <ng-template let-value="value" ngx-datatable-cell-template>
         <button md-icon-button	(click)="delete(value)" color="warn"><md-icon>delete</md-icon></button>
 
@@ -34,7 +34,7 @@
   
 </ngx-datatable>
 
-<a md-raised-button color="primary" href="/admin/@Model.Classifier.Name.LowerFirst()/add">Add User</a>
+<a md-raised-button color="primary" href="/admin/@Model.Classifier.Name.LowerFirst()/add">Add @(Model.Classifier.Name)</a>
 
 </div>
 
@@ -46,9 +46,9 @@
 
 string GetPrimaryKey(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
-		if (att2["Entity Framework","EF Primary Key"]=="True")
+		if (att2["Database General Metadata","Primary Key"]=="True")
 		 return att2.Name;
 	}
 	
@@ -57,9 +57,9 @@ string GetPrimaryKey(IClassifier iClass)
 
 string GetDescriptor(IClassifier iClass)
 {
-	foreach (var att2 in iClass.Properties())
+	foreach (var att2 in iClass.Attributes())
    	{
-		if (att2["Entity Framework","Default Descriptor"]=="True")
+		if (att2["Database General Metadata","Default Descriptor"]=="True")
 		 return att2.Name;
 	}
 	

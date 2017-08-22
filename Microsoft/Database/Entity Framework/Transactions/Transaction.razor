@@ -37,7 +37,7 @@ namespace @(Model.Diagram.Name).Transactions
             {
             
                var new@(Model.Classifier.Name)=new data.@(Model.Classifier.Name)();
-            	@foreach (var att in Model.Classifier.AllProperties()) {
+            	@foreach (var att in Model.Classifier.AllAttributes()) {
             		switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.PrimitiveType:
@@ -120,7 +120,7 @@ namespace @(Model.Diagram.Name).Transactions
             }
                
             	
-            	@foreach (var att in Model.Classifier.AllProperties()) {
+            	@foreach (var att in Model.Classifier.AllAttributes()) {
             		switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.PrimitiveType:
@@ -208,9 +208,9 @@ namespace @(Model.Diagram.Name).Transactions
  
     public static string GetPrimaryKey(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return att.Name;
 			}
@@ -230,9 +230,9 @@ namespace @(Model.Diagram.Name).Transactions
  
     public static string GetPrimaryType(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.Properties())
+    	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

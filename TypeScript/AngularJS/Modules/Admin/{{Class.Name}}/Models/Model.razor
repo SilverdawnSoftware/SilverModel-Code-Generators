@@ -5,7 +5,7 @@
 
 module @Model.Model.QualifiedName {
     export interface I@{@Model.Classifier.Name}View {
-      @foreach (var att in Model.Classifier.AllProperties())
+      @foreach (var att in Model.Classifier.AllAttributes())
     	{
 			if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 			{		
@@ -38,7 +38,7 @@ module @Model.Model.QualifiedName {
     	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
     			{
 		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
-		    	foreach (var assocaitedClassAtt in association.AllProperties())
+		    	foreach (var assocaitedClassAtt in association.AllAttributes())
 					    	{
 					    		if (assocaitedClassAtt["EF4","Default Descriptor"]=="True")
 					    		{
@@ -54,14 +54,14 @@ module @Model.Model.QualifiedName {
     }
     
     export class @{@Model.Classifier.Name}View implements I@{@Model.Classifier.Name}View {
-      @foreach (var att in Model.Classifier.AllProperties())
+      @foreach (var att in Model.Classifier.AllAttributes())
     	{
 			if (Model.RazorSupport.DataTypeIsElement(att.DataType))
 			{		
 	    		if (Model.RazorSupport.GetElement(att.DataType) is IClass)
 	    		{
 					var refclass=(IClass)Model.RazorSupport.GetElement(att.DataType);	    		
-	    			foreach (var att2 in refclass.AllProperties())
+	    			foreach (var att2 in refclass.AllAttributes())
 			    	{
 			    		if (att2["EF4","Default Descriptor"]=="True")
 			    		{
@@ -87,7 +87,7 @@ module @Model.Model.QualifiedName {
     	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
     			{
 		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
-		    	foreach (var assocaitedClassAtt in association.AllProperties())
+		    	foreach (var assocaitedClassAtt in association.AllAttributes())
 					    	{
 					    		if (assocaitedClassAtt["EF4","Default Descriptor"]=="True")
 					    		{

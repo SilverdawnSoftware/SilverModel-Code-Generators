@@ -10,13 +10,17 @@ using @(Model.Diagram.Name).Database;
 
 namespace @(Model.Diagram.Name).Database
 {
-    public class @Model.Diagram["Entity Framework Core","DBContextName"] : DbContext
+    public partial class @Model.Diagram["Entity Framework Core","DBContextName"] : DbContext
     {
     
     @foreach (var att in @Model.Diagram.Classes())
     {
         <text>public DbSet<@att.Name></text> @att.Name<text>s { get; set; } </text>
      }
-        
+     
+
+	
+
+
      }
  }

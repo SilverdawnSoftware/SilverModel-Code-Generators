@@ -23,7 +23,7 @@ namespace @(Model.Diagram.Name).Views
             using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"])())
             {
                 var temp = await db.@(Model.Classifier.Name)s.ToListAsync();
-                return temp.Cast<@(Model.Classifier.Name)View>().ToList();
+                return temp.ConvertAll(user => (@(Model.Classifier.Name)View) user);
             }
         }
     
@@ -57,7 +57,7 @@ namespace @(Model.Diagram.Name).Views
     	using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"])())
             {
             	var result= await db.@(Model.Classifier.Name)s.Where(w=>w.@(parent.Name).@(parentKey) ==@(parentKey.LowerFirst())).ToListAsync();
-            	return result.Cast<@(Model.Classifier.Name)View>().ToList();
+            	return result.ConvertAll(user => (@(Model.Classifier.Name)View) user);
                
             }
     	}
@@ -72,9 +72,9 @@ namespace @(Model.Diagram.Name).Views
  
     public static string GetPrimaryKey(IClassifier umlClass)
     {
-    	foreach (var att in umlClass.AllProperties())
+    	foreach (var att in umlClass.AllAttributes())
 		{
-			if (att["Entity Framework Core","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return att.Name;
 			}
