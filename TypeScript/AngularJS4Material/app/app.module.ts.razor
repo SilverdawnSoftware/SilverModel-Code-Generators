@@ -27,7 +27,7 @@ import {@(att.Name)Edit} from './modules/admin/@(att.Name)/Views/@(att.Name)Edit
 }
 
 @@NgModule({
-  imports: [BrowserModule, ReactiveFormsModule, BrowserAnimationsModule, MaterialModule, MdNativeDateModule, MdTabsModule, HttpModule, AdminRoutingModule],
+  imports: [BrowserModule, ReactiveFormsModule, BrowserAnimationsModule, MaterialModule, MdNativeDateModule, MdTabsModule,NgxDatatableModule, HttpModule, AdminRoutingModule],
   declarations: [AppShell 
   @foreach (var att in @Model.Diagram.Classes())    {
   <text>,@(att.Name)Edit,@(att.Name)Index</text>
