@@ -1,0 +1,19 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+
+//The below needs to manually added to your project file. Generate the code for this using the preview tab 
+
+<ItemGroup>
+ @foreach (var att in @Model.Diagram.Classes())
+    {
+    <EmbeddedResource Include="Views\@(att.Name)\@(att.Name)EditPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\@(att.Name)\@(att.Name)IndexPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+
+}
+
+</ItemGroup>

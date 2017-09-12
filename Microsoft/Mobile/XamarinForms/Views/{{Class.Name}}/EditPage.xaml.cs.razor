@@ -1,0 +1,48 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using @(Model.Diagram.Name)Mobile.ViewModels;
+using @(Model.Diagram.Name)Mobile.Views.Task;
+
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+namespace @(Model.Diagram.Name)Mobile.Views.@(Model.Classifier.Name)
+{
+	[XamlCompilation(XamlCompilationOptions.Compile)]
+	public partial class @(Model.Classifier.Name)EditPage : ContentPage
+	{
+		public @(Model.Classifier.Name)EditPage ()
+		{
+			InitializeComponent ();			
+			MessagingCenter.Subscribe<@(Model.Classifier.Name)EditViewModel>(this, "Save error",model => DisplayAlert("Save error", "Unable to save changes.", "Close") );			 			 
+			 @foreach (var att in Model.Classifier.GetSourceAssociation())    	{ 
+      		 var name=(((IClassifier)att.GetTargetMemberEnd().Type).Name);        
+           	<text>MessagingCenter.Subscribe<UserEditViewModel, @(name)IndexViewModel>(this, "Show@(name)s",async  (sender, arg) => { await Show@(name)s(arg); });</text>
+    	}
+		}
+		
+		
+		 @foreach (var att in Model.Classifier.GetSourceAssociation())    	{ 
+      		 var name=(((IClassifier)att.GetTargetMemberEnd().Type).Name);        
+           	<text>
+        public async System.Threading.Tasks.Task Show@(name)s(@(name)IndexViewModel @(name.LowerFirst())IndexViewModel)
+	    {
+	        var page = new @(name)IndexPage();
+	        await Navigation.PushAsync(page);
+	        NavigationPage.SetHasBackButton(page, true);
+	        page.BindingContext = @(name.LowerFirst())IndexViewModel;
+        }           	
+           	</text>
+    	}
+		
+		
+	}
+}

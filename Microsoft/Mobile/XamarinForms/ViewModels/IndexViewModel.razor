@@ -1,0 +1,166 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using @(Model.Diagram.Name).Views;
+using @(Model.Diagram.Name).Views.Model;
+using @(Model.Diagram.Name)Mobile.Annotations;
+using @(Model.Diagram.Name)Mobile.Views.User;
+using Xamarin.Forms;
+
+namespace @(Model.Diagram.Name)Mobile.ViewModels
+{
+    public class @(Model.Classifier.Name)IndexViewModel : INotifyPropertyChanged
+    {
+
+
+		 public ICommand Add@(Model.Classifier.Name)Command { get; private set; }
+
+        public @(Model.Classifier.Name)IndexViewModel()
+        {
+            Add@(Model.Classifier.Name)Command = new Command(async () => await Add@(Model.Classifier.Name)());
+        }
+
+        private async Task Add@(Model.Classifier.Name)()
+        {
+            var @(Model.Classifier.Name.LowerFirst())=new @(Model.Classifier.Name)EditViewModel();
+
+			 @foreach (var att in Model.Classifier.GetTargetAssociation())    	{ 
+           var pk=((IClassifier)att.GetSourceMemberEnd().Type).Name+ GetPrimaryKey((IClassifier)att.GetSourceMemberEnd().Type);
+ 			<text>@(Model.Classifier.Name.LowerFirst()).@(pk)= @(pk); </text>
+    	}
+            MessagingCenter.Send<@(Model.Classifier.Name)IndexViewModel, @(Model.Classifier.Name)EditViewModel>(this, "Add@(Model.Classifier.Name)", @(Model.Classifier.Name.LowerFirst()));
+        }
+
+		@foreach (var att in Model.Classifier.GetTargetAssociation())    	{ 
+           var pk=((IClassifier)att.GetSourceMemberEnd().Type).Name+ GetPrimaryKey((IClassifier)att.GetSourceMemberEnd().Type);
+ 		<text>public @GetPrimaryType((IClassifier)att.GetSourceMemberEnd().Type) @(pk) {get; set;} </text>
+    	}		
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public ObservableCollection<@(Model.Classifier.Name)View> @(Model.Classifier.Name)Views { get; set; } = new ObservableCollection<@(Model.Classifier.Name)View>();
+
+		@if (Model.Classifier.GetTargetAssociation().Count()>0){
+		foreach (var att in Model.Classifier.GetTargetAssociation()) {
+		var pk=((IClassifier)att.GetSourceMemberEnd().Type).Name+ GetPrimaryKey((IClassifier)att.GetSourceMemberEnd().Type);
+		var sClassifier=(IClassifier)att.GetSourceMemberEnd().Type;
+		<text>
+        public async System.Threading.Tasks.Task Get@(Model.Classifier.Name)sFor@(sClassifier.Name)(@GetPrimaryType(sClassifier) @pk.LowerFirst())
+        {
+        	@pk=@pk.LowerFirst();
+            var @(Model.Classifier.Name)s = new @(Model.Classifier.Name)Views();
+            var temp = await @(Model.Classifier.Name)s.GetAllFor@(sClassifier.Name)(@pk.LowerFirst());
+            @(Model.Classifier.Name)Views.Clear();
+            foreach (var @(Model.Classifier.Name.LowerFirst())View in temp)
+            {
+                @(Model.Classifier.Name)Views.Add(@(Model.Classifier.Name.LowerFirst())View);
+            }
+        }
+        
+        </text>
+        	}
+        }
+        else {
+        <text>
+        public async System.Threading.Tasks.Task Get@(Model.Classifier.Name)s()
+        {
+            var @(Model.Classifier.Name)s = new @(Model.Classifier.Name)Views();
+
+            var temp = await @(Model.Classifier.Name)s.GetAll();
+
+            //Items.Add(temp.First());
+
+            @(Model.Classifier.Name)Views.Clear();
+
+            foreach (var @(Model.Classifier.Name.LowerFirst())View in temp)
+            {
+                @(Model.Classifier.Name)Views.Add(@(Model.Classifier.Name.LowerFirst())View);
+            }
+        }
+        
+        
+        </text>
+        }
+    }
+}
+
+@functions{
+ 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 	 public static string GetPrimaryDescription(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return att.Description;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+ 
+}

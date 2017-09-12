@@ -1,0 +1,32 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+
+
+namespace @(Model.Diagram.Name).Transactions.Model
+{
+	[DataContract]
+    public class @(Model.Classifier.Name)Delete
+    {
+    	@foreach (var att in Model.Classifier.AllAttributes())    	{ 
+    	if ((@att["Database General Metadata","Primary Key"]=="True")) 
+    	{
+    	<text>
+    	
+    	/// <summary>
+        /// @att.Description
+        /// </summary>
+		 [DataMember(Name = "@att.Name.LowerFirst()")]         
+    	public @att.Type.TypeName("C#") </text> @att.Name <text> { get; set; } </text>
+    	    }	
+    	
+    	}
+    	
+    }
+}

@@ -1,0 +1,111 @@
+﻿@using SilvaDawn.SilvaModel.UML.Extensions;
+@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
+@using SilvaDawn.SilvaModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Text;
+using System.Threading.Tasks;
+using ToDo.Views.Model;
+
+using @(Model.Diagram.Name).Views.Model;
+
+
+namespace @(Model.Diagram.Name).Views
+{
+    public partial class @(Model.Classifier.Name)Views
+    {
+        
+    	public async Task<List<@(Model.Classifier.Name)View>> GetAll()
+        {
+            var client = new HttpClient();
+          
+            var serializer = new DataContractJsonSerializer(typeof(List<@(Model.Classifier.Name)View>),new DataContractJsonSerializerSettings()
+            {
+                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
+            });
+
+            var stream = await client.GetStreamAsync("@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())/all");
+
+            var views = serializer.ReadObject(stream) as List<@(Model.Classifier.Name)View>;
+            
+            return views;
+        }
+    
+    
+    	@if (!string.IsNullOrEmpty(GetPrimaryKey(Model.Classifier))){
+    	<text>
+    	public async Task<@(Model.Classifier.Name)View> Get(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
+    	{
+    	
+    		var client = new HttpClient();
+
+            var serializer = new DataContractJsonSerializer(typeof(@(Model.Classifier.Name)View),new DataContractJsonSerializerSettings()
+            {
+                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
+            });
+
+            var stream = await client.GetStreamAsync($"@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())/{@(GetPrimaryKey(Model.Classifier).LowerFirst())}");
+
+            var view = serializer.ReadObject(stream) as @(Model.Classifier.Name)View;
+
+            return view;
+    	
+    	}
+    	
+    	
+    	</text>
+    	}
+    	
+    	
+    	@foreach (var att in Model.Classifier.GetTargetAssociation()) {
+    		var parent=(IClass)att.GetSourceMemberEnd().Type;
+    		var parentKey=GetPrimaryKey(parent);
+		
+		<text>
+		 /// <summary>
+        /// Find all @(Model.Classifier.Name)s for @(parent.Name)
+        /// </summary>
+		
+		public async Task<List<@(Model.Classifier.Name)View>> GetAllFor@(parent.Name)(int @(GetPrimaryKey(parent).LowerFirst()))
+        {
+            var client = new HttpClient();
+          
+            var serializer = new DataContractJsonSerializer(typeof(List<@(Model.Classifier.Name)View>),new DataContractJsonSerializerSettings()
+            {
+                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
+            });
+
+            var stream = await client.GetStreamAsync($"@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(parent.Name.LowerFirst())/{@(GetPrimaryKey(parent).LowerFirst())}/tasks");
+
+            var views = serializer.ReadObject(stream) as List<@(Model.Classifier.Name)View>;
+            
+            return views;
+        }
+		</text>    	
+    	}
+    	
+    }
+}
+
+@functions{
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.AllAttributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}
+    	
+    	return "";
+    }
+ 
+}
