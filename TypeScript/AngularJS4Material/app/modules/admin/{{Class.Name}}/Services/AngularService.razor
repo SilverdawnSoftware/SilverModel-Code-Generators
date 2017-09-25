@@ -27,7 +27,7 @@ export class @(Model.Classifier.Name)Service {
 
 
 
-  baseURL: string='@Model.Diagram["AngularJS4Material","RestAPIURL"]';
+  baseURL: string='@(Model.Diagram["REST Metadata","REST Server URL"])';
 
   getAll(): Promise<@(Model.Classifier.Name)View[]> {
     return this.http.get(this.baseURL + `/api/@(Model.Classifier.Name)/All`)
