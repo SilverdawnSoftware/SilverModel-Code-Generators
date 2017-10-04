@@ -1,6 +1,6 @@
-﻿@using SilvaDawn.SilvaModel.UML.Extensions;
-@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
-@using SilvaDawn.SilvaModel.UML.Classes;
+﻿@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
 // ALLOWOVERWRITE
 
 using System;
@@ -25,7 +25,7 @@ namespace @(Model.Diagram.Name).Views.Model
 	    		{
 					var refclass=(IClass)att.Type;	    		
 	    			foreach (var att2 in refclass.AllAttributes()) {
-			    		if (att2["Entity Framework Core","Default Descriptor"]=="True")
+			    		if (att2["Database General Metadata","Default Descriptor"]=="True")
 			    		{
 			    		<text>
 			    		/// <summary>
@@ -63,7 +63,7 @@ namespace @(Model.Diagram.Name).Views.Model
     			{
 		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
 		    	foreach (var assocaitedClassAtt in associatedClass.Attributes()) {
-					    		if (assocaitedClassAtt["Entity Framework Core","Default Descriptor"]=="True")
+					    		if (assocaitedClassAtt["Database General Metadata","Default Descriptor"]=="True")
 					    		{
 					  <text>
 					  /// <summary>

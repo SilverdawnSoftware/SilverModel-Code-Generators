@@ -1,7 +1,7 @@
-﻿@using SilvaDawn.SilvaModel.UML.Extensions;
-@using SilvaDawn.SilvaModel.UML.Interfaces.Classes;
-@using SilvaDawn.SilvaModel.UML.Classes;
-@using SilvaDawn.SilvaModel.UML.Extensions;
+﻿@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using SilverDawn.SilverModel.UML.Extensions;
 // ALLOWOVERWRITE
 
 using System;
@@ -85,7 +85,7 @@ namespace @(Model.Diagram.Name).Transactions.Model
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["EDatabase General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return att.Description;
 			}
@@ -109,7 +109,7 @@ namespace @(Model.Diagram.Name).Transactions.Model
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Entity Framework Core","EF Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"]=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

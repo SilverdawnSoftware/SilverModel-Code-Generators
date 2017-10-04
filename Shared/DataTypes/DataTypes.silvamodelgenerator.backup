@@ -1,4 +1,4 @@
-<Generator xmlns="http://schemas.datacontract.org/2004/07/SilvaDawn.SilvaModel.UML.Generators" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+<Generator xmlns="http://schemas.datacontract.org/2004/07/SilverDawn.SilverModel.UML.Generators" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
 	<CodeOutputId>5174494e-c270-4df6-a132-ac1b2cf4f115</CodeOutputId>
 	<PrimitiveTypes xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
 		<a:anyType i:type="PrimitiveType">
@@ -279,6 +279,6 @@
 	<ObjectParameters xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
 	<OperationParameters xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
 	<ProjectParameters xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
-	<TemplatePath>M:\Development\SilvaDawn\SilvaModel-Generators\DataTypes</TemplatePath>
+	<TemplatePath>M:\Development\SilverDawn\SilverModel-Generators\DataTypes</TemplatePath>
 	<TemplateStartFile i:nil="true"/>
 </Generator>
