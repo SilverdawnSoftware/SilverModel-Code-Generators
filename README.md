@@ -22,5 +22,5 @@ Since our Code Generators are stored on GitHub, you can download the latest upda
 
 If you wish to submit changes to our GitHub Repository you are more than welcome too.
 
-(https://www.silverdawnsoftware.com/wp-content/uploads/2017/05/CodeGeneratorArchitecture.png")
+<img src="https://www.silverdawnsoftware.com/wp-content/uploads/2017/05/CodeGeneratorArchitecture.png" />
 
