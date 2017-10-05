@@ -5,7 +5,7 @@ This holds all the code generators that work with the SilverModel Code Generator
 For more informantion on SilverModel please visit http://www.SilverdawnSoftware.com
 
 
-#Architecture Layers
+# Architecture Layers
 
 Each Code Generator supplied in SilverModel is designed to fit into a layer of the architecture. The architecture layers being
 
@@ -22,5 +22,5 @@ Since our Code Generators are stored on GitHub, you can download the latest upda
 
 If you wish to submit changes to our GitHub Repository you are more than welcome too.
 
-<img src"https://www.silverdawnsoftware.com/wp-content/uploads/2017/05/CodeGeneratorArchitecture.png">
+(https://www.silverdawnsoftware.com/wp-content/uploads/2017/05/CodeGeneratorArchitecture.png")
 
