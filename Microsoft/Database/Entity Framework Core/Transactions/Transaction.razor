@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silverdawn.Exceptions;
 using @(Model.Diagram.Name).Transactions.Model;
 using @(Model.Diagram.Name).Views.Model;
 using data = @(Model.Diagram.Name).Database;
@@ -22,12 +23,21 @@ namespace @(Model.Diagram.Name).Transactions
  		// Add Transaction Code
  		public async Task<@(Model.Classifier.Name)View> Add(@(Model.Classifier.Name)Add add)
         {
-            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+        	try
             {
-                var result= await Add(db,add);
-                await db.SaveChangesAsync();
-                return (@(Model.Classifier.Name)View)result;
-            }
+	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+	            {
+	                var result= await Add(db,add);
+	                await db.SaveChangesAsync();
+	                return (@(Model.Classifier.Name)View)result;
+	            }
+	        }
+            catch (Exception e)
+            {
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+                return null;
+              
+            } 
         } 	
  	
  	
@@ -89,8 +99,9 @@ namespace @(Model.Diagram.Name).Transactions
     		return new@(Model.Classifier.Name);
             }
             
-             catch (Exception)
+             catch (Exception e)
             {
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
                 return null;
               
             }
@@ -102,12 +113,21 @@ namespace @(Model.Diagram.Name).Transactions
 // Update Transaction Code
  		public async Task<@(Model.Classifier.Name)View> Update(@(Model.Classifier.Name)Update update)
         {
-            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+        	try
             {
-                var result= await Update(db,update);
-                await db.SaveChangesAsync();
-                return (@(Model.Classifier.Name)View)result;
+	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+	            {
+	                var result= await Update(db,update);
+	                await db.SaveChangesAsync();
+	                return (@(Model.Classifier.Name)View)result;
+	            }
             }
+            catch (Exception e)
+            {
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+                return null;
+              
+            } 
         } 	
  	
  	
@@ -154,8 +174,9 @@ namespace @(Model.Diagram.Name).Transactions
     		return @(Model.Classifier.Name.LowerFirst())ToUpdate;
             }
             
-             catch (Exception)
+             catch (Exception e)
             {
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
                 return null;
               
             }
@@ -165,12 +186,20 @@ namespace @(Model.Diagram.Name).Transactions
 	// Delete Transaction Code
  		public async Task Delete(@(Model.Classifier.Name)Delete delete)
         {
-            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+        	try
             {
-                await Delete(db,delete);
-                await db.SaveChangesAsync();
-                
+	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+	            {
+	                await Delete(db,delete);
+	                await db.SaveChangesAsync();	                
+	            }
             }
+            catch (Exception e)
+            {
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+               
+              
+            } 
         } 	
  	
  	
@@ -183,8 +212,9 @@ namespace @(Model.Diagram.Name).Transactions
             
              	db.@(Model.Classifier.Name)s.Remove(@(Model.Classifier.Name.LowerFirst())ToDelete);    		
     		}
-             catch (Exception)
+             catch (Exception e)
             {
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
             }
         }
         </text>

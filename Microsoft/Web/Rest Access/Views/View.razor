@@ -11,8 +11,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
-using ToDo.Views.Model;
-
+using Silverdawn.Exceptions;
 using @(Model.Diagram.Name).Views.Model;
 
 
@@ -23,18 +22,26 @@ namespace @(Model.Diagram.Name).Views
         
     	public async Task<List<@(Model.Classifier.Name)View>> GetAll()
         {
-            var client = new HttpClient();
-          
-            var serializer = new DataContractJsonSerializer(typeof(List<@(Model.Classifier.Name)View>),new DataContractJsonSerializerSettings()
+        	try
+            {       
+	            var client = new HttpClient();
+	          
+	            var serializer = new DataContractJsonSerializer(typeof(List<@(Model.Classifier.Name)View>),new DataContractJsonSerializerSettings()
+	            {
+	                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
+	            });
+	
+	            var stream = await client.GetStreamAsync("@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())/all");
+	
+	            var views = serializer.ReadObject(stream) as List<@(Model.Classifier.Name)View>;
+	            
+	            return views;
+            }
+            catch (Exception e)
             {
-                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
-            });
-
-            var stream = await client.GetStreamAsync("@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())/all");
-
-            var views = serializer.ReadObject(stream) as List<@(Model.Classifier.Name)View>;
-            
-            return views;
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+                return null;              
+            }    
         }
     
     
@@ -42,19 +49,26 @@ namespace @(Model.Diagram.Name).Views
     	<text>
     	public async Task<@(Model.Classifier.Name)View> Get(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
     	{
-    	
-    		var client = new HttpClient();
-
-            var serializer = new DataContractJsonSerializer(typeof(@(Model.Classifier.Name)View),new DataContractJsonSerializerSettings()
+    		try
             {
-                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
-            });
-
-            var stream = await client.GetStreamAsync($"@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())/{@(GetPrimaryKey(Model.Classifier).LowerFirst())}");
-
-            var view = serializer.ReadObject(stream) as @(Model.Classifier.Name)View;
-
-            return view;
+	    		var client = new HttpClient();
+	
+	            var serializer = new DataContractJsonSerializer(typeof(@(Model.Classifier.Name)View),new DataContractJsonSerializerSettings()
+	            {
+	                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
+	            });
+	
+	            var stream = await client.GetStreamAsync($"@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())/{@(GetPrimaryKey(Model.Classifier).LowerFirst())}");
+	
+	            var view = serializer.ReadObject(stream) as @(Model.Classifier.Name)View;
+	
+	            return view;
+            }
+            catch (Exception e)
+            {
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+                return null;              
+            }    
     	
     	}
     	
@@ -74,18 +88,27 @@ namespace @(Model.Diagram.Name).Views
 		
 		public async Task<List<@(Model.Classifier.Name)View>> GetAllFor@(parent.Name)(int @(GetPrimaryKey(parent).LowerFirst()))
         {
-            var client = new HttpClient();
-          
-            var serializer = new DataContractJsonSerializer(typeof(List<@(Model.Classifier.Name)View>),new DataContractJsonSerializerSettings()
+        	try
             {
-                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
-            });
-
-            var stream = await client.GetStreamAsync($"@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(parent.Name.LowerFirst())/{@(GetPrimaryKey(parent).LowerFirst())}/tasks");
-
-            var views = serializer.ReadObject(stream) as List<@(Model.Classifier.Name)View>;
-            
-            return views;
+	            var client = new HttpClient();
+	          
+	            var serializer = new DataContractJsonSerializer(typeof(List<@(Model.Classifier.Name)View>),new DataContractJsonSerializerSettings()
+	            {
+	                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
+	            });
+	
+	            var stream = await client.GetStreamAsync($"@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(parent.Name.LowerFirst())/{@(GetPrimaryKey(parent).LowerFirst())}/tasks");
+	
+	            var views = serializer.ReadObject(stream) as List<@(Model.Classifier.Name)View>;
+	            
+	            return views;
+            }
+            catch (Exception e)
+            {
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+                return null;
+              
+            }    
         }
 		</text>    	
     	}

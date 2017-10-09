@@ -11,6 +11,7 @@ using System.Runtime.Serialization.Json;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Silverdawn.Exceptions;
 using @(Model.Diagram.Name).Transactions.Model;
 using @(Model.Diagram.Name).Views.Model;
 
@@ -20,62 +21,80 @@ namespace @(Model.Diagram.Name).Transactions
     {
         public async Task<@(Model.Classifier.Name)View> @(Model.Classifier.Name)Add(@(Model.Classifier.Name)Add add)
         {
-            string json = "";
-
-            var client = new HttpClient();
-
-            using (var ms = new MemoryStream())
+        	try
             {
-                var serializer = new DataContractJsonSerializer(typeof(@(Model.Classifier.Name)Add));
-                serializer.WriteObject(ms, add);
-                ms.Position = 0;
-                StreamReader sr = new StreamReader(ms);
-                json = sr.ReadToEnd();
+	            string json = "";
+	
+	            var client = new HttpClient();
+	
+	            using (var ms = new MemoryStream())
+	            {
+	                var serializer = new DataContractJsonSerializer(typeof(@(Model.Classifier.Name)Add));
+	                serializer.WriteObject(ms, add);
+	                ms.Position = 0;
+	                StreamReader sr = new StreamReader(ms);
+	                json = sr.ReadToEnd();
+	            }
+	
+	            var stream = await client.PostAsync("@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())", new StringContent(json, Encoding.UTF8, "application/json"));
+	
+	            using (var ms = new MemoryStream())
+	            {
+	                var serializer = new DataContractJsonSerializer(typeof(@(Model.Classifier.Name)View),new DataContractJsonSerializerSettings()
+	            	{
+	                	DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
+	            	});
+	                await stream.Content.CopyToAsync(ms);
+	                ms.Position = 0;
+	                var view = serializer.ReadObject(ms) as @(Model.Classifier.Name)View;
+	                return view;
+	            }
             }
-
-            var stream = await client.PostAsync("@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())", new StringContent(json, Encoding.UTF8, "application/json"));
-
-            using (var ms = new MemoryStream())
+            catch (Exception e)
             {
-                var serializer = new DataContractJsonSerializer(typeof(@(Model.Classifier.Name)View),new DataContractJsonSerializerSettings()
-            	{
-                	DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
-            	});
-                await stream.Content.CopyToAsync(ms);
-                ms.Position = 0;
-                var view = serializer.ReadObject(ms) as @(Model.Classifier.Name)View;
-                return view;
-            }
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+                return null;
+              
+            }    
         }
  
         public async Task<@(Model.Classifier.Name)View> @(Model.Classifier.Name)Update(@(Model.Classifier.Name)Update update)
         {
-            string json = "";
-
-            var client = new HttpClient();
-
-            using (var ms = new MemoryStream())
+        	try
             {
-                var serializer = new DataContractJsonSerializer(typeof(@(Model.Classifier.Name)Update),new DataContractJsonSerializerSettings()
-            	{
-                	DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
-            	});
-                serializer.WriteObject(ms, update);
-                ms.Position = 0;
-                StreamReader sr = new StreamReader(ms);
-                json = sr.ReadToEnd();
-            }
-
-            var stream = await client.PutAsync($"@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())/{update.@(GetPrimaryKey(@Model.Classifier))}", new StringContent(json, Encoding.UTF8, "application/json"));
-
-            using (var ms = new MemoryStream())
+	            string json = "";
+	
+	            var client = new HttpClient();
+	
+	            using (var ms = new MemoryStream())
+	            {
+	                var serializer = new DataContractJsonSerializer(typeof(@(Model.Classifier.Name)Update),new DataContractJsonSerializerSettings()
+	            	{
+	                	DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
+	            	});
+	                serializer.WriteObject(ms, update);
+	                ms.Position = 0;
+	                StreamReader sr = new StreamReader(ms);
+	                json = sr.ReadToEnd();
+	            }
+	
+	            var stream = await client.PutAsync($"@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())/{update.@(GetPrimaryKey(@Model.Classifier))}", new StringContent(json, Encoding.UTF8, "application/json"));
+	
+	            using (var ms = new MemoryStream())
+	            {
+	                var serializer = new DataContractJsonSerializer(typeof(@(Model.Classifier.Name)View));
+	                await stream.Content.CopyToAsync(ms);
+	                ms.Position = 0;
+	                var view = serializer.ReadObject(ms) as @(Model.Classifier.Name)View;
+	                return view;
+	            }
+	        }
+            catch (Exception e)
             {
-                var serializer = new DataContractJsonSerializer(typeof(@(Model.Classifier.Name)View));
-                await stream.Content.CopyToAsync(ms);
-                ms.Position = 0;
-                var view = serializer.ReadObject(ms) as @(Model.Classifier.Name)View;
-                return view;
-            }
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+                return null;
+              
+            }    
         }
 
     }
