@@ -1,0 +1,34 @@
+﻿@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+
+
+namespace @(Model.Diagram.Name).Database
+{
+    public enum @Model.Enumeration.Name
+    {
+    	@foreach (var att in Model.Enumeration.EnumerationLiterals())
+    	{
+    		
+    		if (att.Value!=null)
+    		{
+    		@att.Name@:= @att.Value
+    		}
+    		else
+    		{
+    		@att.Name
+    		}
+    		@:,
+    		
+    	}
+    	
+    }
+    
+    
+}

@@ -1,0 +1,193 @@
+﻿@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Table;
+using Silverdawn.Exceptions;
+using @(Model.Diagram.Name).Views.Model;
+using @(Model.Diagram.Name).Database;
+
+namespace @(Model.Diagram.Name).Views
+{
+    public partial class @(Model.Classifier.Name)Views
+    {
+    	
+    	public async Task<List<@(Model.Classifier.Name)View>> GetAll()
+        {
+            try
+            {
+                var result = new List<@(Model.Classifier.Name)View>();
+
+                TableContinuationToken token = null;
+                TableQuery<Database.@(Model.Classifier.Name)> query = new TableQuery<Database.@(Model.Classifier.Name)>();
+                do
+                {
+                    var @(Model.Classifier.Name.LowerFirst())Table = await Utils.GetTable("@(Model.Classifier.Name)");
+
+
+                    TableQuerySegment<Database.@(Model.Classifier.Name)> seg = await @(Model.Classifier.Name.LowerFirst())Table.ExecuteQuerySegmentedAsync<Database.@(Model.Classifier.Name)>(query, token);
+                    token = seg.ContinuationToken;
+                    result.AddRange(seg.Results.ConvertAll(@(Model.Classifier.Name.LowerFirst()) => (@(Model.Classifier.Name)View)@(Model.Classifier.Name.LowerFirst())));
+
+
+                } while (token != null);
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                LogFactory.GetLogger().Log(LogLevel.Error, e);
+                return null;
+            }
+        }
+    
+    	@if (!string.IsNullOrEmpty(GetPrimaryKey(Model.Classifier)) && !Model.Classifier.GetTargetAssociation().Any() ){
+    	<text>
+    	public async Task<@(Model.Classifier.Name)View> Get(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
+    	{
+    		
+    		try
+            {
+			   TableOperation retrieveOperation = TableOperation.Retrieve<@(Model.Classifier.Name)>("root", @(GetPrimaryKey(Model.Classifier).LowerFirst()).ToString());
+
+                var @(Model.Classifier.Name.LowerFirst())Table = await Utils.GetTable("@(Model.Classifier.Name)");
+
+                var result = await @(Model.Classifier.Name.LowerFirst())Table.ExecuteAsync(retrieveOperation);
+
+                if (result.Result != null)
+                {
+                    var @(Model.Classifier.Name.LowerFirst()) = (Database.@(Model.Classifier.Name))result.Result;
+                    return (@(Model.Classifier.Name)View)user;
+                }
+                
+	    		
+    		 }
+            catch (Exception e)
+            {
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+                              
+            }   
+            return null;
+    	}
+    	</text>
+    	}
+    	
+    	
+    	
+    	
+    	@foreach (var att in Model.Classifier.GetTargetAssociation()) {
+    		var parent=(IClass)att.GetSourceMemberEnd().Type;
+    		var parentKey=GetPrimaryKey(parent);
+		
+		<text>
+		
+		public async Task<@(Model.Classifier.Name)View> Get(int @(parentKey.LowerFirst()),int  @(GetPrimaryKey(Model.Classifier).LowerFirst()))
+        {
+            try
+            {
+                TableOperation retrieveOperation = TableOperation.Retrieve<Database.@(Model.Classifier.Name)>(@(parentKey.LowerFirst()).ToString(), @(GetPrimaryKey(Model.Classifier).LowerFirst()).ToString());
+
+                var @(Model.Classifier.Name.LowerFirst())Table = await Utils.GetTable("@(Model.Classifier.Name)");
+
+                var result = await @(Model.Classifier.Name.LowerFirst())Table.ExecuteAsync(retrieveOperation);
+
+                if (result.Result != null)
+                {
+                    var @(Model.Classifier.Name.LowerFirst()) = (Database.@(Model.Classifier.Name))result.Result;
+                    return (@(Model.Classifier.Name)View)@(Model.Classifier.Name.LowerFirst());
+                }
+            }
+            catch (Exception e)
+            {
+                LogFactory.GetLogger().Log(LogLevel.Error, e);
+
+            }
+            return null;
+        }
+		
+		
+		
+		public async Task<@(Model.Classifier.Name)View> Get(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
+        {
+
+            try
+            {
+                TableQuery<Database.@(Model.Classifier.Name)> query = new TableQuery<Database.@(Model.Classifier.Name)>().Where(TableQuery.GenerateFilterConditionForInt("@(GetPrimaryKey(Model.Classifier))", QueryComparisons.Equal, @(GetPrimaryKey(Model.Classifier).LowerFirst())));
+
+                var @(Model.Classifier.Name.LowerFirst())Table = await Utils.GetTable("@(Model.Classifier.Name)");
+
+                TableContinuationToken token=new TableContinuationToken();
+                var result = await @(Model.Classifier.Name.LowerFirst())Table.ExecuteQuerySegmentedAsync(query, token);
+
+                if (result.Results.Any())
+                {
+                    var @(Model.Classifier.Name.LowerFirst()) = (Database.@(Model.Classifier.Name))result.Results.First();
+                    return (@(Model.Classifier.Name)View)@(Model.Classifier.Name.LowerFirst());
+                }
+            }
+            catch (Exception e)
+            {
+                LogFactory.GetLogger().Log(LogLevel.Error, e);
+
+            }
+            return null;
+        }
+		
+		
+		
+		
+		public async Task<List<@(Model.Classifier.Name)View>> Get@(Model.Classifier.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))
+    	{
+    		try
+            {
+                var result = new List<@(Model.Classifier.Name)View>();
+
+                TableContinuationToken token = null;
+                TableQuery<Database.Task> query = new TableQuery<Database.@(Model.Classifier.Name)>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, @(parentKey.LowerFirst()).ToString()));
+                do
+                {
+                    var @(Model.Classifier.Name.LowerFirst())Table = await Utils.GetTable("@(Model.Classifier.Name)");
+
+                    TableQuerySegment<Database.@(Model.Classifier.Name)> seg = await  @(Model.Classifier.Name.LowerFirst())Table.ExecuteQuerySegmentedAsync<Database.@(Model.Classifier.Name)>(query, token);
+                    token = seg.ContinuationToken;
+                    result.AddRange(seg.Results.ConvertAll(@(Model.Classifier.Name.LowerFirst()) => (@(Model.Classifier.Name)View)@(Model.Classifier.Name.LowerFirst())));
+
+                } while (token != null);
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                LogFactory.GetLogger().Log(LogLevel.Error, e);
+                return null;
+            }
+    		
+	            
+    	}
+</text>    	
+    	}
+    }
+}
+
+@functions{
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.AllAttributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}
+    	
+    	return "";
+    }
+ 
+}

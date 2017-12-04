@@ -1,0 +1,216 @@
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.WindowsAzure.Storage.Table;
+using Silverdawn.Exceptions;
+
+
+namespace @(Model.Diagram.Name).Database
+{
+    public class @Model.Classifier.Name : TableEntity
+    {
+    	@foreach (var att in Model.Classifier.Attributes()) { 
+    	switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.PrimitiveType:			
+	    		<text>
+	    /// <summary> @att.Description </summary>	 
+	    public @att.Type.TypeName("C#")</text> @att.Name <text> { get; set; } </text>    	
+				break;
+				case UmlTypeEnum.Class:				
+				<text>
+		/// <summary>
+        /// @att.Description
+        /// </summary>	
+		public virtual @att.Type.TypeName("C#")</text> @att.Name <text> { get; set; } </text>    				
+				break;
+				}
+    	
+    	
+    		
+    	}
+    	
+    	
+    	@foreach (var att in Model.Classifier.GetTargetAssociation()) { 
+    	var targetName=att.GetTargetMemberEnd().Type.Name;
+    	var sourceName= att.GetSourceMemberEnd().Type.Name;
+    	<text>
+    	//parent of task
+        public int @(sourceName)@(GetPrimaryKey(att.GetSourceMemberEnd().Type)) { get; set; }
+    	
+    	
+    	/// <summary>
+        /// Reference to  @sourceName
+        /// </summary>	
+    	public @sourceName @sourceName
+        {
+            get
+            {
+                try
+                {
+                    var result = new List<@sourceName>();
+
+                    TableContinuationToken token = null;
+                    var query = new TableQuery<Database.@(sourceName)>().Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, @(sourceName)@(GetPrimaryKey(att.GetSourceMemberEnd().Type)).ToString()));
+
+                    var @(sourceName.LowerFirst())Table = Utils.GetTable("@(sourceName)").Result;
+
+                    var seg = @(sourceName.LowerFirst())Table.ExecuteQuerySegmentedAsync<Database. @(sourceName)>(query, token).Result;
+                    token = seg.ContinuationToken;
+                    return seg.Results.First();
+
+                }
+                catch (Exception e)
+                {
+                    LogFactory.GetLogger().Log(LogLevel.Error, e);
+
+                }
+                return null;
+            }
+        }
+        </text>
+    	}
+    	
+    	@foreach (var att in Model.Classifier.GetSourceAssociation()) { 
+    	
+    	var targetName=att.GetTargetMemberEnd().Type.Name;
+    	var sourceName= att.GetSourceMemberEnd().Type.Name;
+    	<text>
+    	/// <summary>
+       	/// List of @(targetName)s
+        /// </summary>
+        [IgnoreProperty]
+        public List<@(targetName)> @(targetName)s
+        {
+            get
+            {
+                try
+                {
+                    var result = new List<@(targetName)>();
+
+                    TableContinuationToken token = null;
+                    TableQuery<Database.@(targetName)> query = new TableQuery<Database.@(targetName)>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, @(GetPrimaryKey(@Model.Classifier)).ToString()));
+                    do
+                    {
+                        var @(targetName.LowerFirst())Table = Utils.GetTable("@(targetName)").Result;
+
+                        TableQuerySegment<Database.@(targetName)> seg = @(targetName.LowerFirst())Table.ExecuteQuerySegmentedAsync<Database.@(targetName)>(query, token).Result;
+                        token = seg.ContinuationToken;
+                        result.AddRange(seg.Results);
+
+                    } while (token != null);
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    LogFactory.GetLogger().Log(LogLevel.Error, e);
+                    return null;
+                }
+            }
+        }
+        </text>
+    	}
+    	
+    	
+    	
+    	
+    }
+    
+    
+}
+
+@functions{
+ 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 	 public static string GetPrimaryDescription(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return att.Description;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+ 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

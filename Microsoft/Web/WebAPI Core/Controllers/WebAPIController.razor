@@ -45,7 +45,7 @@ namespace @(Model.Diagram["WebAPI Core","Web API Namespace"])
             return await view.Get(@(GetPrimaryKey(Model.Classifier).LowerFirst()));            
         }
     
-    
+        
     	 /// <summary>
         /// Add New @(Model.Classifier.Name)
         /// </summary>	
@@ -55,13 +55,16 @@ namespace @(Model.Diagram["WebAPI Core","Web API Namespace"])
     	[HttpPost]
         public async Task<viewModel.@(Model.Classifier.Name)View> Add([FromBody]transModel.@(Model.Classifier.Name)Add add)
         {
-            var addTrans=new trans.@(Model.Classifier.Name)Transactions();            
-            return await addTrans.Add(add);            
+            var addTrans=new trans.@(Model.Classifier.Name)Transactions(); 
+            var result=await addTrans.Add(add);
+            return (viewModel.@(Model.Classifier.Name)View) result;
         }
         
+      
          /// <summary>
         /// Update @(Model.Classifier.Name) By @(GetPrimaryKey(Model.Classifier))
         /// </summary>	
+       
         
         //Update  @(Model.Classifier.Name)
     	[Route("api/@(Model.Classifier.Name)/{@(GetPrimaryKey(Model.Classifier).LowerFirst())}")]
@@ -69,8 +72,10 @@ namespace @(Model.Diagram["WebAPI Core","Web API Namespace"])
         public async Task<viewModel.@(Model.Classifier.Name)View> Update([FromRoute]int @(GetPrimaryKey(Model.Classifier).LowerFirst()),[FromBody]transModel.@(Model.Classifier.Name)Update update)
         {
         	update.@(GetPrimaryKey(Model.Classifier)) = @(GetPrimaryKey(Model.Classifier).LowerFirst());
-            var updateTrans=new trans.@(Model.Classifier.Name)Transactions();            
-            return await updateTrans.Update(update);            
+            var updateTrans=new trans.@(Model.Classifier.Name)Transactions();
+            var result=await updateTrans.Update(update);
+            return (viewModel.@(Model.Classifier.Name)View) result;
+                     
         }
         
          /// <summary>
@@ -100,13 +105,14 @@ namespace @(Model.Diagram["WebAPI Core","Web API Namespace"])
 		
 		[Route("api/@(parent.Name)/{@(parentKey)}/@(Model.Classifier.Name)s")]
     	 [HttpGet]
-        public async Task<List<viewModel.@(Model.Classifier.Name)View>> Get@(Model.Classifier.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))		
+        public async Task<List<viewModel.@(Model.Classifier.Name)View>> Get@(Model.Classifier.Name)sFor@(parent.Name)([FromRoute]int @(parentKey.LowerFirst()))		
     	{
     		 var view=new views.@(Model.Classifier.Name)Views();            
             return await view.Get@(Model.Classifier.Name)sFor@(parent.Name)(@(parentKey.LowerFirst())); 
     	
     	}
-</text>    	
+    	
+		</text>    	
     	}
         
     }

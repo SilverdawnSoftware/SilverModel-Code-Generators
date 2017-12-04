@@ -1,0 +1,121 @@
+﻿@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using SilverDawn.SilverModel.UML.Extensions;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using @(Model.Diagram.Name).Database;
+
+
+namespace @(Model.Diagram.Name).Transactions.Model
+{
+    public class @(Model.Classifier.Name)Add
+    {
+    	@foreach (var att in Model.Classifier.AllAttributes())    	{ 
+    	
+	    	if (!(@att["Entity Framework","EF Primary Key"]=="True"))
+	    	{
+	    	
+	    	switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.PrimitiveType:
+			
+	    		<text>
+	    		 /// <summary>
+                  /// @att.Description
+                  /// </summary>	    		
+	    		public @att.Type.TypeName("C#")</text> @att.Name <text> { get; set; } </text>
+				break;
+				
+				
+				case UmlTypeEnum.Class:
+				var primaryKey=GetPrimaryKey(att.Type);
+				<text>
+				/// <summary>
+                  /// @att.Description
+                  /// </summary>	  
+				public @GetPrimaryType(att.Type) @(att.Name)@(primaryKey)  { get; set; } </text>				
+				break;
+				}
+	    	 }    	
+    	}
+    	   	
+    	@foreach (var att in Model.Classifier.GetTargetAssociation())    	{ 
+    	<text>
+    	/// <summary>
+        /// @GetPrimaryDescription((IClassifier)att.GetSourceMemberEnd().Type)
+        /// </summary>	
+       
+    	public @GetPrimaryType((IClassifier)att.GetSourceMemberEnd().Type)</text> @(((IClassifier)att.GetSourceMemberEnd().Type).Name)@(GetPrimaryKey((IClassifier)att.GetSourceMemberEnd().Type))<text> { get; set; } </text>
+    	}
+    }    	    	
+}
+
+
+
+@functions{
+ 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 	 public static string GetPrimaryDescription(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return att.Description;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+ 
+}

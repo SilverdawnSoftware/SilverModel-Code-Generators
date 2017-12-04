@@ -1,0 +1,242 @@
+﻿@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
+
+using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Silverdawn.Exceptions;
+using Microsoft.WindowsAzure.Storage.Table;
+using @(Model.Diagram.Name).Transactions.Model;
+using @(Model.Diagram.Name).Views.Model;
+using data = @(Model.Diagram.Name).Database;
+
+namespace @(Model.Diagram.Name).Transactions
+{
+ public partial class @(Model.Classifier.Name)Transactions
+ {
+    
+      public async Task<data.@(Model.Classifier.Name)> Add( @(Model.Classifier.Name)Add add)
+        {
+            try
+            {
+
+                var new@(Model.Classifier.Name)=new data.@(Model.Classifier.Name)();
+            	@foreach (var att in Model.Classifier.AllAttributes()) {
+            		switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.PrimitiveType:
+			
+	    		if (att["Database General Metadata","Primary Key"]=="True")
+			    		{
+			    		}
+			    		else
+			    		{
+	    		<text>new</text>@(Model.Classifier.Name)<text>.</text>@(att.Name) @:= add.@att.Name;   	
+	    				}
+				break;
+				
+				
+				case UmlTypeEnum.Class:
+				var primaryKey=GetPrimaryKey(att.Type);
+				<text>
+				  if (db.@att.Type.TypeName("C#")s.Any(w => w.@primaryKey == add.@(att.Name)@primaryKey))
+                {
+                    new@(Model.Classifier.Name).@(att.Name) = db.@att.Type.TypeName("C#")s.First(w => w.@primaryKey == add. @(att.Name)@primaryKey);
+                }    
+				
+				 </text>				
+				break;
+				}
+	    	   
+            	
+					if (att.Type.IsPrimitiveType())
+					{
+	    				
+	    			}    	    		
+    			}
+                
+                new@(Model.Classifier.Name).@(GetPrimaryKey(Model.Classifier)) = await data.Sequence.SequenceGenerator.GetNextId("@(Model.Classifier.Name)");
+                new@(Model.Classifier.Name).RowKey = new@(Model.Classifier.Name).@(GetPrimaryKey(Model.Classifier)).ToString();  
+                @if (Model.Classifier.GetTargetAssociation().Any()){ 
+	                foreach (var att in Model.Classifier.GetTargetAssociation())      	   { 
+		    			if (!(att.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && att.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+		    			{
+		    	<text>new@(Model.Classifier.Name).@(((IClass)att.GetSourceMemberEnd().Type).Name)@(GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type).ToString()) = add.@(((IClass)att.GetSourceMemberEnd().Type).Name)@(GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type).ToString());</text>
+		    	<text>new@(Model.Classifier.Name).PartitionKey = add.@(((IClass)att.GetSourceMemberEnd().Type).Name)@(GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type).ToString()).ToString();</text>
+						}
+					} 
+				}	
+				else {
+				<text>new@(Model.Classifier.Name).PartitionKey ="root";</text>
+				}
+                TableOperation insertOperation = TableOperation.Insert(new@(Model.Classifier.Name));
+                var @(Model.Classifier.Name.LowerFirst())Table = await data.Utils.GetTable("@(Model.Classifier.Name)");
+                await @(Model.Classifier.Name.LowerFirst())Table.ExecuteAsync(insertOperation);
+                return new@(Model.Classifier.Name);
+            }
+
+            catch (Exception e)
+            {
+                LogFactory.GetLogger().Log(LogLevel.Error, e);
+                return null;
+
+            }
+        }
+ 	
+ 	
+ 	
+
+
+@if (!string.IsNullOrEmpty(GetPrimaryKey(Model.Classifier))){
+<text>
+
+ 	
+ 	 public async Task<data.@(Model.Classifier.Name)> Update(@(Model.Classifier.Name)Update update)
+     {
+         try
+         {
+            
+             TableOperation retrieveOperation = TableOperation.Retrieve<data.@(Model.Classifier.Name)>("root", update.@(GetPrimaryKey(Model.Classifier)).ToString());
+
+             var @(GetPrimaryKey(Model.Classifier).LowerFirst())Table = await data.Utils.GetTable("@(Model.Classifier.Name)");
+
+             var result = await @(GetPrimaryKey(Model.Classifier).LowerFirst())Table.ExecuteAsync(retrieveOperation);
+
+             if (result.Result != null)
+             {
+				var @(Model.Classifier.Name.LowerFirst())ToUpdate = (data.@(Model.Classifier.Name)) result.Result;	
+            	@foreach (var att in Model.Classifier.AllAttributes()) {
+            		switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.PrimitiveType:
+			
+	    		if (att["Entity Framework","EF Primary Key"]=="True")
+			    		{
+			    		}
+			    		else
+			    		{
+<text>               </text> @(Model.Classifier.Name.LowerFirst())<text>ToUpdate.</text>@(att.Name) @:= update.@att.Name;   	
+	    				}
+				break;
+				
+				
+				case UmlTypeEnum.Class:
+				var primaryKey=GetPrimaryKey(att.Type);
+				<text>
+				  if (db.@att.Type.TypeName("C#")s.Any(w => w.@primaryKey == update.@(att.Name)@primaryKey))
+                {
+                    @(Model.Classifier.Name.LowerFirst())ToUpdate.@(att.Name) = db.@att.Type.TypeName("C#")s.First(w => w.@primaryKey == update.@(att.Name)@primaryKey);
+                }    
+				
+				 </text>				
+				break;
+				}
+				}
+            	
+    			 TableOperation updateOperation = TableOperation.Replace(@(Model.Classifier.Name.LowerFirst())ToUpdate);
+
+                 // Execute the operation.
+                 await @(GetPrimaryKey(Model.Classifier).LowerFirst())Table.ExecuteAsync(updateOperation);
+    		
+    		
+    			return @(Model.Classifier.Name.LowerFirst())ToUpdate;
+            	}
+            }
+            
+             catch (Exception e)
+            {
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+               
+              
+            }
+             return null;
+        }
+
+
+	// Delete Transaction Code
+ 	
+ 	 public async Task Delete( @(Model.Classifier.Name)Delete delete)
+     {
+         try
+         {
+            	TableOperation retrieveOperation = TableOperation.Retrieve<data.@(Model.Classifier.Name)>("root", delete.@(GetPrimaryKey(Model.Classifier)).ToString());
+
+                var @(Model.Classifier.Name.LowerFirst())Table = await data.Utils.GetTable("@(Model.Classifier.Name)");
+
+                var result = await @(Model.Classifier.Name.LowerFirst())Table.ExecuteAsync(retrieveOperation);
+
+                if (result.Result != null)
+                {
+                    var deleteEntity = (data.@(Model.Classifier.Name))result.Result;
+                    TableOperation deleteOperation = TableOperation.Delete(deleteEntity);
+
+                    // Execute the operation.
+                    await @(Model.Classifier.Name.LowerFirst())Table.ExecuteAsync(deleteOperation);
+                }
+             
+    		}
+             catch (Exception e)
+            {
+            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+            }
+        }
+        </text>
+     }
+
+	}
+ }
+ 
+@functions{
+ 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+ 
+}

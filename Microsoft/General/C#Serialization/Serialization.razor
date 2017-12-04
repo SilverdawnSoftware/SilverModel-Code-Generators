@@ -25,7 +25,16 @@ namespace @Model.Diagram.QualifiedName
 			@:[DataMember]
 			}
 			
-			<text>public @Model.RazorSupport.LookupDataType("C#",att.DataTypeId)</text> @att.Name <text> { get; set; } </text>
+<text>public @(att.Type.TypeName("C#"))</text> @att.Name <text> { get; set; } </text>
     	}
+    	
+    	@foreach (var att in Model.Classifier.GetSourceAssociation()) { 
+    	<text>
+    	/// <summary>
+        /// List of @(att.GetTargetMemberEnd().Type.Name)s
+        /// </summary>	
+    	public virtual List<@att.GetTargetMemberEnd().Type.Name></text> @att.GetTargetMemberEnd().Type.Name<text>s { get; set; } </text>
+    	}
+    	
     }
 }

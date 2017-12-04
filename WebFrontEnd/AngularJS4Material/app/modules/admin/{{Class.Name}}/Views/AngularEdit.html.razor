@@ -5,10 +5,7 @@
 
 
  <form [formGroup]="@(Model.Classifier.Name.LowerFirst())Form" class="form-horizontal css-form" role="form" (ngSubmit)="update()">
-        <mat-tab-group >
-        
-        	
-        	
+        <mat-tab-group >        	
         	 @{
         	 // complex form layout
         	 //build the sort order for the form
@@ -23,8 +20,12 @@
         	 {
         	 	int maxrow=0;
         	 	int maxcol=0;
-        	  	maxrow = Model.Classifier.AllAttributes().Where(w=>w["Form Design Metadata","TabName"]==tab).Max(m => SafeParse(m["Form Design Metadata", "Row"]));
-             	maxcol = Model.Classifier.AllAttributes().Where(w => w["Form Design Metadata", "TabName"] == tab).Max(m => SafeParse(m["Form Design Metadata", "Column"]));
+        	 	if (Model.Classifier.AllAttributes().Any(w=>w["Form Design Metadata","TabName"]==tab)){        	 	
+        	  		maxrow = Model.Classifier.AllAttributes().Where(w=>w["Form Design Metadata","TabName"]==tab).Max(m => SafeParse(m["Form Design Metadata", "Row"]));
+        	  	}
+        	  	if (Model.Classifier.AllAttributes().Any(w => w["Form Design Metadata", "TabName"] == tab)){
+             		maxcol = Model.Classifier.AllAttributes().Where(w => w["Form Design Metadata", "TabName"] == tab).Max(m => SafeParse(m["Form Design Metadata", "Column"]));
+             	}
         	 if (altmode) {maxrow=Model.Classifier.AllAttributes().Count()-1;}
         	 
         	
