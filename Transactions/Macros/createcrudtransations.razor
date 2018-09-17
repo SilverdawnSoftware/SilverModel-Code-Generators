@@ -1,0 +1,59 @@
+﻿@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+
+
+@{
+var parent=CreateModel(Model.Diagram,"Transactions.Models");
+
+foreach (var classifier in Model.Diagram.Classes()) { 
+
+var foundclass=FindClass(parent,classifier.Name);
+	
+	<text>@parent.Name</text>
+	
+	<text>@classifier.Name</text>
+	
+		foreach (var prop in classifier.AllAttributes())
+		{			
+			FindProperty(foundclass,prop);
+		}
+	}
+}
+
+
+
+@functions{
+
+public IModel CreateModel(IModel parent,string modelName)
+{
+	
+		return parent.AddModelWithPath(modelName);
+	
+}
+
+public IClass FindClass(IModel parent,string className)
+{
+	if (parent.Classes().Any(w=>w.Name==className))
+	{
+		return parent.Classes().First(w=>w.Name==className);
+	}
+	
+	
+	return parent.AddClass(className);
+	
+}
+
+public IProperty FindProperty(IClass parentClass,IProperty relatedProperty)
+{
+	if (parentClass.AllAttributes().Any(w=>w.Name==relatedProperty.Name))
+	{
+		return parentClass.AllAttributes().First(w=>w.Name==relatedProperty.Name);
+	}
+	
+	return parentClass.AddRelatedProperty(relatedProperty);
+
+}
+
+
+}

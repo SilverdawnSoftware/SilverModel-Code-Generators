@@ -1,0 +1,26 @@
+﻿@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
+using @(Model.Diagram.Name).Database;
+
+namespace @(Model.Diagram.Name)
+{
+    public partial class @Model.Diagram["Entity Framework Core","DBContextName"] : DbContext
+    {
+    
+    @foreach (var att in @Model.Diagram.Classes())
+    {
+        <text>public DbSet<@att.Name></text> @att.Name<text>s { get; set; } </text>
+     }
+     
+
+	
+
+
+     }
+ }

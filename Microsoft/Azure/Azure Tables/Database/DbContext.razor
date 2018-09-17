@@ -10,7 +10,7 @@ using @(Model.Diagram.Name).Database;
 
 namespace @(Model.Diagram.Name).Database
 {
-    public partial class @Model.Diagram["Entity Framework Core","DBContextName"] : DbContext
+    public partial class @Model.Diagram["Azure Tables","DBContextName"] : DbContext
     {
     
     @foreach (var att in @Model.Diagram.Classes())
@@ -18,7 +18,7 @@ namespace @(Model.Diagram.Name).Database
         <text>public DbSet<@att.Name></text> @att.Name<text>s { get; set; } </text>
      }
      
-
+	
 	
 
 
