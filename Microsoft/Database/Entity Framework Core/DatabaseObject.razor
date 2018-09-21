@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace @(Model.Diagram.Name)
 {
-    public class @Model.Classifier.Name
+    public class @Model.Classifier.Name @GetInheritance(@Model.Classifier)
     {
     	@foreach (var att in Model.Classifier.Attributes()) { 
     	switch (att.Type.GetUMLType())
@@ -64,7 +64,22 @@ namespace @(Model.Diagram.Name)
 
 
 
-
+@functions{
+ 
+    public static string GetInheritance(IClassifier umlClass)
+    {
+    	
+    	var generals=umlClass.GetTargetGeneralizations();
+    	
+    	if (generals.Any())
+    	{
+    		return ": "+((INamedElement)generals.First().Source).Name;
+    	}
+    	
+    	return "";
+    }
+ 
+}
 
 
 
