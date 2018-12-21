@@ -8,11 +8,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using transModel =@(Model.Diagram.Name).Transactions.Model;
-using trans =@(Model.Diagram.Name).Transactions;
-using viewModel =@(Model.Diagram.Name).Views.Model;
-using views =@(Model.Diagram.Name).Views;
-using database = @(Model.Diagram.Name).Database;
+using transModel =@(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model;
+using trans =@(Model.Solution.Name).@(Model.Diagram.Name).Transactions;
+using viewModel =@(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
+using views =@(Model.Solution.Name).@(Model.Diagram.Name).Views;
+
 
 namespace @(Model.Diagram["WebAPI Core","Web API Namespace"])
 {

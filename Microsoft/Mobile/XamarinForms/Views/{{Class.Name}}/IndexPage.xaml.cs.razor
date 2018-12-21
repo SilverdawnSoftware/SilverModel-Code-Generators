@@ -11,16 +11,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using @(Model.Diagram.Name).Views.Model;
 using @(Model.Diagram.Name).Views;
-using @(Model.Diagram.Name)Mobile.ViewModels;
+using @(Model.Diagram.Name).Mobile.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace @(Model.Diagram.Name)Mobile.Views.@(Model.Classifier.Name)
+namespace @(Model.Diagram.Name).Mobile.Views.@(Model.Classifier.Name)
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class @(Model.Classifier.Name)IndexPage : ContentPage
     {
-        public ObservableCollection<@(Model.Diagram.Name).Views.Model.@(Model.Classifier.Name)View> Items { get; set; }=new ObservableCollection<@(Model.Classifier.Name)View>();
+        public ObservableCollection<@(Model.Classifier.Name)View> Items { get; set; }=new ObservableCollection<@(Model.Classifier.Name)View>();
 
         public @(Model.Classifier.Name)IndexPage()
         {

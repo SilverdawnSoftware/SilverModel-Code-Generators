@@ -9,7 +9,7 @@ using System.Linq;
 
 
 
-namespace @(Model.Diagram.Name)
+namespace @(Model.Solution.Name).@(Model.Diagram.Name)
 {
     public class @Model.Classifier.Name @GetInheritance(@Model.Classifier)
     {
@@ -24,10 +24,13 @@ namespace @(Model.Diagram.Name)
 				break;
 				case UmlTypeEnum.Class:				
 				<text>
+				/// To avoid Many to Many Relationships, use primary key https://github.com/aspnet/EntityFrameworkCore/issues/1368
 				/// <summary>
                 /// @att.Description
                 /// </summary>	
-				public virtual @att.Type.TypeName("C#")</text> @att.Name <text> { get; set; } </text>    				
+				//public virtual @att.Type.TypeName("C#")</text> @att.Name <text> { get; set; } </text> 
+				
+				<text>public @GetPrimaryType(att.Type) @(att.Name)@GetPrimaryKey(att.Type)  { get; set; } </text>		
 				break;
 				}
     	
@@ -81,7 +84,55 @@ namespace @(Model.Diagram.Name)
  
 }
 
-
+@functions{
+ 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"]=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+ 
+}
 
 
 

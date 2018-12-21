@@ -9,16 +9,12 @@ using System.Linq;
 
 
 
-namespace @(Model.Diagram.Name).Views.Model
+namespace @(Model.Solution.Name).@(Model.Diagram.Name).Views.Model
 {
 
     public class @(Model.Classifier.Name)View
     {
-    
-   
-    
-    	@foreach (var att in Model.Classifier.AllAttributes())     	{
-    	
+    	@foreach (var att in Model.Classifier.AllAttributes())     	{    	
 			if (!att.Type.IsPrimitiveType())
 			{		
 	    		if (att.Type is IClass)
@@ -28,19 +24,19 @@ namespace @(Model.Diagram.Name).Views.Model
 			    		if (att2["Database General Metadata","Default Descriptor"]=="True")
 			    		{
 			    		<text>
-			    		/// <summary>
-                        /// @att.Description
-                         /// </summary>	
-			    		public @att2.Type.TypeName("C#") </text>@att.Name<text>@att2.Name { get; set; } </text>  
+    		/// <summary>
+            /// @att.Description
+            /// </summary>	
+			public @att2.Type.TypeName("C#") </text>@att.Name<text>@att2.Name { get; set; } </text>  
 			    		}
 			    		if (att2["Database General Metadata","Primary Key"]=="True")
 			    		{
 			    		<text>
-			    		/// <summary>
-                        ///  @att.Description
-                        /// </summary>	
+    		/// <summary>
+            ///  @att.Description
+            /// </summary>	
 			    		
-			    		public @att2.Type.TypeName("C#") </text>@att.Name@att2.Name<text> { get; set; } </text>  
+			public @att2.Type.TypeName("C#") </text>@att.Name@att2.Name<text> { get; set; } </text>  
 			    		}
 			    	}
 	    		}
@@ -74,10 +70,10 @@ namespace @(Model.Diagram.Name).Views.Model
 					    		if (assocaitedClassAtt["Database General Metadata","Primary Key"]=="True")
 					    		{
 					  <text>
-					   /// <summary>
-                      /// Reference of PrimaryKey for @associatedClass.Name
-                      /// </summary>
-					  public  @GetPrimaryType((IClassifier)association.GetSourceMemberEnd().Type) @associatedClass.Name@assocaitedClassAtt.Name { get; set; } </text>  
+			/// <summary>
+	        /// Reference of PrimaryKey for @associatedClass.Name
+	        /// </summary>
+			public  @GetPrimaryType((IClassifier)association.GetSourceMemberEnd().Type) @associatedClass.Name@assocaitedClassAtt.Name { get; set; } </text>  
 					    		}
 					    	}
 				}
@@ -86,70 +82,73 @@ namespace @(Model.Diagram.Name).Views.Model
     	
     	
     	
-    	public static explicit operator @(Model.Classifier.Name)View(@Model.Classifier.Name item)
-    	{
-    	 var result=new @(Model.Classifier.Name)View();
-    	 
-      @foreach (var att in Model.Classifier.AllAttributes()) {
-		if (att.Type.IsPrimitiveType())
-			{		
-	    	<text>result.</text>@att.Name @:= item.@att.Name;     
-	    	}
+	    	public static explicit operator @(Model.Classifier.Name)View(@Model.Classifier.Name item)
+	    	{
+	    		var result=new @(Model.Classifier.Name)View();
 	    	 
-		if (att.Type is IClass)
-	    		{
-	    		
-					var refclass=(IClass)att.Type;	    		
-	    			foreach (var att2 in refclass.Attributes())
-			    	{
-			    	if (att2["Database General Metadata","Default Descriptor"]=="True" ||att2["Database General Metadata","Primary Key"]=="True" )
-			    	{
-			    	<text>if (item.@(att.Name) != null) 
-			    			{   	</text>
-			    		if (att2["Database General Metadata","Default Descriptor"]=="True")
-			    		{
-			    			<text>result.</text>@att.Name@att2.Name@:= item.@att.Name.@att2.Name;
-			    		}
-			    		if (att2["Database General Metadata","Primary Key"]=="True")
-			    		{
-			    		   <text>result.</text>@att.Name@att2.Name@:= item.@att.Name.@att2.Name;
-			    		 
-			    		}
-			    		
-			    		<text>} </text>
-			    	  }
-			    	}
-	    		}	    	 
-    		
-    	}
-    	
-    	@foreach (var association in Model.Classifier.GetTargetAssociation())     	{ 
-    		if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
-			{
-				IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
-	
-				foreach (var assocaitedClassAtt in associatedClass.Attributes())
-		    	{
-		    		if (assocaitedClassAtt["Database General Metadata","Default Descriptor"]=="True")
-		    		{
-		    		<text>if (item.@(associatedClass.Name) != null) 
-			    			{   	
-		    			result.@(associatedClass.Name)@assocaitedClassAtt.Name=item.@(associatedClass.Name).@(assocaitedClassAtt.Name); 
-		    			} </text>
-		    		}
-		    		if (assocaitedClassAtt["Database General Metadata","Primary Key"]=="True")
-		    		{<text>if (item.@(associatedClass.Name) != null) 
-			    			{   
-		    		   result.@(associatedClass.Name)@assocaitedClassAtt.Name=item.@(associatedClass.Name).@(assocaitedClassAtt.Name);
-		    		   } </text>
-		    		}
+	      @foreach (var att in Model.Classifier.AllAttributes()) {
+			if (att.Type.IsPrimitiveType())
+				{		
+		    	<text>result.</text>@att.Name @:= item.@att.Name;     
 		    	}
-		    }
-    	}
+		    	 
+			if (att.Type is IClass)
+		    		{
+		    		
+						var refclass=(IClass)att.Type;	    		
+		    			foreach (var att2 in refclass.Attributes())
+				    	{
+				    	if (att2["Database General Metadata","Default Descriptor"]=="True" ||att2["Database General Metadata","Primary Key"]=="True" )
+				    	{
+				    	
+				    	
+				<text>//if (item.@(att.Name) != null) 
+				//{   	</text>
+				    		if (att2["Database General Metadata","Default Descriptor"]=="True")
+				    		{
+				<text>//result.</text>@att.Name@att2.Name@:= item.@att.Name.@att2.Name;
+				    		}
+				    		if (att2["Database General Metadata","Primary Key"]=="True")
+				    		{
+				<text>result.</text>@att.Name@att2.Name@:= item.@att.Name@att2.Name;
+				<text>//result.</text>@att.Name@att2.Name@:= item.@att.Name.@att2.Name;
+				    		 
+				    		}
+				    		
+			<text>	//} </text>
+				    	  }
+				    	}
+		    		}	    	 
+	    		
+	    	}
+	    	
+	    	@foreach (var association in Model.Classifier.GetTargetAssociation())     	{ 
+	    		if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+				{
+					IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
+		
+					foreach (var assocaitedClassAtt in associatedClass.Attributes())
+			    	{
+			    		if (assocaitedClassAtt["Database General Metadata","Default Descriptor"]=="True")
+			    		{
+			    		<text>if (item.@(associatedClass.Name) != null) 
+				    			{   	
+			    			result.@(associatedClass.Name)@assocaitedClassAtt.Name=item.@(associatedClass.Name).@(assocaitedClassAtt.Name).ToString(); 
+			    			} </text>
+			    		}
+			    		if (assocaitedClassAtt["Database General Metadata","Primary Key"]=="True")
+			    		{<text>				if (item.@(associatedClass.Name) != null) 
+				{   
+			    	result.@(associatedClass.Name)@assocaitedClassAtt.Name=item.@(associatedClass.Name).@(assocaitedClassAtt.Name);
+			    } </text>
+			    		}
+			    	}
+			    }
+	    	}
+	    	
     	
-    	
-    	return result;
-     }   
+    			return result;
+    	}   
    
     }
 }

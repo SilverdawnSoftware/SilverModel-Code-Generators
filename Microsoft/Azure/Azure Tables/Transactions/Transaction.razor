@@ -11,11 +11,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Silverdawn.Exceptions;
 using Microsoft.WindowsAzure.Storage.Table;
-using @(Model.Diagram.Name).Transactions.Model;
-using @(Model.Diagram.Name).Views.Model;
-using data = @(Model.Diagram.Name).Database;
+using @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model;
+using @(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
+using data = @(Model.Solution.Name).@(Model.Diagram.Name);
 
-namespace @(Model.Diagram.Name).Transactions
+namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
 {
  public partial class @(Model.Classifier.Name)Transactions
  {
@@ -160,7 +160,7 @@ namespace @(Model.Diagram.Name).Transactions
 
 	// Delete Transaction Code
  	
- 	 public async Task Delete( @(Model.Classifier.Name)Delete delete)
+ 	 public async System.Threading.Tasks.Task Delete( @(Model.Classifier.Name)Delete delete)
      {
          try
          {

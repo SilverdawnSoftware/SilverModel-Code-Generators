@@ -159,10 +159,10 @@ loadCount++;
        this.route.params.subscribe(params => {
         this.@(GetPrimaryKey(Model.Classifier).LowerFirst()) =params['id'];
           if (this.@(GetPrimaryKey(Model.Classifier).LowerFirst())>0) {
-        	this.@(Model.Classifier.Name.LowerFirst())Service.get(+params['id']).then(@(Model.Classifier.Name.LowerFirst()) => this.display@(Model.Classifier.Name)(@(Model.Classifier.Name.LowerFirst())));
+        	this.@(Model.Classifier.Name.LowerFirst())Service.get(+params['id']).subscribe(@(Model.Classifier.Name.LowerFirst()) => this.display@(Model.Classifier.Name)(@(Model.Classifier.Name.LowerFirst())));
           		 @foreach (var att in Model.Classifier.GetSourceAssociation()) { 
   				 IClass sourceClass=(IClass)att.GetTargetMemberEnd().Type;
-  			<text> this.@(sourceClass.Name.LowerFirst())Service.get@(sourceClass.Name)sBy@(Model.Classifier.Name)(this.@(GetPrimaryKey(Model.Classifier).LowerFirst())).then(value => this.@(sourceClass.Name.LowerFirst())rows=value);</text> 
+  			<text> this.@(sourceClass.Name.LowerFirst())Service.get@(sourceClass.Name)sBy@(Model.Classifier.Name)(this.@(GetPrimaryKey(Model.Classifier).LowerFirst())).subscribe(value => this.@(sourceClass.Name.LowerFirst())rows=value);</text> 
   				}
       		}
       	});
@@ -185,7 +185,7 @@ loadCount++;
           const @(Model.Classifier.Name.LowerFirst())Model = this.@(Model.Classifier.Name.LowerFirst())Form.value;
           if (this.@(GetPrimaryKey(Model.Classifier).LowerFirst())>0)
           {
-            this.@(Model.Classifier.Name.LowerFirst())Service.update(this.@(GetPrimaryKey(Model.Classifier).LowerFirst()),@(Model.Classifier.Name.LowerFirst())Model).then(value => this.display@(Model.Classifier.Name)(value));
+            this.@(Model.Classifier.Name.LowerFirst())Service.update(this.@(GetPrimaryKey(Model.Classifier).LowerFirst()),@(Model.Classifier.Name.LowerFirst())Model).subscribe(value => this.display@(Model.Classifier.Name)(value));
           }
           else
           {
@@ -194,7 +194,7 @@ loadCount++;
    		   var sourcepk=GetPrimaryKey(sourceClass);
       		  <text>@(Model.Classifier.Name.LowerFirst())Model.@(sourceClass.Name.LowerFirst())@(sourcepk)=this.@(sourceClass.Name.LowerFirst())@(sourcepk);</text>
     	}
-              this.@(Model.Classifier.Name.LowerFirst())Service.add(@(Model.Classifier.Name.LowerFirst())Model).then(value => this.router.navigateByUrl("/admin/@(Model.Classifier.Name.LowerFirst())/edit/"+value.@(GetPrimaryKey(Model.Classifier).LowerFirst())));
+              this.@(Model.Classifier.Name.LowerFirst())Service.add(@(Model.Classifier.Name.LowerFirst())Model).subscribe(value => this.router.navigateByUrl("/admin/@(Model.Classifier.Name.LowerFirst())/edit/"+value.@(GetPrimaryKey(Model.Classifier).LowerFirst())));
           }
       }
 
@@ -218,7 +218,7 @@ loadCount++;
   	{
 	    if (confirm('Are you sure you want to delete this?'))
 	    {
-	      this.@(sourceClass.Name.LowerFirst())Service.remove(@(sourcepk.LowerFirst())).then();
+	      this.@(sourceClass.Name.LowerFirst())Service.remove(@(sourcepk.LowerFirst())).subscribe();
 	
 	      for(var i = this.@(sourceClass.Name.LowerFirst())rows.length - 1; i >= 0; i--) {
 	        if(this.@(sourceClass.Name.LowerFirst())rows[i].@(sourcepk.LowerFirst()) === @(sourcepk.LowerFirst())) {

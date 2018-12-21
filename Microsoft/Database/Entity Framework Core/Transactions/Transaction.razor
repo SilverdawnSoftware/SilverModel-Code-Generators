@@ -10,11 +10,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Silverdawn.Exceptions;
-using @(Model.Diagram.Name).Transactions.Model;
-using @(Model.Diagram.Name).Views.Model;
-using data = @(Model.Diagram.Name);
+using @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model;
+using @(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
+using data = @(Model.Solution.Name).@(Model.Diagram.Name);
 
-namespace @(Model.Diagram.Name).Transactions
+namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
 {
  public partial class @(Model.Classifier.Name)Transactions
  {
@@ -46,7 +46,7 @@ namespace @(Model.Diagram.Name).Transactions
          try
             {
             
-               var new@(Model.Classifier.Name)=new data.@(Model.Classifier.Name)();
+            var new@(Model.Classifier.Name)=new data.@(Model.Classifier.Name)();
             	@foreach (var att in Model.Classifier.AllAttributes()) {
             		switch (att.Type.GetUMLType())
 				{
@@ -65,10 +65,13 @@ namespace @(Model.Diagram.Name).Transactions
 				case UmlTypeEnum.Class:
 				var primaryKey=GetPrimaryKey(att.Type);
 				<text>
-				  if (db.@att.Type.TypeName("C#")s.Any(w => w.@primaryKey == add.@(att.Name)@primaryKey))
-                {
-                    new@(Model.Classifier.Name).@(att.Name) = db.@att.Type.TypeName("C#")s.First(w => w.@primaryKey == add. @(att.Name)@primaryKey);
-                }    
+				
+			new@(Model.Classifier.Name).@(att.Name)@primaryKey  = add.@(att.Name)@primaryKey;
+				
+			//	  if (db.@att.Type.TypeName("C#")s.Any(w => w.@primaryKey == add.@(att.Name)@primaryKey))
+            //    {
+            //        new@(Model.Classifier.Name).@(att.Name) = db.@att.Type.TypeName("C#")s.First(w => w.@primaryKey == add. @(att.Name)@primaryKey);
+            //    }    
 				
 				 </text>				
 				break;
@@ -112,7 +115,7 @@ namespace @(Model.Diagram.Name).Transactions
 <text>
 // Update Transaction Code
  		public async Task<@(Model.Classifier.Name)View> Update(@(Model.Classifier.Name)Update update)
-        {
+        {	
         	try
             {
 	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
@@ -128,7 +131,7 @@ namespace @(Model.Diagram.Name).Transactions
                 return null;
               
             } 
-        } 	
+        } 			
  	
  	
  	 public async Task<data.@(Model.Classifier.Name)> Update(data.@(Model.Diagram["Entity Framework Core","DBContextName"]) db, @(Model.Classifier.Name)Update update)
@@ -157,11 +160,14 @@ namespace @(Model.Diagram.Name).Transactions
 				
 				case UmlTypeEnum.Class:
 				var primaryKey=GetPrimaryKey(att.Type);
+				
 				<text>
-				  if (db.@att.Type.TypeName("C#")s.Any(w => w.@primaryKey == update.@(att.Name)@primaryKey))
-                {
-                    @(Model.Classifier.Name.LowerFirst())ToUpdate.@(att.Name) = db.@att.Type.TypeName("C#")s.First(w => w.@primaryKey == update.@(att.Name)@primaryKey);
-                }    
+				@(Model.Classifier.Name.LowerFirst())ToUpdate.@(att.Name)@primaryKey= update.@(att.Name)@primaryKey;
+				
+		   //	if (db.@att.Type.TypeName("C#")s.Any(w => w.@primaryKey == update.@(att.Name)@primaryKey))
+           //   {
+           //         @(Model.Classifier.Name.LowerFirst())ToUpdate.@(att.Name) = db.@att.Type.TypeName("C#")s.First(w => w.@primaryKey == update.@(att.Name)@primaryKey);
+           //   }    
 				
 				 </text>				
 				break;
@@ -184,7 +190,7 @@ namespace @(Model.Diagram.Name).Transactions
 
 
 	// Delete Transaction Code
- 		public async Task Delete(@(Model.Classifier.Name)Delete delete)
+ 		public async System.Threading.Tasks.Task Delete(@(Model.Classifier.Name)Delete delete)
         {
         	try
             {
@@ -203,7 +209,7 @@ namespace @(Model.Diagram.Name).Transactions
         } 	
  	
  	
- 	 public async Task Delete(data.@(Model.Diagram["Entity Framework Core","DBContextName"]) db, @(Model.Classifier.Name)Delete delete)
+ 	 public async System.Threading.Tasks.Task Delete(data.@(Model.Diagram["Entity Framework Core","DBContextName"]) db, @(Model.Classifier.Name)Delete delete)
         {
          try
             {

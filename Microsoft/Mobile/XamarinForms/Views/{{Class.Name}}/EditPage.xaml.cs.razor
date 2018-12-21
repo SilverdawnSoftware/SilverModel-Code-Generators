@@ -8,13 +8,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using @(Model.Diagram.Name)Mobile.ViewModels;
-using @(Model.Diagram.Name)Mobile.Views.Task;
+using @(Model.Diagram.Name).Mobile.ViewModels;
+@foreach (var att in Model.Classifier.GetSourceAssociation())    	{ 
+<text>using @(Model.Diagram.Name).Mobile.Views.@(((IClassifier)att.GetTargetMemberEnd().Type).Name);</text>
+}
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace @(Model.Diagram.Name)Mobile.Views.@(Model.Classifier.Name)
+namespace @(Model.Diagram.Name).Mobile.Views.@(Model.Classifier.Name)
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class @(Model.Classifier.Name)EditPage : ContentPage
@@ -25,7 +27,7 @@ namespace @(Model.Diagram.Name)Mobile.Views.@(Model.Classifier.Name)
 			MessagingCenter.Subscribe<@(Model.Classifier.Name)EditViewModel>(this, "Save error",model => DisplayAlert("Save error", "Unable to save changes.", "Close") );			 			 
 			 @foreach (var att in Model.Classifier.GetSourceAssociation())    	{ 
       		 var name=(((IClassifier)att.GetTargetMemberEnd().Type).Name);        
-           	<text>MessagingCenter.Subscribe<UserEditViewModel, @(name)IndexViewModel>(this, "Show@(name)s",async  (sender, arg) => { await Show@(name)s(arg); });</text>
+           	<text>MessagingCenter.Subscribe<@(Model.Classifier.Name)EditViewModel, @(name)IndexViewModel>(this, "Show@(name)s",async  (sender, arg) => { await Show@(name)s(arg); });</text>
     	}
 		}
 		

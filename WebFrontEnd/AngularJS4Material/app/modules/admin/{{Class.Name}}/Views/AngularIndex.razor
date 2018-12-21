@@ -20,7 +20,7 @@
   
   <ngx-datatable-column name="Edit" width="300" prop="@(GetPrimaryKey(Model.Classifier).LowerFirst())">
       <ng-template let-value="value" ngx-datatable-cell-template>
-      <button mat-icon-button	routerLink="/admin/user/edit/{{value}}" color="primary"><mat-icon>edit</mat-icon></button>
+      <button mat-icon-button	routerLink="/admin/@(Model.Classifier.Name.LowerFirst())/edit/{{value}}" color="primary"><mat-icon>edit</mat-icon></button>
 
     </ng-template>
     </ngx-datatable-column>
