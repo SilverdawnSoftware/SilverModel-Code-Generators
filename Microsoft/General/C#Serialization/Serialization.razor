@@ -4,38 +4,39 @@
 @using SilverDawn.SilverModel.UML.Extensions;
 @using SilverDawn.SilverModel.UML.Interfaces.Classes;
 @using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
 
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using SilverDawn.SilverModel.UML.Interfaces.Classes;
+using System.Runtime.Serialization;
 
-namespace @Model.Diagram.QualifiedName
+
+namespace @Model.Diagram.QualifiedName.Replace("::",".")
 {
-    public class @Model.Classifier.Name
-    {
-    	@if (Model.Classifier["Default","CanSerialize"]=="True")
-			{
-			@:[DataContract]
-			}
+	@if (Model.Classifier["C#Serialization","CanSerialize"]=="True")
+	{
+	@:[DataContract]
+	}
+    public partial class @Model.Classifier.Name
+    {    
     	@foreach (var att in Model.Classifier.Attributes())
-    	{ 
-    	
-    		if (att["C#Serialization","CanSerialize"]=="True")
+    	{     	
+			if (att["C#Serialization","CanSerialize"]=="True")
 			{
-			@:[DataMember]
-			}
-			
-<text>public @(att.Type.TypeName("C#"))</text> @att.Name <text> { get; set; } </text>
+		@:[DataMember]
+			}			
+		<text>public @(att.Type.TypeName("C#"))</text> @att.Name <text> { get; set; } </text>
+		@:
     	}
     	
     	@foreach (var att in Model.Classifier.GetSourceAssociation()) { 
     	<text>
     	/// <summary>
         /// List of @(att.GetTargetMemberEnd().Type.Name)s
-        /// </summary>	
+        /// </summary>
+        [DataMember]
     	public virtual List<@att.GetTargetMemberEnd().Type.Name></text> @att.GetTargetMemberEnd().Type.Name<text>s { get; set; } </text>
     	}
     	
