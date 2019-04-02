@@ -1,0 +1,67 @@
+﻿
+@:      public async Task<InvoiceView> CreateInvoice(@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()))
+@:      {
+@:			try
+@:          {
+@:              var result=new @(queryResult.Name)();
+@:              using (var db=new @(GetDbContext(queryClass,Model.Output))())
+@:              {
+@:                   if (db.@(queryClass.Name)s.Any(w => @(GetWhereForClassifier(Model.Classifier,queryClass))))
+@:                   {
+@:                       var @(queryClass.Name.LowerFirst()) = db.@(queryClass.Name)s.First(w => @(GetWhereForClassifier(Model.Classifier,queryClass)));
+
+
+			
+
+				foreach (var att in queryClass.AllAttributes())    	
+				{
+					if  (Model.Classifier.AllAttributes().Any(w=>w.RelatedField.ElementId==att.ElementId))
+					{
+						var match=Model.Classifier.AllAttributes().First(w=>w.RelatedField.ElementId==att.ElementId);
+						if (match["Query Metadata","IsUpdate"].AsBoolean())
+						{
+							if (match["Query Metadata","UpdateValue"].AsString().Length>0)
+							{
+								switch(att.Type.GetUMLType())
+								{
+								case UmlTypeEnum.Enumeration:
+								default:
+						@:@(queryClass.Name.LowerFirst()).@(att.Name)=@(match["Query Metadata","UpdateValue"].AsString());
+							     break;
+								}
+                       							
+							}
+							else
+							{
+                       @:@(queryClass.Name.LowerFirst()).@(att.Name)=@(Model.Classifier.Name.LowerFirst()).@(match.Name);
+                       		}
+						}
+					}
+    			}
+
+
+@:                       await db.SaveChangesAsync();
+@:
+			 foreach (var att in queryResult.AllAttributes())
+			 {
+			 	if  (att.RelatedField!=null && queryClass.AllAttributes().Any(w=>w.ElementId==att.RelatedField.ElementId))
+				{
+					var match=queryClass.AllAttributes().First(w=>w.ElementId==att.RelatedField.ElementId);	
+					if (!match.Type.IsClass())
+					{
+                       @:result.@(att.Name)=@(queryClass.Name.LowerFirst()).@(match.Name);
+                    }
+				}
+			 }
+@:                       return result;
+@:                   }
+@:               }
+@:           }
+@:              catch (Exception e)
+@:                {
+@:                    LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                         
+@:                } 
+@:               return null;         
+@:               }
+

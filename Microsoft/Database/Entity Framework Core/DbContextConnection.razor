@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace @(Model.Solution.Name).@(Model.Diagram.Name)
 {
-    public partial class @Model.Diagram["Entity Framework Core","DBContextName"] : DbContext
+    public partial class @Model.Diagram["Entity Framework Core","DBContextName"].AsString() : DbContext
     {
     
    
@@ -23,7 +23,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name)
             //IConfigurationRoot configuration = new ConfigurationBuilder()
             //    .AddJsonFile("appsettings.json", optional: true)
             //    .Build();
-            //var conn = configuration["ConnectionStrings:@(Model.Diagram.Name)Connection"];
+            //var conn = configuration["ConnectionStrings:@(Model.Diagram.Name)Connection"].AsString();
 
             //optionsBuilder.UseSqlServer(conn);
 

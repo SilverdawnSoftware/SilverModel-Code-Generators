@@ -19,7 +19,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model
     {
     	@foreach (var att in Model.Classifier.AllAttributes())    	{ 
     	
-	    	if (!(@att["Entity Framework","EF Primary Key"]=="True"))
+	    	if (!(@att["Entity Framework","EF Primary Key"].AsString()=="True"))
 	    	{
 	    	
 	    	switch (att.Type.GetUMLType())
@@ -76,7 +76,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}
@@ -88,7 +88,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Description;
 			}
@@ -112,7 +112,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

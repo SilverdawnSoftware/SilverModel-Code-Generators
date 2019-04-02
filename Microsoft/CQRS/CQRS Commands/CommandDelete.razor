@@ -1,0 +1,46 @@
+﻿
+@:      public async Task<CQRSBase> CreateInvoice(Models.@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()))
+@:      {
+@:          var result=new CQRSBase();
+@:			try
+@:          {
+@:              using (var db=new @(GetDbContext(queryClass,Model.Output))())
+@:              {
+@:                   if (db.@(queryClass.Name)s.Any(w => @(GetWhereForClassifier(Model.Classifier,queryClass))))
+@:                   {
+@:                       var @(queryClass.Name.LowerFirst()) = db.@(queryClass.Name)s.First(w => @(GetWhereForClassifier(Model.Classifier,queryClass)));
+@:                       db.@(queryClass.Name)s.Remove(@(queryClass.Name.LowerFirst()));
+
+@:                       await db.SaveChangesAsync();
+@:
+			 foreach (var att in queryResult.AllAttributes())
+			 {
+			 	if  (att.RelatedField!=null && queryClass.AllAttributes().Any(w=>w.ElementId==att.RelatedField.ElementId))
+				{
+					var match=queryClass.AllAttributes().First(w=>w.ElementId==att.RelatedField.ElementId);	
+					if (!match.Type.IsClass())
+					{
+                       @:result.@(att.Name)=@(queryClass.Name.LowerFirst()).@(match.Name);
+                    }
+				}
+			 }
+@:                      result.__CQRSSuccessful=true; 
+@:						return result;
+@:                   }
+@:                   else
+@:                   {
+@:                    result.__CQRSSuccessful=false;
+@:                    result.__CQRSErrorMessage="@(queryClass.Name) was not found";
+@:                   }
+@:               }
+@:           }
+@:           catch (Exception e)
+@:               {
+@:                    LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                    result.__CQRSExceptionMessage=e.Message;
+@:                    result.__CQRSExceptionStackTrace=e.StackTrace;
+@:                    result.__CQRSSuccessful=false;
+@:                }  
+@:                return result;      
+@:           }
+

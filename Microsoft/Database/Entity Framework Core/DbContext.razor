@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace @(Model.Solution.Name).@(Model.Diagram.Name)
 {
-    public partial class @Model.Diagram["Entity Framework Core","DBContextName"] : DbContext
+    public partial class @Model.Diagram["Entity Framework Core","DBContextName"].AsString() : DbContext
     {
     
     @foreach (var att in @Model.Diagram.Classes())

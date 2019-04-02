@@ -15,7 +15,7 @@ foreach (var prop in classifier.AllAttributes())
 		if  (prop.Name!=null && classifier.Name.ToUpper()==prop.Name.ToUpper().Replace("ID",""))
 		{
 		@:PrimaryKey Set Classifier:@classifier.Name  Property:@prop.Name
-			prop["Database General Metadata","Primary Key"]="True";
+			prop["Database General Metadata","Primary Key"].AsString()="True";
 		}
 }
 

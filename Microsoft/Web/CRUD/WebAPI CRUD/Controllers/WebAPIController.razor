@@ -19,7 +19,7 @@ using viewModel =@(Model.Diagram.Name).Views.Model;
 using views =@(Model.Diagram.Name).Views;
 using database = @(Model.Diagram.Name).Database;
 
-namespace @(Model.Diagram["WebAPI","Web API Namespace"])
+namespace @(Model.Diagram["WebAPI CRUD","Web API Namespace"].AsString())
 {
 
 	
@@ -122,7 +122,7 @@ namespace @(Model.Diagram["WebAPI","Web API Namespace"])
     {
     	foreach (var att in umlClass.AllAttributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}

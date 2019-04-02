@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using Silverdawn.Exceptions;
+using SilverdawnSoftware.Exceptions;
 using @(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
 
 
@@ -25,7 +25,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Views
         {
         	try
             {
-	            using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"])())
+	            using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
 	            {
 	                var temp = await db.@(Model.Classifier.Name)s.ToListAsync();
 	                return temp.ConvertAll(user => (@(Model.Classifier.Name)View) user);
@@ -46,7 +46,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Views
     		
     		try
             {
-	    		using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"])())
+	    		using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
 	            {
 	            	if (await db.@(Model.Classifier.Name)s.AnyAsync(w=>w.@(GetPrimaryKey(Model.Classifier))==@(GetPrimaryKey(Model.Classifier).LowerFirst())))
 	                {
@@ -73,7 +73,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Views
     		try
             {
     	
-	    		using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"])())
+	    		using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
 	            {
 	            	var result= await db.@(Model.Classifier.Name)s.Where(w=>w.@(parent.Name).@(parentKey) ==@(parentKey.LowerFirst())).ToListAsync();
 	            	return result.ConvertAll(user => (@(Model.Classifier.Name)View) user);
@@ -101,7 +101,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Views
     {
     	foreach (var att in umlClass.AllAttributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}

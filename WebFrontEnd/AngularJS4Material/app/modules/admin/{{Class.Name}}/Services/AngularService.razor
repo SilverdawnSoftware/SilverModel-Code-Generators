@@ -27,7 +27,7 @@ export class @(Model.Classifier.Name)Service {
   constructor(private http: HttpClient) {
   }
 
-  baseURL: string='@(Model.Diagram["REST Metadata","REST Server URL"])';
+  baseURL: string='@(Model.Diagram["REST Metadata","REST Server URL"].AsString())';
 
  getAll(): Observable<@(Model.Classifier.Name)View[]> {
     return this.http.get<@(Model.Classifier.Name)View[]>(this.baseURL + `/api/@(Model.Classifier.Name)/All`)
@@ -138,7 +138,7 @@ export class @(Model.Classifier.Name)Service {
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Default Descriptor"]=="True")
+			if (att["Database General Metadata","Default Descriptor"].AsString()=="True")
 			{
 				return att.Name;
 			}
@@ -162,7 +162,7 @@ export class @(Model.Classifier.Name)Service {
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}
@@ -184,7 +184,7 @@ export class @(Model.Classifier.Name)Service {
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

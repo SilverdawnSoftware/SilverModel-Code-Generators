@@ -13,7 +13,7 @@ using @(Model.Diagram.Name).Database;
 
 namespace @(Model.Diagram.Name).Database
 {
-    public class @Model.Diagram["Entity Framework","DBContextName"] : DbContext
+    public class @Model.Diagram["Entity Framework","DBContextName"].AsString() : DbContext
     {
     
     @foreach (var att in @Model.Diagram.Classes())

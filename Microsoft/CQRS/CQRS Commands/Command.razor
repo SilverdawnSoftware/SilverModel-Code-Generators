@@ -1,0 +1,52 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using System.Text;
+@using SilverDawn.SilverModel.Interfaces;
+@{
+var queryClass=Model.Classifier["Query Metadata","Query Class"].AsClass();
+var queryResult=Model.Classifier["Query Metadata","Query Result"].AsClass();
+@:// ALLOWOVERWRITE
+
+@:using System;
+@:using System.Collections.Generic;
+@:using Microsoft.EntityFrameworkCore;
+@:using System.Linq;
+@:using System.Threading.Tasks;
+@:using SilverdawnSoftware.Exceptions;
+if(queryResult!=null)
+{
+@:using @GetNameSpaceForClass(queryResult);
+}
+if(queryClass!=null)
+{
+@:using @GetNameSpaceForClass(queryClass);
+}
+
+@(GetUsings(Model.Classifier))
+
+@:namespace @GetNameSpaceForClass(Model.Classifier)
+@:{
+@:  	public partial class @(Model.Classifier.Name)Transations
+@:    {
+	switch(Model.Classifier["Query Metadata","OperationType"].AsString())
+		{
+		case "Add":   					
+			@IncludeFile("CommandAdd.razor")
+		break;
+		case "Update":
+			@IncludeFile("CommandUpdate.razor")
+		break;
+		case "Delete":
+			@IncludeFile("CommandDelete.razor")
+		break;}
+	
+@:	}
+}
+
+
+@IncludeFile("SharedFunctions.razor")
+}

@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.WindowsAzure.Storage.Table;
-using Silverdawn.Exceptions;
+using SilverdawnSoftware.Exceptions;
 
 
 namespace @(Model.Solution.Name).@(Model.Diagram.Name)
@@ -145,7 +145,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name)
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}
@@ -157,7 +157,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name)
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Description;
 			}
@@ -181,7 +181,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name)
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

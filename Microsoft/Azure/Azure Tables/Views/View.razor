@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Table;
-using Silverdawn.Exceptions;
+using SilverdawnSoftware.Exceptions;
 using @(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
 
 
@@ -184,7 +184,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Views
     {
     	foreach (var att in umlClass.AllAttributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}

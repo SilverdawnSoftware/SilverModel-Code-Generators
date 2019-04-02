@@ -15,15 +15,15 @@ using System.Runtime.Serialization;
 
 namespace @Model.Diagram.QualifiedName.Replace("::",".")
 {
-	@if (Model.Classifier["C#Serialization","CanSerialize"]=="True")
+	@if (Model.Classifier["C#Serialization","CanSerialize"].AsString()=="True")
 	{
 	@:[DataContract]
 	}
     public partial class @Model.Classifier.Name
     {    
-    	@foreach (var att in Model.Classifier.Attributes())
+    	@foreach (var att in Model.Classifier.Attributes().Where(w=>w.Visibility!=VisibilityKind.None))
     	{     	
-			if (att["C#Serialization","CanSerialize"]=="True")
+			if (att["C#Serialization","CanSerialize"].AsString()=="True")
 			{
 		@:[DataMember]
 			}			

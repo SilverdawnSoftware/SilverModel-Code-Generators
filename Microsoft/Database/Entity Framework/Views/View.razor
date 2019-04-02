@@ -23,7 +23,7 @@ namespace @(Model.Diagram.Name).Views
     
     	public async Task<List<@(Model.Classifier.Name)View>> GetAll()
         {
-            using (var db = new @(Model.Diagram["Entity Framework","DBContextName"])())
+            using (var db = new @(Model.Diagram["Entity Framework","DBContextName"].AsString())())
             {
                 var temp = await db.@(Model.Classifier.Name)s.ToListAsync();
                 return temp.ConvertAll(w => (@(Model.Classifier.Name)View)w);
@@ -36,7 +36,7 @@ namespace @(Model.Diagram.Name).Views
     	public async Task<@(Model.Classifier.Name)View> Get(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
     	{
     	
-    	using (var db = new @(Model.Diagram["Entity Framework","DBContextName"])())
+    	using (var db = new @(Model.Diagram["Entity Framework","DBContextName"].AsString())())
             {
             	if (await db.@(Model.Classifier.Name)s.AnyAsync(w=>w.@(GetPrimaryKey(Model.Classifier))==@(GetPrimaryKey(Model.Classifier).LowerFirst())))
                 {
@@ -57,7 +57,7 @@ namespace @(Model.Diagram.Name).Views
 		public async Task<List<@(Model.Classifier.Name)View>> Get@(Model.Classifier.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))
     	{
     	
-    	using (var db = new @(Model.Diagram["Entity Framework","DBContextName"])())
+    	using (var db = new @(Model.Diagram["Entity Framework","DBContextName"].AsString())())
             {
             	var result= await db.@(Model.Classifier.Name)s.Where(w=>w.@(parent.Name).@(parentKey) ==@(parentKey.LowerFirst())).ToListAsync();
             	return result.ConvertAll(w=>(@(Model.Classifier.Name)View) w);
@@ -77,7 +77,7 @@ namespace @(Model.Diagram.Name).Views
     {
     	foreach (var att in umlClass.AllAttributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}

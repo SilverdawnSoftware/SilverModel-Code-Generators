@@ -14,7 +14,7 @@ using System.Runtime.Serialization.Json;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using Silverdawn.Exceptions;
+using SilverdawnSoftware.Exceptions;
 using @(Model.Diagram.Name).Transactions.Model;
 using @(Model.Diagram.Name).Views.Model;
 
@@ -39,7 +39,7 @@ namespace @(Model.Diagram.Name).Transactions
 	                json = sr.ReadToEnd();
 	            }
 	
-	            var stream = await client.PostAsync("@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())", new StringContent(json, Encoding.UTF8, "application/json"));
+	            var stream = await client.PostAsync("@(Model.Diagram["REST Metadata","REST Server URL"].AsString())/api/@(Model.Classifier.Name.LowerFirst())", new StringContent(json, Encoding.UTF8, "application/json"));
 	
 	            using (var ms = new MemoryStream())
 	            {
@@ -81,7 +81,7 @@ namespace @(Model.Diagram.Name).Transactions
 	                json = sr.ReadToEnd();
 	            }
 	
-	            var stream = await client.PutAsync($"@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())/{update.@(GetPrimaryKey(@Model.Classifier))}", new StringContent(json, Encoding.UTF8, "application/json"));
+	            var stream = await client.PutAsync($"@(Model.Diagram["REST Metadata","REST Server URL"].AsString())/api/@(Model.Classifier.Name.LowerFirst())/{update.@(GetPrimaryKey(@Model.Classifier))}", new StringContent(json, Encoding.UTF8, "application/json"));
 	
 	            using (var ms = new MemoryStream())
 	            {
@@ -120,7 +120,7 @@ namespace @(Model.Diagram.Name).Transactions
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}
@@ -132,7 +132,7 @@ namespace @(Model.Diagram.Name).Transactions
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Description;
 			}
@@ -156,7 +156,7 @@ namespace @(Model.Diagram.Name).Transactions
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

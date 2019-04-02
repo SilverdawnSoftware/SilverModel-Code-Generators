@@ -17,7 +17,7 @@ using viewModel =@(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
 using views =@(Model.Solution.Name).@(Model.Diagram.Name).Views;
 
 
-namespace @(Model.Diagram["WebAPI Core","Web API Namespace"])
+namespace @(Model.Diagram["WebAPI Core CRUD","Web API Namespace"].AsString())
 {
 
 	
@@ -127,7 +127,7 @@ namespace @(Model.Diagram["WebAPI Core","Web API Namespace"])
     {
     	foreach (var att in umlClass.AllAttributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}

@@ -18,50 +18,49 @@ namespace @(Model.Diagram.Name).Views.Model
 	[DataContract]
     public class @(Model.Classifier.Name)View
     {
-    
-   
-    
     	@foreach (var att in Model.Classifier.AllAttributes())     	{
-    	
-			if (!att.Type.IsPrimitiveType())
-			{		
-	    		if (att.Type is IClass)
-	    		{
+    	switch (att.Type.GetUMLType())
+    	{
+			case UmlTypeEnum.Class:	
 					var refclass=(IClass)att.Type;	    		
 	    			foreach (var att2 in refclass.AllAttributes()) {
-			    		if (att2["Database General Metadata","Default Descriptor"]=="True")
+			    		if (att2["Database General Metadata","Default Descriptor"].AsString()=="True")
 			    		{
-			    		<text>
-			    		/// <summary>
-                        /// @att.Description
-                         /// </summary>
-						 [DataMember(Name = "@att.Name.LowerFirst()@att2.Name")]                         
-			    		public @att2.Type.TypeName("C#") </text>@att.Name<text>@att2.Name { get; set; } </text>  
+@:                       /// <summary>
+@:                       /// @att.Description
+@:                       /// </summary>
+@:                       [DataMember(Name = "@att.Name.LowerFirst()@att2.Name")]                         
+@:                       public @(att2.Type.TypeName("C#")) @(att.Name) @(att2.Name) { get; set; }
 			    		}
-			    		if (att2["Database General Metadata","Primary Key"]=="True")
+			    		if (att2["Database General Metadata","Primary Key"].AsString()=="True")
 			    		{
-			    		<text>
-			    		/// <summary>
-                        ///  @att.Description
-                        /// </summary>	
-			    		 [DataMember(Name = "@att.Name.LowerFirst()@att2.Name")]
-			    		public @att2.Type.TypeName("C#") </text>@att.Name@att2.Name<text> { get; set; } </text>  
+@:                       /// <summary>
+@:                       ///  @att.Description
+@:                       /// </summary>	
+@:                       [DataMember(Name = "@att.Name.LowerFirst()@att2.Name")]
+@:                       public @(att2.Type.TypeName("C#")) @(att.Name) @(att2.Name) { get; set; } 
 			    		}
 			    	}
-	    		}
-	    	}
-	    	else
-	    	{
-	    	if (att.Type.IsPrimitiveType())
-			{
-	    	<text>
+			    	break;
+	    		
 	    	
-	    	/// <summary>
-            /// @att.Description
-            /// </summary>
-			 [DataMember(Name = "@att.Name.LowerFirst()")]            
-	    	public @att.Type.TypeName("C#") </text> @att.Name <text> { get; set; } </text>	    	
-	    	}
+	    	case UmlTypeEnum.PrimitiveType:	
+				    	
+@:                       /// <summary>
+@:                       /// @att.Description
+@:                       /// </summary>
+@:                       [DataMember(Name = "@att.Name.LowerFirst()")]            
+@:                       public @(att.Type.TypeName("C#")) @(att.Name) { get; set; }	    	
+	    	break;
+	    	case UmlTypeEnum.Enumeration:
+@:                       /// <summary>
+@:                       /// @att.Description
+@:                       /// </summary>
+@:                       [DataMember(Name = "@att.Name.LowerFirst()")]            
+@:                       public @(att.Type.TypeName("C#")) @(att.Name) { get; set; }		    	
+	    	break;
+	    	
+	    	
 	    	}
     	}
     	@foreach (var association in Model.Classifier.GetTargetAssociation()) { 
@@ -69,7 +68,7 @@ namespace @(Model.Diagram.Name).Views.Model
     			{
 		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
 		    	foreach (var assocaitedClassAtt in associatedClass.Attributes()) {
-					    		if (assocaitedClassAtt["Database General Metadata","Default Descriptor"]=="True")
+					    		if (assocaitedClassAtt["Database General Metadata","Default Descriptor"].AsString()=="True")
 					    		{
 					  <text>
 					  /// <summary>
@@ -78,7 +77,7 @@ namespace @(Model.Diagram.Name).Views.Model
 				      [DataMember(Name = "@associatedClass.Name.LowerFirst()@assocaitedClassAtt.Name")]                      
 					  public string @associatedClass.Name@assocaitedClassAtt.Name { get; set; } </text>  
 					    		}
-					    		if (assocaitedClassAtt["Database General Metadata","Primary Key"]=="True")
+					    		if (assocaitedClassAtt["Database General Metadata","Primary Key"].AsString()=="True")
 					    		{
 					  <text>
 					   /// <summary>
@@ -116,7 +115,7 @@ namespace @(Model.Diagram.Name).Views.Model
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}
@@ -138,7 +137,7 @@ namespace @(Model.Diagram.Name).Views.Model
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

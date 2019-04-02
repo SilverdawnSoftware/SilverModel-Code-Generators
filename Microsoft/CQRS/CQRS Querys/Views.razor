@@ -214,8 +214,8 @@ namespace @GetNameSpaceForClass(Model.Classifier)
  			foreach(var prop in ((IClass)para.Type).OwnedProperties)
  			{
  			   
-				output.WriteLine(prop["Query","IsWhere"]);
-				if (prop["Query Metadata","IsWhere"]=="True")
+				output.WriteLine(prop["Query","IsWhere"].AsString());
+				if (prop["Query Metadata","IsWhere"].AsString()=="True")
 	 			{
 	 				output.WriteLine(prop.RelatedField.Class.Name);
 	 				output.WriteLine(((IClass)iOperation.Type).Name);
@@ -243,7 +243,7 @@ namespace @GetNameSpaceForClass(Model.Classifier)
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}
@@ -259,11 +259,11 @@ namespace @GetNameSpaceForClass(Model.Classifier)
  			foreach(var prop in ((IClass)para.Type).OwnedProperties)
  			{
  			   
-				output.WriteLine(prop["Query","IsWhere"]);
-				if (prop["Query Metadata","IsWhere"]=="True")
+				output.WriteLine(prop["Query","IsWhere"].AsString());
+				if (prop["Query Metadata","IsWhere"].AsString()=="True")
 	 			{
 	 			 
-	 				return prop.RelatedField.Class.GetModel()["Entity Framework Core","DBContextName"];
+	 				return prop.RelatedField.Class.GetModel()["Entity Framework Core","DBContextName"].AsString();
 	 			}
  			}
 		} 

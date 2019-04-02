@@ -14,7 +14,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
-using Silverdawn.Exceptions;
+using SilverdawnSoftware.Exceptions;
 using @(Model.Diagram.Name).Views.Model;
 
 
@@ -34,7 +34,7 @@ namespace @(Model.Diagram.Name).Views
 	                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
 	            });
 	
-	            var stream = await client.GetStreamAsync("@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())/all");
+	            var stream = await client.GetStreamAsync("@(Model.Diagram["REST Metadata","REST Server URL"].AsString())/api/@(Model.Classifier.Name.LowerFirst())/all");
 	
 	            var views = serializer.ReadObject(stream) as List<@(Model.Classifier.Name)View>;
 	            
@@ -61,7 +61,7 @@ namespace @(Model.Diagram.Name).Views
 	                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
 	            });
 	
-	            var stream = await client.GetStreamAsync($"@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(Model.Classifier.Name.LowerFirst())/{@(GetPrimaryKey(Model.Classifier).LowerFirst())}");
+	            var stream = await client.GetStreamAsync($"@(Model.Diagram["REST Metadata","REST Server URL"].AsString())/api/@(Model.Classifier.Name.LowerFirst())/{@(GetPrimaryKey(Model.Classifier).LowerFirst())}");
 	
 	            var view = serializer.ReadObject(stream) as @(Model.Classifier.Name)View;
 	
@@ -100,7 +100,7 @@ namespace @(Model.Diagram.Name).Views
 	                DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ss")
 	            });
 	
-	            var stream = await client.GetStreamAsync($"@(Model.Diagram["REST Metadata","REST Server URL"])/api/@(parent.Name.LowerFirst())/{@(GetPrimaryKey(parent).LowerFirst())}/tasks");
+	            var stream = await client.GetStreamAsync($"@(Model.Diagram["REST Metadata","REST Server URL"].AsString())/api/@(parent.Name.LowerFirst())/{@(GetPrimaryKey(parent).LowerFirst())}/tasks");
 	
 	            var views = serializer.ReadObject(stream) as List<@(Model.Classifier.Name)View>;
 	            
@@ -125,7 +125,7 @@ namespace @(Model.Diagram.Name).Views
     {
     	foreach (var att in umlClass.AllAttributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}

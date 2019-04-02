@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Silverdawn.Exceptions;
+using SilverdawnSoftware.Exceptions;
 using Microsoft.WindowsAzure.Storage.Table;
 using @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model;
 using @(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
@@ -34,7 +34,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
 				{
 				case UmlTypeEnum.PrimitiveType:
 			
-	    		if (att["Database General Metadata","Primary Key"]=="True")
+	    		if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			    		{
 			    		}
 			    		else
@@ -118,7 +118,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
 				{
 				case UmlTypeEnum.PrimitiveType:
 			
-	    		if (att["Entity Framework","EF Primary Key"]=="True")
+	    		if (att["Entity Framework","EF Primary Key"].AsString()=="True")
 			    		{
 			    		}
 			    		else
@@ -211,7 +211,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}
@@ -233,7 +233,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

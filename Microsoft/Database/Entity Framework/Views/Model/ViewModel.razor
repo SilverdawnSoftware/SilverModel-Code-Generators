@@ -28,7 +28,7 @@ namespace @(Model.Diagram.Name).Views.Model
 	    		{
 					var refclass=(IClass)att.Type;	    		
 	    			foreach (var att2 in refclass.AllAttributes()) {
-			    		if (att2["Database General Metadata","Default Descriptor"]=="True")
+			    		if (att2["Database General Metadata","Default Descriptor"].AsString()=="True")
 			    		{
 			    		<text>
 			    		/// <summary>
@@ -36,7 +36,7 @@ namespace @(Model.Diagram.Name).Views.Model
                          /// </summary>	
 			    		public @att2.Type.TypeName("C#") </text>@att.Name<text>@att2.Name { get; set; } </text>  
 			    		}
-			    		if (att2["Database General Metadata","Primary Key"]=="True")
+			    		if (att2["Database General Metadata","Primary Key"].AsString()=="True")
 			    		{
 			    		<text>
 			    		/// <summary>
@@ -66,7 +66,7 @@ namespace @(Model.Diagram.Name).Views.Model
     			{
 		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
 		    	foreach (var assocaitedClassAtt in associatedClass.Attributes()) {
-					    		if (assocaitedClassAtt["Database General Metadata","Default Descriptor"]=="True")
+					    		if (assocaitedClassAtt["Database General Metadata","Default Descriptor"].AsString()=="True")
 					    		{
 					  <text>
 					  /// <summary>
@@ -74,7 +74,7 @@ namespace @(Model.Diagram.Name).Views.Model
                       /// </summary>	
 					  public string @associatedClass.Name@assocaitedClassAtt.Name { get; set; } </text>  
 					    		}
-					    		if (assocaitedClassAtt["Database General Metadata","Primary Key"]=="True")
+					    		if (assocaitedClassAtt["Database General Metadata","Primary Key"].AsString()=="True")
 					    		{
 					  <text>
 					   /// <summary>
@@ -105,15 +105,15 @@ namespace @(Model.Diagram.Name).Views.Model
 					var refclass=(IClass)att.Type;	    		
 	    			foreach (var att2 in refclass.Attributes())
 			    	{
-			    	if (att2["Database General Metadata","Default Descriptor"]=="True" ||att2["Database General Metadata","Primary Key"]=="True" )
+			    	if (att2["Database General Metadata","Default Descriptor"].AsString()=="True" ||att2["Database General Metadata","Primary Key"].AsString()=="True" )
 			    	{
 			    	<text>if (item.@(att.Name) != null) 
 			    			{   	</text>
-			    		if (att2["Database General Metadata","Default Descriptor"]=="True")
+			    		if (att2["Database General Metadata","Default Descriptor"].AsString()=="True")
 			    		{
 			    			<text>result.</text>@att.Name@att2.Name@:= item.@att.Name.@att2.Name;
 			    		}
-			    		if (att2["Database General Metadata","Primary Key"]=="True")
+			    		if (att2["Database General Metadata","Primary Key"].AsString()=="True")
 			    		{
 			    		   <text>result.</text>@att.Name@att2.Name@:= item.@att.Name.@att2.Name;
 			    		 
@@ -133,14 +133,14 @@ namespace @(Model.Diagram.Name).Views.Model
 	
 				foreach (var assocaitedClassAtt in associatedClass.Attributes())
 		    	{
-		    		if (assocaitedClassAtt["Database General Metadata","Default Descriptor"]=="True")
+		    		if (assocaitedClassAtt["Database General Metadata","Default Descriptor"].AsString()=="True")
 		    		{
 		    		<text>if (item.@(associatedClass.Name) != null) 
 			    			{   	
 		    			result.@(associatedClass.Name)@assocaitedClassAtt.Name=item.@(associatedClass.Name).@(assocaitedClassAtt.Name); 
 		    			} </text>
 		    		}
-		    		if (assocaitedClassAtt["Database General Metadata","Primary Key"]=="True")
+		    		if (assocaitedClassAtt["Database General Metadata","Primary Key"].AsString()=="True")
 		    		{<text>if (item.@(associatedClass.Name) != null) 
 			    			{   
 		    		   result.@(associatedClass.Name)@assocaitedClassAtt.Name=item.@(associatedClass.Name).@(assocaitedClassAtt.Name);
@@ -174,7 +174,7 @@ namespace @(Model.Diagram.Name).Views.Model
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}
@@ -196,7 +196,7 @@ namespace @(Model.Diagram.Name).Views.Model
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				

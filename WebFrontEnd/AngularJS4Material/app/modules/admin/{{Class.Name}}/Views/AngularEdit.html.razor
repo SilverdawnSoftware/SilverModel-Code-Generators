@@ -9,37 +9,35 @@
 
  <form [formGroup]="@(Model.Classifier.Name.LowerFirst())Form" class="form-horizontal css-form" role="form" (ngSubmit)="update()">
         <mat-tab-group >        	
-        	 @{
+        @{
         	 // complex form layout
         	 //build the sort order for the form
-        	 string[] tabs=Model.Classifier["Form Design Metadata","TabOrder"].Split(',');
+        	 string[] tabs=Model.Classifier["Form Design Metadata","TabOrder"].AsString().Split(',');
         	
         	
         	 var altmode=false;
         	 if (tabs.Length==0 ){ tabs=new string[]{""}; }
         	 if (tabs.Length==1 && string.IsNullOrWhiteSpace(tabs[0])) {altmode=true;}
         	
-        	 foreach(var tab in tabs)
-        	 {
-        	 	int maxrow=0;
-        	 	int maxcol=0;
-        	 	if (Model.Classifier.AllAttributes().Any(w=>w["Form Design Metadata","TabName"]==tab)){        	 	
-        	  		maxrow = Model.Classifier.AllAttributes().Where(w=>w["Form Design Metadata","TabName"]==tab).Max(m => SafeParse(m["Form Design Metadata", "Row"]));
-        	  	}
-        	  	if (Model.Classifier.AllAttributes().Any(w => w["Form Design Metadata", "TabName"] == tab)){
-             		maxcol = Model.Classifier.AllAttributes().Where(w => w["Form Design Metadata", "TabName"] == tab).Max(m => SafeParse(m["Form Design Metadata", "Column"]));
-             	}
-        	 if (altmode) {maxrow=Model.Classifier.AllAttributes().Count()-1;}
-        	 
-        	
-        	  
+	        	 foreach(var tab in tabs)
+	        	 {
+	        	 	int maxrow=0;
+	        	 	int maxcol=0;
+	        	 	if (Model.Classifier.AllAttributes().Any(w=>w["Form Design Metadata","TabName"].AsString()==tab)){        	 	
+	        	  		maxrow = Model.Classifier.AllAttributes().Where(w=>w["Form Design Metadata","TabName"].AsString()==tab).Max(m => SafeParse(m["Form Design Metadata", "Row"].AsString()));
+	        	  	}
+	        	  	if (Model.Classifier.AllAttributes().Any(w => w["Form Design Metadata", "TabName"].AsString() == tab)){
+	             		maxcol = Model.Classifier.AllAttributes().Where(w => w["Form Design Metadata", "TabName"].AsString() == tab).Max(m => SafeParse(m["Form Design Metadata", "Column"].AsString()));
+	             	}
+	        	 	if (altmode) {maxrow=Model.Classifier.AllAttributes().Count()-1;
+	        	 }
         	 var tabName=!string.IsNullOrWhiteSpace(tab) ? tab : "Main";
-        	 <mat-tab label="@(tabName)">        	 
-        	 	@for(int i=0; i <= maxrow;i++){
-        	 		<div fxLayout="row" fxLayout.xs="column" fxLayout.sm="column" fxFlex>
-        	 		@for( int j=0; j <= maxcol;j++){
-        	 			<div fxFlex>	
-        	 			@{
+@:        	 <mat-tab label="@(tabName)">        	 
+        	 	for(int i=0; i <= maxrow;i++){
+@:        	 		<div fxLayout="row" fxLayout.xs="column" fxLayout.sm="column" fxFlex>
+        	 		for( int j=0; j <= maxcol;j++){
+@:        	 			<div fxFlex>	
+        	 			
         	 			var atts=new List<IProperty>();
         	 			if (altmode)
         	 			{
@@ -47,67 +45,65 @@
         	 			}
         	 			else
         	 			{
-        	 				atts=Model.Classifier.AllAttributes().Where(w=>w["Form Design Metadata","TabName"]==tab && SafeParse(w["Form Design Metadata","Row"])==i && SafeParse(w["Form Design Metadata","Column"])==j ).ToList();
+        	 				atts=Model.Classifier.AllAttributes().Where(w=>w["Form Design Metadata","TabName"].AsString()==tab && SafeParse(w["Form Design Metadata","Row"].AsString())==i && SafeParse(w["Form Design Metadata","Column"].AsString())==j ).ToList();
         	 				
         	 			}
         	 			
         	 			foreach (var att in atts)
         	 			{
-        	 				
-							
-			  switch (att.Type.GetUMLType())
-				{
-				case UmlTypeEnum.Class:				
-	    		
-					var refclass=(IClass)att.Type;	
-
-					var pKey=GetPrimaryKey(refclass);
-					var descriptor=GetDescriptor(refclass);
-					
-					if (!string.IsNullOrEmpty(pKey) && !string.IsNullOrEmpty(descriptor))
-					{
-					<text>
-					 <div class="form-group">
-					 		
-                            <label for="@Model.Classifier.Name.LowerFirst()@att.Name" class="col-sm-2 control-label">@(att.Name)</label>
-                            <div class="col-sm-10">
-
-                                <select id="@Model.Classifier.Name.LowerFirst()@att.Name" class="form-control" ng-model="@(Model.Classifier.Name.LowerFirst())View.@(att.Name.LowerFirst())@pKey" ng-options="@(refclass.Name.LowerFirst()).@(pKey.LowerFirst()) as @(refclass.Name.LowerFirst()).@(descriptor.LowerFirst()) for @refclass.Name.LowerFirst() in @(refclass.Name.LowerFirst())s" required>
-                                    <option value="">-- Choose @refclass.Name --</option>
-                                </select>
-                            </div>
-                       	</div>
-                        </text>
-					}
-					break;
-				   default:
-				  	if (@att.Name!=GetPrimaryKey(Model.Classifier))
-	    				{
-	    	            <text>	    				
-                         <mat-form-field>                            
-                                <input matInput formControlName="@att.Name.LowerFirst()" id="@Model.Classifier.Name.LowerFirst()@att.Name" type="@(att.Type.TypeName("HtmlInput"))" placeholder="@(att.Name)"  required/>
-						</mat-form-field>                       
-                        </text>
-                        }
-	    			
-	    			break;
-	    		}    	
+						  	switch (att.Type.GetUMLType())
+							{
+							case UmlTypeEnum.Class:				
+				    		
+								var refclass=(IClass)att.Type;	
+			
+								var pKey=GetPrimaryKey(refclass);
+								var descriptor=GetDescriptor(refclass);
+								
+								if (!string.IsNullOrEmpty(pKey) && !string.IsNullOrEmpty(descriptor))
+								{
+								<text>
+								 <div class="form-group">
+								 		
+			                            <label for="@Model.Classifier.Name.LowerFirst()@att.Name" class="col-sm-2 control-label">@(att.Name)</label>
+			                            <div class="col-sm-10">
+			
+			                                <select id="@Model.Classifier.Name.LowerFirst()@att.Name" class="form-control" ng-model="@(Model.Classifier.Name.LowerFirst())View.@(att.Name.LowerFirst())@pKey" ng-options="@(refclass.Name.LowerFirst()).@(pKey.LowerFirst()) as @(refclass.Name.LowerFirst()).@(descriptor.LowerFirst()) for @refclass.Name.LowerFirst() in @(refclass.Name.LowerFirst())s" required>
+			                                    <option value="">-- Choose @refclass.Name --</option>
+			                                </select>
+			                            </div>
+			                       	</div>
+			                        </text>
+								}
+								break;
+							   default:
+							  	if (@att.Name!=GetPrimaryKey(Model.Classifier))
+				    				{
+				    	            <text>	    				
+			                         <mat-form-field>                            
+			                                <input matInput formControlName="@att.Name.LowerFirst()" id="@Model.Classifier.Name.LowerFirst()@att.Name" type="@(att.Type.TypeName("HtmlInput"))" placeholder="@(att.Name)"  required/>
+									</mat-form-field>                       
+			                        </text>
+			                        }
+				    			
+				    			break;
+				    		  }    	
     		
     			
+        	 			
         	 			}
-        	 			}
-        	 			</div>
+@:        	 			</div>
         	 		}
-        	 		</div>
+@:        	 		</div>
         	 	}
         	 
-			 </mat-tab>
+@:			 </mat-tab>
 			 }
         	 
         	 
         	
         	 
-        	 }
+        	}
         	 
         	 @foreach (var att in Model.Classifier.GetSourceAssociation()) { 
         	 IClass associatedClass=(IClass)att.GetTargetMemberEnd().Type;
@@ -140,7 +136,7 @@
       </ng-template>
     </ngx-datatable-column>			
    			@:</ngx-datatable>
-    				 <a mat-raised-button color="primary" href="/admin/@(att.GetTargetMemberEnd().Type.Name.LowerFirst())/add?@(Model.Classifier.Name.LowerFirst())@(GetPrimaryKey(Model.Classifier))={{@(Model.Classifier.Name.LowerFirst())View.@(GetPrimaryKey(Model.Classifier).LowerFirst())}}">Add</a>
+    		@:		 <a mat-raised-button color="primary" href="/admin/@(att.GetTargetMemberEnd().Type.Name.LowerFirst())/add?@(Model.Classifier.Name.LowerFirst())@(GetPrimaryKey(Model.Classifier))={{@(Model.Classifier.Name.LowerFirst())View.@(GetPrimaryKey(Model.Classifier).LowerFirst())}}">Add</a>
     		@:</mat-tab>	
     	}
     	
@@ -158,7 +154,7 @@ string GetPrimaryKey(IClassifier iClass)
 {
 	foreach (var att2 in iClass.Attributes())
    	{
-		if (att2["Database General Metadata","Primary Key"]=="True")
+		if (att2["Database General Metadata","Primary Key"].AsString()=="True")
 		 return att2.Name;
 	}
 	
@@ -169,7 +165,7 @@ string GetDescriptor(IClassifier iClass)
 {
 	foreach (var att2 in iClass.Attributes())
    	{
-		if (att2["Database General Metadata","Default Descriptor"]=="True")
+		if (att2["Database General Metadata","Default Descriptor"].AsString()=="True")
 		 return att2.Name;
 	}
 	
@@ -178,7 +174,7 @@ string GetDescriptor(IClassifier iClass)
 
 int GetTabCount(IClassifier iClass)
 {
-var tabs=iClass["Form Design Metadata","Tab Order"].Split(',');
+var tabs=iClass["Form Design Metadata","Tab Order"].AsString().Split(',');
 return tabs.Length;
 }
 

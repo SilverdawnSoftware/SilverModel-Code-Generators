@@ -108,7 +108,7 @@ loadCount++;
 		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
 		    	foreach (var assocaitedClassAtt in associatedClass.Attributes()) {
 					    		
-					    		if (assocaitedClassAtt["Database General Metadata","Primary Key"]=="True")
+					    		if (assocaitedClassAtt["Database General Metadata","Primary Key"].AsString()=="True")
 					    		{
 <text>  @associatedClass.Name.LowerFirst()@assocaitedClassAtt.Name : @assocaitedClassAtt.Type.TypeName("TypeScript"); </text>  
 					    		}
@@ -242,7 +242,7 @@ string GetPrimaryKey(IClassifier iClass)
 {
 	foreach (var att2 in iClass.Attributes())
    	{
-		if (att2["Database General Metadata","Primary Key"]=="True")
+		if (att2["Database General Metadata","Primary Key"].AsString()=="True")
 		 return att2.Name;
 	}
 	
@@ -253,7 +253,7 @@ string GetDescriptor(IClassifier iClass)
 {
 	foreach (var att2 in iClass.Attributes())
    	{
-		if (att2["Database General Metadata","Default Descriptor"]=="True")
+		if (att2["Database General Metadata","Default Descriptor"].AsString()=="True")
 		 return att2.Name;
 	}
 	
@@ -274,7 +274,7 @@ public static string GetPrimaryType(IType iType)
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return  @att.Type.TypeName("TypeScript");
 				

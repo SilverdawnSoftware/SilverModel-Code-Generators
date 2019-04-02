@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Silverdawn.Exceptions;
+using SilverdawnSoftware.Exceptions;
 using @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model;
 using @(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
 using data = @(Model.Solution.Name).@(Model.Diagram.Name);
@@ -28,7 +28,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
         {
         	try
             {
-	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
 	            {
 	                var result= await Add(db,add);
 	                await db.SaveChangesAsync();
@@ -44,7 +44,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
         } 	
  	
  	
- 	 public async Task<data.@(Model.Classifier.Name)> Add(data.@(Model.Diagram["Entity Framework Core","DBContextName"]) db, @(Model.Classifier.Name)Add add)
+ 	 public async Task<data.@(Model.Classifier.Name)> Add(data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString()) db, @(Model.Classifier.Name)Add add)
         {
          try
             {
@@ -55,7 +55,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
 				{
 				case UmlTypeEnum.PrimitiveType:
 			
-	    		if (att["Database General Metadata","Primary Key"]=="True")
+	    		if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			    		{
 			    		}
 			    		else
@@ -121,7 +121,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
         {	
         	try
             {
-	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
 	            {
 	                var result= await Update(db,update);
 	                await db.SaveChangesAsync();
@@ -137,7 +137,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
         } 			
  	
  	
- 	 public async Task<data.@(Model.Classifier.Name)> Update(data.@(Model.Diagram["Entity Framework Core","DBContextName"]) db, @(Model.Classifier.Name)Update update)
+ 	 public async Task<data.@(Model.Classifier.Name)> Update(data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString()) db, @(Model.Classifier.Name)Update update)
         {
          try
             {
@@ -151,7 +151,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
 				{
 				case UmlTypeEnum.PrimitiveType:
 			
-	    		if (att["Entity Framework","EF Primary Key"]=="True")
+	    		if (att["Entity Framework","EF Primary Key"].AsString()=="True")
 			    		{
 			    		}
 			    		else
@@ -197,7 +197,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
         {
         	try
             {
-	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"])())
+	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
 	            {
 	                await Delete(db,delete);
 	                await db.SaveChangesAsync();	                
@@ -212,7 +212,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
         } 	
  	
  	
- 	 public async System.Threading.Tasks.Task Delete(data.@(Model.Diagram["Entity Framework Core","DBContextName"]) db, @(Model.Classifier.Name)Delete delete)
+ 	 public async System.Threading.Tasks.Task Delete(data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString()) db, @(Model.Classifier.Name)Delete delete)
         {
          try
             {
@@ -249,7 +249,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return att.Name;
 			}
@@ -271,7 +271,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
     {
     	foreach (var att in umlClass.Attributes())
 		{
-			if (att["Database General Metadata","Primary Key"]=="True")
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
 			{
 				return  @att.Type.TypeName("C#");
 				
