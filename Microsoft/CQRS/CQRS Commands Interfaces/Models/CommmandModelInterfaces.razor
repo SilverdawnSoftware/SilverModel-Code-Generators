@@ -1,0 +1,52 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using SilverDawn.SilverModel.Interfaces;
+@using System.Text;
+@{
+@:// ALLOWOVERWRITE
+@:
+@:using System;
+@:using System.Collections.Generic;
+@:using System.Linq;
+@:using System.Runtime.Serialization;
+
+
+@:namespace @(GetInterfaceNameSpace(Model.Classifier)).Models
+@:{
+@:    public partial interface I@(Model.Classifier.Name) : ICQRSBase
+@:    { 
+    	foreach (var att in Model.Classifier.Attributes().Where(w=>w.Visibility!=VisibilityKind.None))
+    	{     				
+		switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.PrimitiveType:				    		
+						
+@:         @(att.Type.TypeName("C#")) @att.Name  { get; set; }
+		@:  	
+				break;
+				case UmlTypeEnum.Class:							
+@:        /// To avoid Many to Many Relationships, use primary key https://github.com/aspnet/EntityFrameworkCore/issues/1368
+@:        /// <summary>
+@:        /// @att.Description
+@:        /// </summary>	
+@:        //public virtual @att.Type.TypeName("C#") @att.Name <text> { get; set; }  				
+@:         @(GetPrimaryType(att.RelatedField.Type)) @(att.Name)@(GetPrimaryKey(att.RelatedField.Type))  { get; set; }		
+				break;
+				case UmlTypeEnum.Enumeration:
+@:        /// <summary> @att.Description </summary>	
+@:         @(att.Type.Name) @(att.Name) { get; set; }  
+				break;
+				} 
+    	}    	 	    
+@:	}
+	
+
+	
+	
+@:}
+@IncludeFile("..\..\CQRS Shared Code\SharedFunctions.razor")
+}

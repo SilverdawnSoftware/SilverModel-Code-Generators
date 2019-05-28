@@ -1,5 +1,5 @@
 ﻿
-@:      public async Task<InvoiceView> CreateInvoice(@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()))
+@:      public async Task<I@(queryResult.Name)> @(Model.Classifier.Name)(I@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()))
 @:      {
 @:			try
 @:          {
@@ -33,7 +33,15 @@
 							}
 							else
 							{
-                       @:@(queryClass.Name.LowerFirst()).@(att.Name)=@(Model.Classifier.Name.LowerFirst()).@(match.Name);
+								switch (att.Type.GetUMLType())
+								{
+									case UmlTypeEnum.PrimitiveType:
+									case UmlTypeEnum.Enumeration:
+@:                    @(queryClass.Name.LowerFirst()).@(att.Name)=@(Model.Classifier.Name.LowerFirst()).@(match.Name);  	
+									break;
+									case UmlTypeEnum.Class:											
+									break;
+								} 
                        		}
 						}
 					}
@@ -60,7 +68,7 @@
 @:              catch (Exception e)
 @:                {
 @:                    LogFactory.GetLogger().Log(LogLevel.Error,e);
-@:                         
+@:                    return new @(queryResult.Name)(){__CQRSSuccessful = false,__CQRSErrorMessage = "Unable to create @(queryResult.Name)",__CQRSStatusCode = 500};     
 @:                } 
 @:               return null;         
 @:               }

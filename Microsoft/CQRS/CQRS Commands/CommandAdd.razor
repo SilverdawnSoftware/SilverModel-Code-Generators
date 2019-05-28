@@ -1,5 +1,5 @@
 ﻿
-@:      public async Task<InvoiceView> CreateInvoice(Models.@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()))
+@:      public async Task<I@(queryResult.Name)> @(Model.Classifier.Name)(I@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()))
 @:      {
 @:			try
 @:          {
@@ -7,8 +7,20 @@
 @:              using (var db=new @(GetDbContext(queryClass,Model.Output))())
 @:              {
 @:                   var @(queryClass.Name.LowerFirst()) = new Database.@(queryClass.Name)();
+				if (AddToParent(Model.Classifier,queryClass,Model.Output))
+				{
+					var parentEnd=GetParentMemberEnd(Model.Classifier,queryClass,Model.Output);
+@:                   if (!db.@(parentEnd.Type.Name)s.Any(w=>w.@(LookupRelatedFieldName(Model.Classifier,queryClass,Model.Output)) == @(Model.Classifier.Name.LowerFirst()).@(LookupRelatedFieldName(Model.Classifier,queryClass,Model.Output))))				
+@:                       return new @(queryResult.Name)(){__CQRSSuccessful = false,__CQRSErrorMessage = "Unable to find parent for @(parentEnd.Type.Name)",__CQRSStatusCode = 404}; 
+@:
+@:                   var @(parentEnd.Type.Name.LowerFirst())=db.@(parentEnd.Type.Name)s.First(w=>w.@(LookupRelatedFieldName(Model.Classifier,queryClass,Model.Output)) == @(Model.Classifier.Name.LowerFirst()).@(LookupRelatedFieldName(Model.Classifier,queryClass,Model.Output)));				
+@:                   if (@(parentEnd.Type.Name.LowerFirst()).@(queryClass.Name)s == null) @(parentEnd.Type.Name.LowerFirst()).@(queryClass.Name)s = new List<@(queryClass.GetModel().Name).@(queryClass.Name)>();
+@:                   @(parentEnd.Type.Name.LowerFirst()).@(queryClass.Name)s.Add(@(queryClass.Name.LowerFirst()));
+				}
+				else
+				{
 @:                   db.@(queryClass.Name)s.Add(@(queryClass.Name.LowerFirst()));
-
+				}
 			
 
 				foreach (var att in queryClass.AllAttributes())    	
@@ -18,7 +30,16 @@
 						var match=Model.Classifier.AllAttributes().First(w=>w.RelatedField.ElementId==att.ElementId);
 						if (match["Query Metadata","IsUpdate"].AsBoolean())
 						{
-                   @:@(queryClass.Name.LowerFirst()).@(att.Name)=@(Model.Classifier.Name.LowerFirst()).@(match.Name);
+							switch (att.Type.GetUMLType())
+							{
+								case UmlTypeEnum.PrimitiveType:
+								case UmlTypeEnum.Enumeration:
+@:                   @(queryClass.Name.LowerFirst()).@(att.Name)=@(Model.Classifier.Name.LowerFirst()).@(match.Name);  	
+								break;
+								case UmlTypeEnum.Class:											
+								break;
+							} 
+						
 						}
 					}
     			}
@@ -28,13 +49,23 @@
 @:
 			 foreach (var att in queryResult.AllAttributes())
 			 {
+			 
 			 	if  (att.RelatedField!=null && queryClass.AllAttributes().Any(w=>w.ElementId==att.RelatedField.ElementId))
-				{
+				{				
 					var match=queryClass.AllAttributes().First(w=>w.ElementId==att.RelatedField.ElementId);	
 					if (!match.Type.IsClass())
 					{
                    @:result.@(att.Name)=@(queryClass.Name.LowerFirst()).@(match.Name);
                     }
+                    
+				}
+				else
+				{
+					var parentEnd=GetParentMemberEnd(Model.Classifier,queryClass,Model.Output);
+					if (att.RelatedField!=null && att.RelatedField.Class.Name==parentEnd.Type.Name)
+					{
+@:                   result.@(att.Name)=@(parentEnd.Type.Name.LowerFirst()).@(att.Name);
+					}
 				}
 			 }
 @:                   return result;
@@ -43,6 +74,94 @@
 @:          catch (Exception e)
 @:                {
 @:                    LogFactory.GetLogger().Log(LogLevel.Error,e);
-@:                    return null;              
+@:                    return new @(queryResult.Name)(){__CQRSSuccessful = false,__CQRSErrorMessage = "Unable to create @(queryResult.Name)",__CQRSStatusCode = 500};             
 @:                } 
 @:           }
+
+
+@functions{
+public static bool AddToParent(IClassifier addClass,IClassifier queryClass,IOutput output)
+{
+	if (queryClass.GetParentAssociations().Any())
+	{
+		var parent=queryClass.GetParentAssociations().First();
+		
+		if (addClass.AllAttributes().Any(w=>w.RelatedField!=null && w.RelatedField.Class.Name==parent.FirstRole.Type.Name))
+		{
+			return true;
+		}
+		else
+		{
+			output.WriteLine("Command Add: For Class "+addClass.Name +" no lookup field was found for the parent class. You may need to add this to the class to avoid lost records");
+		}
+	}
+	
+	
+	return false;
+}
+
+public static string LookupFieldName(IClassifier addClass,IClassifier queryClass,IOutput output)
+{
+	if (queryClass.GetParentAssociations().Any())
+	{
+		var parent=queryClass.GetParentAssociations().First();
+		
+		if (addClass.AllAttributes().Any(w=>w.RelatedField!=null && w.RelatedField.Class.Name==parent.FirstRole.Type.Name))
+		{
+			return addClass.AllAttributes().First(w=>w.RelatedField!=null && w.RelatedField.Class.Name==parent.FirstRole.Type.Name).Name;
+		}
+		else
+		{
+			output.WriteLine("Command Add: For Class "+addClass.Name +" no lookup field was found for the parent class. You may need to add this to the class to avoid lost records");
+		}
+	}
+	
+	
+	return "";
+}
+
+public static string LookupRelatedFieldName(IClassifier addClass,IClassifier queryClass,IOutput output)
+{
+	if (queryClass.GetParentAssociations().Any())
+	{
+		var parent=queryClass.GetParentAssociations().First();
+		
+		if (addClass.AllAttributes().Any(w=>w.RelatedField!=null && w.RelatedField.Class.Name==parent.FirstRole.Type.Name))
+		{
+			var attribute= addClass.AllAttributes().First(w=>w.RelatedField!=null && w.RelatedField.Class.Name==parent.FirstRole.Type.Name);
+			return attribute.RelatedField.Name;
+		}
+		else
+		{
+			output.WriteLine("Command Add: For Class "+addClass.Name +" no lookup field was found for the parent class. You may need to add this to the class to avoid lost records");
+		}
+	}
+	
+	
+	return "";
+}
+
+
+public static IProperty GetParentMemberEnd(IClassifier addClass,IClassifier queryClass,IOutput output)
+{
+	if (queryClass.GetParentAssociations().Any())
+	{
+		var parent=queryClass.GetParentAssociations().First();
+		
+		if (addClass.AllAttributes().Any(w=>w.RelatedField!=null && w.RelatedField.Class.Name==parent.FirstRole.Type.Name))
+		{
+			return (IProperty)parent.FirstRole;
+		}
+		else
+		{
+			output.WriteLine("Command Add: For Class "+addClass.Name +" no lookup field was found for the parent class. You may need to add this to the class to avoid lost records");
+		}
+	}
+	
+	
+	return null;
+}
+
+
+
+}

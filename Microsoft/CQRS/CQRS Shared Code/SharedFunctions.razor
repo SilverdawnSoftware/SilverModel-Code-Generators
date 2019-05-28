@@ -1,117 +1,71 @@
-﻿@using System;
-@using System.Collections.Generic;
-@using System.Linq;
-@using SilverDawn.SilverModel.UML.Extensions;
-@using SilverDawn.SilverModel.UML.Interfaces.Classes;
-@using SilverDawn.SilverModel.UML.Classes;
-@using System.Text;
-@using SilverDawn.SilverModel.Interfaces;
-// ALLOWOVERWRITE
+﻿@functions{
 
-using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using SilverdawnSoftware.Exceptions;
-@(GetUsings(Model.Classifier))
-
-namespace @GetNameSpaceForClass(Model.Classifier)
+public static IProperty GetParentMemberEnd(IProperty property,IClassifier queryClass,IOutput output)
 {
-    public partial class @(Model.Classifier.Name)Views
-    {
-   		@{foreach(var operation in Model.Classifier.Operations()){
-   		var dbObjectName=GetLookupObject(operation,Model.Output).Name;
-   			if (HasMany(operation))
-   			{
-   		@:public List<@(operation.Type.TypeName("C#"))> @(operation.Name)(@(GetParameters(operation)))
-   		@:{
-   			@:try
-	            @:{
-	            @:var result=new List<@(operation.Type.TypeName("C#"))>();
-	            @:using (var db=new @(GetDbContext(operation,Model.Output))())
-	            @:{
-
-		         @:  	var @(dbObjectName.LowerFirst())s = db.@(dbObjectName)s.Where(w => @(GetWhere(operation,Model.Output)));
-		         @:    	foreach(var @(dbObjectName.LowerFirst()) in @(dbObjectName.LowerFirst())s)
-				 @:    	{
-				  @:    		var toAdd=new @(operation.Type.TypeName("C#"))();
-				 foreach(var attr in GetLookupObject(operation,Model.Output).Attributes())
-				 {
-				 		if (((IClass)operation.Type).Attributes().Any(w=>w.Name==attr.Name))
-				 		{
-				 			var opAttr=((IClass)operation.Type).Attributes().First(w=>w.Name==attr.Name);
-				 		
-		         @:   		toAdd.@(opAttr.Name) = @(dbObjectName.LowerFirst()).@(attr.Name);
-		         		}
-		         
-				 }
-				@:       result.Add(toAdd);
-				@:		}
-
-	                
-	            @:}
-	            @:return result;
-	            @:}
-	            @:catch (Exception e)
-	            @:{
-	            @:    var log = new LogExceptions();
-	            @:    log.Log(LogLevel.Error,e);
-	            @:    throw;
-	            @:}
-   			@:}
-   		
-   		@:
-   		}
-   		else
-   		{
-   		@:public @(operation.Type.TypeName("C#")) @(operation.Name)(@(GetParameters(operation)))
-   		@:{
-   			@:try
-	            @:{
-	            @:var result=new @(operation.Type.TypeName("C#"))();
-	            @:using (var db=new @(GetDbContext(operation,Model.Output))())
-	            @:{
-	               @: if (db.@(GetLookupObject(operation,Model.Output).Name)s.Any(w => @(GetWhere(operation,Model.Output))))
-	                @:{
-	                 @:   var @(dbObjectName.LowerFirst()) = db.@(GetLookupObject(operation,Model.Output).Name)s.First(w => @(GetWhere(operation,Model.Output)));
-					 foreach(var attr in GetLookupObject(operation,Model.Output).Attributes())
-					 {
-					 		if (((IClass)operation.Type).Attributes().Any(w=>w.Name==attr.Name))
-					 		{
-					 			var opAttr=((IClass)operation.Type).Attributes().First(w=>w.Name==attr.Name);
-					 		
-	                 @:   result.@(opAttr.Name) = @(dbObjectName.LowerFirst()).@(attr.Name);
-	                 		}
-					 }
-	                @:}
-	                
-	            @:}
-	            @:return result;
-	            @:}
-	            @:catch (Exception e)
-	            @:{
-	            @:    var log = new LogExceptions();
-	            @:    log.Log(LogLevel.Error,e);
-	            @:    throw;
-	            @:}
-   			@:}
-   		
-   		@:
-   		}
-   		
-   		}
-   
-   		@:}
-   
-   
-   
-    }    
+	if (queryClass.GetParentAssociations().Any())
+	{
+		var parent=queryClass.GetParentAssociations().First().FirstRole;
+		if (parent.Type.Name==property.RelatedField.Class.Name)
+		{		
+			return parent;
+		}
+		else
+		{
+			output.WriteLine("Unable to find parent end for "+property.Name);
+		}
+	}
+	
+	
+	return null;
 }
 
 
-@functions{
 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+   
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+
+	public static string GetInterfaceNameSpace(IClassifier iClass)
+	{
+		var model=iClass.GetModel();
+		var sol=iClass.GetSolution();
+	   var tempNS= model.QualifiedName.Replace("::",".");
+	   
+	   var interfaceStart=sol.Name+".Interfaces";
+	   
+	   return tempNS.Replace(sol.Name,interfaceStart);
+	}
 
 	public static string GetUsings(IClassifier iClass)
 	{
@@ -270,6 +224,63 @@ namespace @GetNameSpaceForClass(Model.Classifier)
 		
 		return "";
  	}
-   
+
+	 public static string GetDbContext(IClassifier iClassifier, IOutput output)
+ 	{
+ 		var model=iClassifier.GetModel();
+		
+		return model["Entity Framework Core","DBContextName"].AsString();
+		
+		
+ 	}
+ 	public static string GetWhereForClassifier(string operation,IClassifier iClassifier,IClassifier queryClass)
+ 	{
+ 		var where=GetWhereForClassifier(iClassifier,queryClass);
+ 		
+ 		if (string.IsNullOrWhiteSpace(where)) return "";
+ 		
+ 		return "."+operation+"(w=>"+where+")";
+ 	}
+ 	
+ 	
+ 	public static string GetWhereForClassifier(IClassifier iClassifier,IClassifier queryClass)
+ 	{
+ 		var where="";
+ 		foreach (var att in iClassifier.AllAttributes())
+ 		{
+ 			if (att["Query Metadata","IsWhere"].AsString()=="True" && att.RelatedField.ElementId!=null)
+ 			{
+ 				if(!string.IsNullOrWhiteSpace(where)) where=where+" && "; 
+ 				if (att.RelatedField.Class.Name==queryClass.Name)
+ 				{
+ 					where=where+" w."+att.RelatedField.Name+" "+GetCSharpOperator(att)+" "+iClassifier.Name.LowerFirst()+"."+att.Name;
+ 				}
+ 				else
+ 				{
+ 					where=where+" w."+att.RelatedField.Class.Name+"." +att.RelatedField.Name+" "+GetCSharpOperator(att)+" "+iClassifier.Name.LowerFirst()+"."+att.Name; 				
+ 				}
+ 			}
+ 		}
+ 		
+ 		return where;
+ 	}
+ 	
+ 	public static string GetCSharpOperator(IProperty prop)
+ 	{
+ 		switch (prop["Query Metadata","Operator"].AsString())
+ 		{
+ 		 case "<": return "<";
+ 		 case "<=": return "<=";
+ 		 case "<>": return "<>";
+ 		 case ">": return ">";
+ 		 case ">=": return ">=";
+ 		 case "=":
+ 		 default:
+ 		 	return "==";
+ 		}
+ 	}
+
+
+
     
 }

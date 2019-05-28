@@ -30,7 +30,7 @@ namespace @(Model.Diagram.Name).Views.Model
 @:                       /// @att.Description
 @:                       /// </summary>
 @:                       [DataMember(Name = "@att.Name.LowerFirst()@att2.Name")]                         
-@:                       public @(att2.Type.TypeName("C#")) @(att.Name) @(att2.Name) { get; set; }
+@:                       public @(att2.Type.TypeName("C#")) @(att.Name)@(att2.Name) { get; set; }
 			    		}
 			    		if (att2["Database General Metadata","Primary Key"].AsString()=="True")
 			    		{
@@ -38,7 +38,7 @@ namespace @(Model.Diagram.Name).Views.Model
 @:                       ///  @att.Description
 @:                       /// </summary>	
 @:                       [DataMember(Name = "@att.Name.LowerFirst()@att2.Name")]
-@:                       public @(att2.Type.TypeName("C#")) @(att.Name) @(att2.Name) { get; set; } 
+@:                       public @(att2.Type.TypeName("C#")) @(att.Name)@(att2.Name) { get; set; } 
 			    		}
 			    	}
 			    	break;
@@ -57,7 +57,7 @@ namespace @(Model.Diagram.Name).Views.Model
 @:                       /// @att.Description
 @:                       /// </summary>
 @:                       [DataMember(Name = "@att.Name.LowerFirst()")]            
-@:                       public @(att.Type.TypeName("C#")) @(att.Name) { get; set; }		    	
+@:                       public int @(att.Name) { get; set; }		    	
 	    	break;
 	    	
 	    	

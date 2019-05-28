@@ -4,279 +4,285 @@
 @using SilverDawn.SilverModel.UML.Extensions;
 @using SilverDawn.SilverModel.UML.Interfaces.Classes;
 @using SilverDawn.SilverModel.UML.Classes;
-// ALLOWOVERWRITE
+@{
+@:// ALLOWOVERWRITE
+@:
+@:using System;
+@:using System.ComponentModel;
+@:using System.Runtime.CompilerServices;
+@:using System.Threading.Tasks;
+@:using System.Windows.Input;
+@:using @(Model.Diagram.Name).Transactions;
+@:using @(Model.Diagram.Name).Transactions.Model;
+@:using @(Model.Diagram.Name).Views;
+@:using @(Model.Diagram.Name).Views.Model;
+@:using @(Model.Diagram.Name).Mobile.Annotations;
 
-using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using @(Model.Diagram.Name).Transactions;
-using @(Model.Diagram.Name).Transactions.Model;
-using @(Model.Diagram.Name).Views;
-using @(Model.Diagram.Name).Views.Model;
-using @(Model.Diagram.Name).Mobile.Annotations;
+@:using Xamarin.Forms;
 
-using Xamarin.Forms;
+@:namespace @(Model.Diagram.Name).Mobile.ViewModels
+@:{
 
-namespace @(Model.Diagram.Name).Mobile.ViewModels
-{
-
-    public class @(Model.Classifier.Name)EditViewModel : INotifyPropertyChanged
-    {
+@:    public class @(Model.Classifier.Name)EditViewModel : INotifyPropertyChanged
+@:    {
 
 
-        public @(Model.Classifier.Name)EditViewModel()
-        {
-            SaveCommand=new Command( async () => await Save());
-            CancelCommand = new Command(async () => await Cancel());
-             @foreach (var att in Model.Classifier.GetSourceAssociation())    	{ 
+@:        public @(Model.Classifier.Name)EditViewModel()
+@:        {
+@:           SaveCommand=new Command( async () => await Save());
+@:           CancelCommand = new Command(async () => await Cancel());
+             foreach (var att in Model.Classifier.GetSourceAssociation())    	{ 
       		 var name=(((IClassifier)att.GetTargetMemberEnd().Type).Name);        
-           	<text>
-           	View@(name)sCommand = new Command(async () => await View@(name)s());
-           	</text>
-           	}
-            
-        }
+@:           View@(name)sCommand = new Command(async () => await View@(name)s());
+           	}            
+@:        }
+@:
+@:        public ICommand SaveCommand { get; private set; }
+@:
+@:        public ICommand CancelCommand { get; private set; }
+@:
 
-      
-
-        public ICommand SaveCommand { get; private set; }
-
-        public ICommand CancelCommand { get; private set; }
-
-
-@foreach (var att in Model.Classifier.GetSourceAssociation())    	{ 
+			foreach (var att in Model.Classifier.GetSourceAssociation())    	{ 
       		 var name=(((IClassifier)att.GetTargetMemberEnd().Type).Name);        
-           	<text>
-           	
-        public ICommand View@(name)sCommand { get; private set; }
-         
-        public async Task View@(name)s()
-        {           
-                var @(name.LowerFirst())s = new @(name)IndexViewModel();
-                await @(name.LowerFirst())s.Get@(name)sFor@(Model.Classifier.Name)(@(GetPrimaryKey(Model.Classifier)));
-                MessagingCenter.Send<@(Model.Classifier.Name)EditViewModel, @(name)IndexViewModel>(this, "Show@(name)s", @(name.LowerFirst())s);
-        }
-           	</text>
+@:
+@:        public ICommand View@(name)sCommand { get; private set; }
+@:         
+@:        public async Task View@(name)s()
+@:        {           
+@:                var @(name.LowerFirst())s = new @(name)IndexViewModel();
+@:                await @(name.LowerFirst())s.Get@(name)sFor@(Model.Classifier.Name)(@(GetPrimaryKey(Model.Classifier)));
+@:                MessagingCenter.Send<@(Model.Classifier.Name)EditViewModel, @(name)IndexViewModel>(this, "Show@(name)s", @(name.LowerFirst())s);
+@:        }
            	}
 
+@:
+@:        public async Task Cancel()
+@:        {
+@:            if (@(Model.Classifier.Name)View.@(GetPrimaryKey(Model.Classifier))> 0)
+@:                await Load(@(Model.Classifier.Name)View.@(GetPrimaryKey(Model.Classifier)));
+@:            else
+@:                @(Model.Classifier.Name)View=new @(Model.Classifier.Name)View();
+@:        }
 
-        public async Task Cancel()
-        {
-            if (@(Model.Classifier.Name)View.@(GetPrimaryKey(Model.Classifier))> 0)
-                await Load(@(Model.Classifier.Name)View.@(GetPrimaryKey(Model.Classifier)));
-            else
-                @(Model.Classifier.Name)View=new @(Model.Classifier.Name)View();
-        }
+@:        public async Task Load(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
+@:        {
+@:            var uv=new @(Model.Classifier.Name)Views();
+@:
+@:            this.@(Model.Classifier.Name)View = await uv.Get(@(GetPrimaryKey(Model.Classifier).LowerFirst()));
+@:        }
 
-        public async Task Load(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
-        {
-            var uv=new @(Model.Classifier.Name)Views();
+@:
+@:        public async Task Save()
+@:        {
+@:        	try
+@:        	{
+@:	            var uv = new @(Model.Classifier.Name)Transactions();
+@:	
+@:	            if (@(Model.Classifier.Name)View.@(GetPrimaryKey(Model.Classifier)) > 0)
+@:	            {
+@:	                @(Model.Classifier.Name)View = await uv.@(Model.Classifier.Name)Update(this.Get@(Model.Classifier.Name)Update());
+@:	            }
+@:	            else
+@:	            {
+@:	                @(Model.Classifier.Name)View = await uv.@(Model.Classifier.Name)Add(this.Get@(Model.Classifier.Name)Add());
+@:	            }
+@:          }
+@:            catch (Exception ex)
+@:            {
+@:            	 MessagingCenter.Send(this, "Save error");
+@:            }          
+@:        }
 
-            this.@(Model.Classifier.Name)View = await uv.Get(@(GetPrimaryKey(Model.Classifier).LowerFirst()));
-        }
+@:
+@:        public event PropertyChangedEventHandler PropertyChanged;
+@:
+@:        [NotifyPropertyChangedInvocator]
+@:        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+@:        {
+@:            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+@:        }
 
-
-
-        public async Task Save()
-        {
-        	try
-        	{
-	            var uv = new @(Model.Classifier.Name)Transactions();
-	
-	            if (@(Model.Classifier.Name)View.@(GetPrimaryKey(Model.Classifier)) > 0)
-	            {
-	                @(Model.Classifier.Name)View = await uv.@(Model.Classifier.Name)Update(this.Get@(Model.Classifier.Name)Update());
-	            }
-	            else
-	            {
-	                @(Model.Classifier.Name)View = await uv.@(Model.Classifier.Name)Add(this.Get@(Model.Classifier.Name)Add());
-	            }
-            }
-            catch (Exception ex)
-            {
-            	 MessagingCenter.Send(this, "Save error");
-            }
-          
-        }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-
-        private @(Model.Classifier.Name)View _@(Model.Classifier.Name.LowerFirst())View = new @(Model.Classifier.Name)View();
-
-        public @(Model.Classifier.Name)View @(Model.Classifier.Name)View
-        {
-            get
-            {
-                return _@(Model.Classifier.Name.LowerFirst())View;
-            }
-
-            set
-            {
-                this._@(Model.Classifier.Name.LowerFirst())View = value;
-                @foreach (var att in Model.Classifier.AllAttributes())     	{
-                <text>OnPropertyChanged("@(att.Name)");</text>
-                }
-                              
-            }
-        }
-
+@:
+@:        private @(Model.Classifier.Name)View _@(Model.Classifier.Name.LowerFirst())View = new @(Model.Classifier.Name)View();
+@:
+@:        public @(Model.Classifier.Name)View @(Model.Classifier.Name)View
+@:        {
+@:            get
+@:            {
+@:                return _@(Model.Classifier.Name.LowerFirst())View;
+@:            }
+@:
+@:            set
+@:            {
+@:                this._@(Model.Classifier.Name.LowerFirst())View = value;
+                foreach (var att in Model.Classifier.AllAttributes())
+				{
+@:                OnPropertyChanged("@(att.Name)");
+	                }
+@:                              
+@:            }
+@:        }
 		
-       	 @foreach (var att in Model.Classifier.AllAttributes())     	{
-       	 	if(att.Type.IsClass())
-       	 	{
-       	  	 <text>
-        /// <summary>
-        /// is class
-        /// </summary>	
-        public @GetPrimaryType(att.Type)  @(att.Name) 
-        {
-            set
-            {
-                if (@(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type) != value)
-                {
-                    @(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type) = value;
-                    OnPropertyChanged("@(att.Name)@GetPrimaryKey(att.Type)");
-                }
-            }
-            get
-            {
-                return @(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type);
-            } 
-         } 	    	
-	    	</text>
-       	 	}
-       	 else
+       	 foreach (var att in Model.Classifier.AllAttributes())   
        	 {
+       	 	switch (att.Type.GetUMLType())
+       	 	{
+       	 	case UmlTypeEnum.Class:	
+@:        /// <summary>
+@:        /// is class
+@:        /// </summary>	
+@:        public @GetPrimaryType(att.Type)  @(att.Name) 
+@:        {
+@:            set
+@:            {
+@:                if (@(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type) != value)
+@:                {
+@:                    @(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type) = value;
+@:                    OnPropertyChanged("@(att.Name)@GetPrimaryKey(att.Type)");
+@:                }
+@:            }
+@:            get
+@:            {
+@:                return @(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type);
+@:            } 
+@:         } 	    	
+       	 	break;
+       	case UmlTypeEnum.PrimitiveType:
        	 
-       	 <text>
-        /// <summary>
-        /// 
-        /// </summary>	
-        public @(att.Type.TypeName("C#"))  @(att.Name) 
-        {
-            set
-            {
-                if (@(Model.Classifier.Name)View.@(att.Name) != value)
-                {
-                    @(Model.Classifier.Name)View.@(att.Name) = value;
-                    OnPropertyChanged("@(att.Name)");
-                }
-            }
-            get
-            {
-                return @(Model.Classifier.Name)View.@(att.Name);
-            } 
-         } 	    	
-	    	</text>
-	    		}
+@:        /// <summary>
+@:        /// 
+@:        /// </summary>	
+@:        public @(att.Type.TypeName("C#"))  @(att.Name) 
+@:        {
+@:            set
+@:            {
+@:                if (@(Model.Classifier.Name)View.@(att.Name) != value)
+@:                {
+@:                    @(Model.Classifier.Name)View.@(att.Name) = value;
+@:                    OnPropertyChanged("@(att.Name)");
+@:                }
+@:            }
+@:            get
+@:            {
+@:                return @(Model.Classifier.Name)View.@(att.Name);
+@:            } 
+@:         } 	    	
+	    		break;
+       	case UmlTypeEnum.Enumeration:
+       	 
+@:        /// <summary>
+@:        /// 
+@:        /// </summary>	
+@:        public int @(att.Name) 
+@:        {
+@:            set
+@:            {
+@:                if (@(Model.Classifier.Name)View.@(att.Name) != value)
+@:                {
+@:                    @(Model.Classifier.Name)View.@(att.Name) = value;
+@:                    OnPropertyChanged("@(att.Name)");
+@:                }
+@:            }
+@:            get
+@:            {
+@:                return @(Model.Classifier.Name)View.@(att.Name);
+@:            } 
+@:         } 	    	
+	    		break;	    		
+	    		
 	    	}
+	     }
 	    	
-	    	@foreach (var att in Model.Classifier.GetTargetAssociation())    	{ 
+	    	foreach (var att in Model.Classifier.GetTargetAssociation())
+	    	{ 
 	    	var pk=((IClassifier)att.GetSourceMemberEnd().Type).Name+ GetPrimaryKey((IClassifier)att.GetSourceMemberEnd().Type);
 	    	
-    	<text>
-    	/// <summary>
-        /// @GetPrimaryDescription((IClassifier)att.GetSourceMemberEnd().Type)
-        /// </summary>	
-       
-		 public @GetPrimaryType((IClassifier)att.GetSourceMemberEnd().Type)  @(pk) 
-         {
-            set
-            {
-                if (@(Model.Classifier.Name)View.@(pk) != value)
-                {
-                    @(Model.Classifier.Name)View.@(pk) = value;
-                    OnPropertyChanged("@(pk)");
-                }
-            }
-            get
-            {
-                return @(Model.Classifier.Name)View.@(pk);
-            } 
-         } 	    	
-		</text>
+@:    	/// <summary>
+@:        /// @GetPrimaryDescription((IClassifier)att.GetSourceMemberEnd().Type)
+@:        /// </summary>	
+@:       
+@:		 public @GetPrimaryType((IClassifier)att.GetSourceMemberEnd().Type)  @(pk) 
+@:         {
+@:            set
+@:            {
+@:                if (@(Model.Classifier.Name)View.@(pk) != value)
+@:                {
+@:                    @(Model.Classifier.Name)View.@(pk) = value;
+@:                    OnPropertyChanged("@(pk)");
+@:                }
+@:            }
+@:            get
+@:            {
+@:                return @(Model.Classifier.Name)View.@(pk);
+@:            } 
+@:         } 	    	
     	}
 	    	
 	    	
 
       
-
-        public @(Model.Classifier.Name)Update Get@(Model.Classifier.Name)Update()
-        {
-            var result = new @(Model.Classifier.Name)Update();
-
-			 @foreach (var att in Model.Classifier.AllAttributes())     	{
+@:
+@:        public @(Model.Classifier.Name)Update Get@(Model.Classifier.Name)Update()
+@:        {
+@:            var result = new @(Model.Classifier.Name)Update();
+@:
+			 foreach (var att in Model.Classifier.AllAttributes()) 
+			 {
 				 if(att.Type.IsClass())
 	       	 	{
-	       <text>result.@(att.Name)@GetPrimaryKey(att.Type) = @(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type);</text>	 	
+@:	       result.@(att.Name)@GetPrimaryKey(att.Type) = @(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type);	
 	       	 	}
 	       	 	else
 	       	 	{
-			<text>result.@(att.Name) = @(Model.Classifier.Name)View.@(att.Name);</text>
+@:			result.@(att.Name) = @(Model.Classifier.Name)View.@(att.Name);
 				}
-           }
-            return result;
-        }
-
-        public @(Model.Classifier.Name)Add Get@(Model.Classifier.Name)Add()
-        {
-            var result = new @(Model.Classifier.Name)Add();
-
-            @foreach (var att in Model.Classifier.AllAttributes())     	{
+            }
+@:            return result;
+@:        }
+@:
+@:        public @(Model.Classifier.Name)Add Get@(Model.Classifier.Name)Add()
+@:        {
+@:            var result = new @(Model.Classifier.Name)Add();
+            foreach (var att in Model.Classifier.AllAttributes())     	
+            {
 			 if(att.Type.IsClass())
 	       	 	{
-	       <text>result.@(att.Name)@GetPrimaryKey(att.Type) = @(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type);</text>	 	
+@:	       result.@(att.Name)@GetPrimaryKey(att.Type) = @(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type);	 	
 	       	 	}
 	       	 	else
 	       	 	{
-			<text>result.@(att.Name) = @(Model.Classifier.Name)View.@(att.Name);</text>
+@:			result.@(att.Name) = @(Model.Classifier.Name)View.@(att.Name);
 				}
-           }
-           @foreach (var att in Model.Classifier.GetTargetAssociation())    	{ 
+            }
+           foreach (var att in Model.Classifier.GetTargetAssociation())    
+           { 
            var pk=((IClassifier)att.GetSourceMemberEnd().Type).Name+ GetPrimaryKey((IClassifier)att.GetSourceMemberEnd().Type);
- <text>result.@(pk)= @(Model.Classifier.Name)View.@(pk); </text>
-    	}
-            return result;
-        }
-
-
-
-
-        public static explicit operator @(Model.Classifier.Name)EditViewModel(@(Model.Classifier.Name)View item)
-    	{
-       	    var result=new @(Model.Classifier.Name)EditViewModel();
-    	 
-	    	 @foreach (var att in Model.Classifier.AllAttributes())     	{
+@:         result.@(pk)= @(Model.Classifier.Name)View.@(pk); 
+    		}
+@:            return result;
+@:        }
+@:
+@:        public static explicit operator @(Model.Classifier.Name)EditViewModel(@(Model.Classifier.Name)View item)
+@:    	{
+@:       	    var result=new @(Model.Classifier.Name)EditViewModel();    	 
+	    	 foreach (var att in Model.Classifier.AllAttributes()) 
+	    	 {
 	    	  if(att.Type.IsClass())
 	       	 	{
-	     //  <text>result.@(att.Name)@GetPrimaryKey(att.Type) = item.@(att.Name)@GetPrimaryKey(att.Type);</text>	 	
+@:	     //  result.@(att.Name)@GetPrimaryKey(att.Type) = item.@(att.Name)@GetPrimaryKey(att.Type); 	
 	       	 	}
 	       	 	else
 	       	 	{
-			<text>result.@(att.Name) = item.@(att.Name);</text>
+@:			result.@(att.Name) = item.@(att.Name);
 				}
-	    	 
-	    	 
-			
-           }     
-	    	
-        	return result;
-       }
+             }     	    	
+@:        	return result;
+@:       }
 
      
-    }
+@:    }
 }
-
+}
 @functions{
  
  	public static string GetPrimaryKey(IType iType)

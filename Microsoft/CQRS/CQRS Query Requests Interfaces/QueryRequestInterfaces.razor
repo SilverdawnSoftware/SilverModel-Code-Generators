@@ -1,0 +1,46 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using System.Text;
+@using SilverDawn.SilverModel.Interfaces;
+@{
+var queryResult=Model.Classifier["Query Metadata","Query Result"].AsClass();
+@:// ALLOWOVERWRITE
+@:using System.Collections.Generic;
+@:using System.Threading.Tasks;
+if (queryResult!=null){
+@:using @(GetInterfaceNameSpace(queryResult)).Models;
+}
+@:using @(GetInterfaceNameSpace(Model.Classifier)).Models;
+@:namespace @(GetInterfaceNameSpace(Model.Classifier)) 
+@:{
+@:    public partial interface I@(Model.Classifier.Name)Request : Orleans.IGrainWithIntegerKey
+@:    {
+		if (HasMany(Model.Classifier))
+   			{
+@:        Task<List<I@(queryResult.Name)>> @(Model.Classifier.Name)(I@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()));
+			}
+			else
+			{
+@:        Task<I@(queryResult.Name)> @(Model.Classifier.Name)(I@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()));			
+			}
+@:    }
+@:}
+
+
+@IncludeFile("..\CQRS Shared Code\SharedFunctions.razor")
+}
+
+@functions{
+
+	public static bool HasMany(IClassifier iClass)
+	{
+		if (iClass["Query Metadata","Query Result Multiplicity"].AsString()=="Many")
+			return true;
+			
+		return false;
+	}
+}

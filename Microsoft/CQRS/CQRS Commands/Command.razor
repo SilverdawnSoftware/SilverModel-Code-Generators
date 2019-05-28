@@ -17,24 +17,32 @@ var queryResult=Model.Classifier["Query Metadata","Query Result"].AsClass();
 @:using System.Linq;
 @:using System.Threading.Tasks;
 @:using SilverdawnSoftware.Exceptions;
+@:using System.Runtime.Serialization;
+@:using @(GetInterfaceNameSpace(Model.Classifier));
+@:using @(GetInterfaceNameSpace(Model.Classifier)).Models;
+@:using @(Model.Solution.Name).Interfaces;
 if(queryResult!=null)
 {
-@:using @GetNameSpaceForClass(queryResult);
+@:using @(GetNameSpaceForClass(queryResult)).Models;
+@:using @(GetInterfaceNameSpace(queryResult)).Models;
 }
 if(queryClass!=null)
 {
 @:using @GetNameSpaceForClass(queryClass);
 }
 
+@:
 @(GetUsings(Model.Classifier))
-
+@:
 @:namespace @GetNameSpaceForClass(Model.Classifier)
 @:{
-@:  	public partial class @(Model.Classifier.Name)Transations
+@:  	public partial class @(Model.Classifier.Name)Command : Orleans.Grain , I@(Model.Classifier.Name)Command
 @:    {
+@:
+@:		
 	switch(Model.Classifier["Query Metadata","OperationType"].AsString())
 		{
-		case "Add":   					
+		case "Insert":   					
 			@IncludeFile("CommandAdd.razor")
 		break;
 		case "Update":
@@ -48,5 +56,5 @@ if(queryClass!=null)
 }
 
 
-@IncludeFile("SharedFunctions.razor")
+@IncludeFile("..\CQRS Shared Code\SharedFunctions.razor")
 }

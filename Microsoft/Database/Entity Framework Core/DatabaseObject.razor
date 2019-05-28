@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 
@@ -19,8 +20,13 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name)
     	@foreach (var att in Model.Classifier.Attributes()) { 
     	switch (att.Type.GetUMLType())
 				{
-				case UmlTypeEnum.PrimitiveType:				    		
-@:        /// <summary> @att.Description </summary>	 	    		
+				case UmlTypeEnum.PrimitiveType:
+@:        /// <summary> @att.Description </summary>
+					if (att["Database General Metadata","Primary Key"].AsString()=="True")
+					{
+@:        [Key]			
+					}
+	 	    		
 @:        public @(att.Type.TypeName("C#")) @(att.Name) { get; set; }     	
 				break;
 				case UmlTypeEnum.Class:							

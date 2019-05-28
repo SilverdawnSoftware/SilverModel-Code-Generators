@@ -41,7 +41,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Views
     
     	@if (!string.IsNullOrEmpty(GetPrimaryKey(Model.Classifier))){
     	<text>
-    	public async Task<@(Model.Classifier.Name)View> Get(int @(GetPrimaryKey(Model.Classifier).LowerFirst()))
+    	public async Task<@(Model.Classifier.Name)View> Get(@(GetPrimaryKeyType(Model.Classifier)) @(GetPrimaryKey(Model.Classifier).LowerFirst()))
     	{
     		
     		try
@@ -109,5 +109,20 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name).Views
     	
     	return "";
     }
- 
+
+ public static string GetPrimaryKeyType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.AllAttributes())
+		{
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return att.Type.TypeName("C#");
+				
+			}
+		}
+    	
+    	return "";
+    }
+
+
 }
