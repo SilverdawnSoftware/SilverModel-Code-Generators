@@ -53,13 +53,26 @@ if(queryClass!=null)
 				 {
                       if  (att.RelatedField!=null && queryClass.AllAttributes().Any(w=>w.ElementId==att.RelatedField.ElementId))
 				 	  {
-				 	    	var match=queryClass.AllAttributes().First(w=>w.ElementId==att.RelatedField.ElementId);	
-				         	if (!match.Type.IsClass())
-				        	{
+						var match=queryClass.AllAttributes().First(w=>w.ElementId==att.RelatedField.ElementId);	
+						switch (att.Type.GetUMLType())
+						{
+							case UmlTypeEnum.PrimitiveType:
+							case UmlTypeEnum.Enumeration:
 @:                            toAdd.@(att.Name)=@(queryClass.Name.LowerFirst()).@(match.Name);
-                            }
+	                   		break;
+	                   		case UmlTypeEnum.Class:
+	                   			var iClassifier=(IClassifier)att.Type;
+								if (iClassifier["Database General Metadata","Entity Type"].AsString()=="OwnedEntity") 				
+		       	 				{
+@:                            toAdd.@(att.Name) = new @(iClassifier.Name)();
+		       	 					foreach (var att2 in iClassifier.AllAttributes()) 
+	                     			{
+@:                            toAdd.@(match.Name).@(att2.Name)=@(queryClass.Name.LowerFirst()).@(match.Name).@(att2.Name);                       			
+	                     			}
+		       	 				}
+	                   		break;
 		         	   }
-		         
+		         	}
 				 }
 @:                            result.Add(toAdd);
 				@:		}
@@ -96,10 +109,24 @@ if(queryClass!=null)
                       if  (att.RelatedField!=null && queryClass.AllAttributes().Any(w=>w.ElementId==att.RelatedField.ElementId))
 				 	  {
 				 	    	var match=queryClass.AllAttributes().First(w=>w.ElementId==att.RelatedField.ElementId);	
-				         	if (!match.Type.IsClass())
-				        	{
-                       @:result.@(att.Name)=@(queryClass.Name.LowerFirst()).@(match.Name);
-                            }
+				         	switch (att.Type.GetUMLType())
+						{
+							case UmlTypeEnum.PrimitiveType:
+							case UmlTypeEnum.Enumeration:
+@:                       result.@(att.Name)=@(queryClass.Name.LowerFirst()).@(match.Name);
+	                   		break;
+	                   		case UmlTypeEnum.Class:
+	                   			var iClassifier=(IClassifier)att.Type;
+								if (iClassifier["Database General Metadata","Entity Type"].AsString()=="OwnedEntity") 				
+		       	 				{
+@:                       result.@(att.Name) = new @(iClassifier.Name)();
+		       	 					foreach (var att2 in iClassifier.AllAttributes()) 
+	                     			{
+@:                       result.@(match.Name).@(att2.Name)=@(queryClass.Name.LowerFirst()).@(match.Name).@(att2.Name);                       			
+	                     			}
+		       	 				}
+	                   		break;
+		         	   }
 		         	   }
 		         	   else
 		         	   {

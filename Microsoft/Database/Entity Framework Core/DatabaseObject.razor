@@ -4,21 +4,27 @@
 @using SilverDawn.SilverModel.UML.Extensions;
 @using SilverDawn.SilverModel.UML.Interfaces.Classes;
 @using SilverDawn.SilverModel.UML.Classes;
-// ALLOWOVERWRITE
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-
-
-
-namespace @(Model.Solution.Name).@(Model.Diagram.Name)
-{
-    public class @Model.Classifier.Name @GetInheritance(@Model.Classifier)
-    {
-    	@foreach (var att in Model.Classifier.Attributes()) { 
-    	switch (att.Type.GetUMLType())
+@{
+@:// ALLOWOVERWRITE
+@:
+@:using System;
+@:using System.Collections.Generic;
+@:using System.ComponentModel.DataAnnotations;
+@:using System.Linq;
+@:using Microsoft.EntityFrameworkCore;
+@:
+@:namespace @(Model.Solution.Name).@(Model.Diagram.Name)
+@:{
+@:	
+	if (Model.Classifier["Database General Metadata","Entity Type"].AsString()=="OwnedEntity")
+    	{
+@:    [Owned]
+    	}
+@:    public class @Model.Classifier.Name @GetInheritance(@Model.Classifier)
+@:    {
+    	foreach (var att in Model.Classifier.Attributes()) { 
+@:
+			switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.PrimitiveType:
 @:        /// <summary> @att.Description </summary>
@@ -29,13 +35,25 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name)
 	 	    		
 @:        public @(att.Type.TypeName("C#")) @(att.Name) { get; set; }     	
 				break;
-				case UmlTypeEnum.Class:							
+				case UmlTypeEnum.Class:	
+				if (att.Type is IClassifier)
+ 				{
+ 					var iClassifier=(IClassifier)att.Type;
+ 					if (iClassifier["Database General Metadata","Entity Type"].AsString()=="OwnedEntity")
+ 					{
+@:        /// <summary> @att.Description </summary>	
+@:        public virtual @(iClassifier.Name)  @(att.Name)   { get; set; }
+					} 				
+ 					else
+ 					{
 @:        /// To avoid Many to Many Relationships, use primary key https://github.com/aspnet/EntityFrameworkCore/issues/1368
 @:        /// <summary>
 @:        /// @att.Description
 @:        /// </summary>	
 @:        //public virtual @att.Type.TypeName("C#") @att.Name <text> { get; set; }  				
-@:        public @(GetPrimaryType(att.Type)) @(att.Name)@(GetPrimaryKey(att.Type))  { get; set; }		
+@:        public @(GetPrimaryType(att.Type)) @(att.Name)@(GetPrimaryKey(att.Type))  { get; set; }	
+					}
+				}
 				break;
 				case UmlTypeEnum.Enumeration:
 @:        /// <summary> @att.Description </summary>	
@@ -44,7 +62,7 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name)
 				}    		
     	}
     	
-    	@foreach (var att in Model.Classifier.GetTargetAssociation()) { 
+    	foreach (var att in Model.Classifier.GetTargetAssociation()) { 
     	
 @:    	/// <summary>
 @:        /// Reference to  @att.GetSourceMemberEnd().Type.Name
@@ -52,22 +70,16 @@ namespace @(Model.Solution.Name).@(Model.Diagram.Name)
 @:    	public virtual @(att.GetSourceMemberEnd().Type.Name) @(att.GetSourceMemberEnd().Type.Name) { get; set; } 
     	}
     	
-    	@foreach (var att in Model.Classifier.GetSourceAssociation()) { 
+    	foreach (var att in Model.Classifier.GetSourceAssociation()) { 
 @:    	/// <summary>
 @:        /// List of @(att.GetTargetMemberEnd().Type.Name)s
 @:        /// </summary>	
 @:    	public virtual List<@(att.GetTargetMemberEnd().Type.Name)> @(att.GetTargetMemberEnd().Type.Name)s { get; set; }
     	}
-    	
-    	
-    	
-    	
-    }
-    
-    
+@:    }
+@:}
+
 }
-
-
 
 
 

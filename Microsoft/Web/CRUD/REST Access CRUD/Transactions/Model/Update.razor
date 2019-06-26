@@ -23,27 +23,43 @@
 			switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.PrimitiveType:			
-@:	    		/// <summary>
-@:                /// @att.Description
-@:                /// </summary>
-@:				 [DataMember(Name = "@att.Name.LowerFirst()")]                 
-@:	    		public @att.Type.TypeName("C#") @att.Name { get; set; } 
+@:              /// <summary>
+@:              /// @att.Description 
+@:              /// </summary>
+@:              [DataMember(Name = "@att.Name.LowerFirst()")]                 
+@:              public @att.Type.TypeName("C#") @att.Name { get; set; } 
 				break;
-
                 case UmlTypeEnum.Class:
-				var primaryKey=GetPrimaryKey(att.Type);
-@:				/// <summary>
-@:                /// @att.Description
-@:                /// </summary>
-@:				 [DataMember(Name = "@att.Name.LowerFirst()@(primaryKey)")]                 
-@:				public @GetPrimaryType(att.Type) @(att.Name)@primaryKey  { get; set; } 				
+                if (att.Type is IClassifier)
+ 				{
+ 					var iClassifier=(IClassifier)att.Type;
+ 					if (iClassifier["Database General Metadata","Entity Type"].AsString()=="OwnedEntity")
+    				{
+    								var primaryKey=GetPrimaryKey(att.Type);
+@:              /// <summary>
+@:              /// @att.Description 
+@:              /// </summary>
+@:              //[DataMember(Name = "@att.Name.LowerFirst()@(primaryKey)")]                 
+@:             // public @(iClassifier.Name) @(iClassifier.Name) { get; set; } 	
+    				}
+    				else
+    				{
+    								var primaryKey=GetPrimaryKey(att.Type);
+@:              /// <summary>
+@:              /// @att.Description
+@:              /// </summary>
+@:              [DataMember(Name = "@att.Name.LowerFirst()@(primaryKey)")]                 
+@:              public @GetPrimaryType(att.Type) @(att.Name)@primaryKey  { get; set; } 	
+    				}
+ 				}
+			
 				break;
 				case UmlTypeEnum.Enumeration:
-@:	    		/// <summary>
-@:                /// @att.Description
-@:                /// </summary>
-@:				 [DataMember(Name = "@att.Name.LowerFirst()")]                 
-@:	    		public int @att.Name { get; set; } 				
+@:              /// <summary>
+@:              /// @att.Description
+@:              /// </summary>
+@:              [DataMember(Name = "@att.Name.LowerFirst()")]                 
+@:              public int @att.Name { get; set; } 				
 				break;
 				}
 	    	 }      	

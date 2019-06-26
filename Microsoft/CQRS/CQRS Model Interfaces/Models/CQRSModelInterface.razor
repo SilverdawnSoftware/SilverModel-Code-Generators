@@ -22,23 +22,28 @@
 @:    { 
     	foreach (var att in Model.Classifier.Attributes().Where(w=>w.Visibility!=VisibilityKind.None))
     	{     	
-		
+@:		
 			switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.PrimitiveType:				    		     				
-@:         @(att.Type.TypeName("C#")) @att.Name  { get; set; }
-		@:  	
+@:        @(att.Type.TypeName("C#")) @att.Name  { get; set; }	
 				break;
-				case UmlTypeEnum.Class:							
-@:        /// To avoid Many to Many Relationships, use primary key https://github.com/aspnet/EntityFrameworkCore/issues/1368
-@:        /// <summary>
-@:        /// @att.Description
-@:        /// </summary>	
-@:        //public virtual @att.Type.TypeName("C#") @att.Name <text> { get; set; }  				
-@:         @(GetPrimaryType(att.RelatedField.Type)) @(att.Name)@(GetPrimaryKey(att.RelatedField.Type))  { get; set; }		
+		  case UmlTypeEnum.Class:
+		  if (att.Type is IClassifier)
+ 				{
+ 					var iClassifier=(IClassifier)att.Type;  					
+				 	if (iClassifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
+	       	 		{
+@:        I@(iClassifier.Name)  @(att.Name)   { get; set; }
+ 					}
+ 					else
+ 					{
+ @:        I@(iClassifier.Name)  @(att.Name)   { get; set; }					
+ 					}
+				}
 				break;
 				case UmlTypeEnum.Enumeration:
-@:        /// <summary> @att.Description </summary>	
+@:        /// <summary> @att.Description  </summary>	
 @:         @(att.Type.Name) @(att.Name) { get; set; }  
 				break;
 				} 

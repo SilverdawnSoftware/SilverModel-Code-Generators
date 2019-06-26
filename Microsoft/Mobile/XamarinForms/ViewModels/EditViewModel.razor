@@ -128,6 +128,9 @@
        	 	switch (att.Type.GetUMLType())
        	 	{
        	 	case UmlTypeEnum.Class:	
+       	 		var iClassifier=(IClassifier)att.Type;
+       	 		if (iClassifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity")
+ 					{
 @:        /// <summary>
 @:        /// is class
 @:        /// </summary>	
@@ -145,7 +148,8 @@
 @:            {
 @:                return @(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type);
 @:            } 
-@:         } 	    	
+@:         } 
+					}
        	 	break;
        	case UmlTypeEnum.PrimitiveType:
        	 
@@ -224,13 +228,18 @@
 @:
 @:        public @(Model.Classifier.Name)Update Get@(Model.Classifier.Name)Update()
 @:        {
+
 @:            var result = new @(Model.Classifier.Name)Update();
 @:
 			 foreach (var att in Model.Classifier.AllAttributes()) 
-			 {
-				 if(att.Type.IsClass())
-	       	 	{
+			 {			 	 				
+				if(att.Type.IsClass())
+				{
+					var iClassifier=(IClassifier)att.Type;
+				 	if (iClassifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
+	       	 		{
 @:	       result.@(att.Name)@GetPrimaryKey(att.Type) = @(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type);	
+	       	 		}
 	       	 	}
 	       	 	else
 	       	 	{
@@ -245,14 +254,18 @@
 @:            var result = new @(Model.Classifier.Name)Add();
             foreach (var att in Model.Classifier.AllAttributes())     	
             {
-			 if(att.Type.IsClass())
+				if(att.Type.IsClass())
 	       	 	{
+	       	 		var iClassifier=(IClassifier)att.Type;
+				 	if (iClassifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
+	       	 		{
 @:	       result.@(att.Name)@GetPrimaryKey(att.Type) = @(Model.Classifier.Name)View.@(att.Name)@GetPrimaryKey(att.Type);	 	
+	       	 		}
 	       	 	}
 	       	 	else
 	       	 	{
 @:			result.@(att.Name) = @(Model.Classifier.Name)View.@(att.Name);
-				}
+				}				
             }
            foreach (var att in Model.Classifier.GetTargetAssociation())    
            { 

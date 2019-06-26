@@ -5,59 +5,66 @@
 @using SilverDawn.SilverModel.UML.Interfaces.Classes;
 @using SilverDawn.SilverModel.UML.Classes;
 @using SilverDawn.SilverModel.UML.Extensions;
-// ALLOWOVERWRITE
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-
-
-namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model
+@{
+@:// ALLOWOVERWRITE
+if (Model.Classifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
 {
-    public class @(Model.Classifier.Name)Add
-    {
-    	@foreach (var att in Model.Classifier.AllAttributes())    	{ 
+@:
+@:using System;
+@:using System.Collections.Generic;
+@:using System.Linq;
+@:
+@:namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model
+@:{
+@:    public class @(Model.Classifier.Name)Add
+@:    {
+    	foreach (var att in Model.Classifier.AllAttributes())    	{ 
     	
 	    	if (!(@att["Entity Framework","EF Primary Key"].AsString()=="True"))
 	    	{
-	    	
+@:	    	
 	    	switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.PrimitiveType:
-			
-	    		<text>
-	    		 /// <summary>
-                  /// @att.Description
-                  /// </summary>	    		
-	    		public @att.Type.TypeName("C#")</text> @att.Name <text> { get; set; } </text>
+@:        /// <summary>
+@:        /// @att.Description
+@:        /// </summary>	    		
+@:        public @(att.Type.TypeName("C#")) @(att.Name)  { get; set; } 
 				break;
-				
-				
+								
 				case UmlTypeEnum.Class:
+				if (att.Type is IClassifier)
+ 				{
+ 					var iClassifier=(IClassifier)att.Type;
+ 					if (iClassifier["Database General Metadata","Entity Type"].AsString()=="OwnedEntity")
+ 					{
+@:        public @(iClassifier.Name)  @(att.Name)   { get; set; }
+					} 				
+ 					else
+ 					{
 				var primaryKey=GetPrimaryKey(att.Type);
-				<text>
-				/// <summary>
-                  /// @att.Description
-                  /// </summary>	  
-				public @GetPrimaryType(att.Type) @(att.Name)@(primaryKey)  { get; set; } </text>				
+@:        /// <summary>
+@:        /// @att.Description
+@:        /// </summary>	  
+@:        public @(GetPrimaryType(att.Type)) @(att.Name)@(primaryKey)  { get; set; } 
+					}
+				}
 				break;
 				}
 	    	 }    	
     	}
     	   	
-    	@foreach (var att in Model.Classifier.GetTargetAssociation())    	{ 
-    	<text>
-    	/// <summary>
-        /// @GetPrimaryDescription((IClassifier)att.GetSourceMemberEnd().Type)
-        /// </summary>	
-       
-    	public @GetPrimaryType((IClassifier)att.GetSourceMemberEnd().Type)</text> @(((IClassifier)att.GetSourceMemberEnd().Type).Name)@(GetPrimaryKey((IClassifier)att.GetSourceMemberEnd().Type))<text> { get; set; } </text>
+    	foreach (var att in Model.Classifier.GetTargetAssociation())    	
+    	{ 
+@:        /// <summary>
+@:        /// @GetPrimaryDescription((IClassifier)att.GetSourceMemberEnd().Type)
+@:        /// </summary>	       
+@:        public @(GetPrimaryType((IClassifier)att.GetSourceMemberEnd().Type)) @(((IClassifier)att.GetSourceMemberEnd().Type).Name)@(GetPrimaryKey((IClassifier)att.GetSourceMemberEnd().Type)) { get; set; } 
     	}
-    }    	    	
+@:    }    	    	
+@:}
 }
-
-
+}
 
 @functions{
  

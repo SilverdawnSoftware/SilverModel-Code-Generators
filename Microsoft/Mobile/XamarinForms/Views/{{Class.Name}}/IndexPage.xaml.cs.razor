@@ -5,62 +5,57 @@
 @using SilverDawn.SilverModel.UML.Interfaces.Classes;
 @using SilverDawn.SilverModel.UML.Classes;
 // ALLOWOVERWRITE
-
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using @(Model.Diagram.Name).Views.Model;
-using @(Model.Diagram.Name).Views;
-using @(Model.Diagram.Name).Mobile.ViewModels;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-
-namespace @(Model.Diagram.Name).Mobile.Views.@(Model.Classifier.Name)
+@{
+if (Model.Classifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class @(Model.Classifier.Name)IndexPage : ContentPage
-    {
-        public ObservableCollection<@(Model.Classifier.Name)View> Items { get; set; }=new ObservableCollection<@(Model.Classifier.Name)View>();
-
-        public @(Model.Classifier.Name)IndexPage()
-        {
-            InitializeComponent();
-			MessagingCenter.Subscribe<@(Model.Classifier.Name)IndexViewModel, @(Model.Classifier.Name)EditViewModel>(this, "Add@(Model.Classifier.Name)", async (sender, arg) => { await Add@(Model.Classifier.Name)s(arg);});                   
-        }
+@:using System;
+@:using System.Collections.Generic;
+@:using System.Collections.ObjectModel;
+@:using System.ComponentModel;
+@:using System.Linq;
+@:using System.Threading.Tasks;
+@:using @(Model.Diagram.Name).Views.Model;
+@:using @(Model.Diagram.Name).Views;
+@:using @(Model.Diagram.Name).Mobile.ViewModels;
+@:using Xamarin.Forms;
+@:using Xamarin.Forms.Xaml;
+@:
+@:namespace @(Model.Diagram.Name).Mobile.Views.@(Model.Classifier.Name)
+@:{
+@:    [XamlCompilation(XamlCompilationOptions.Compile)]
+@:    public partial class @(Model.Classifier.Name)IndexPage : ContentPage
+@:    {
+@:        public ObservableCollection<@(Model.Classifier.Name)View> Items { get; set; }=new ObservableCollection<@(Model.Classifier.Name)View>();
+@:
+@:        public @(Model.Classifier.Name)IndexPage()
+@:        {
+@:            InitializeComponent();
+@:			MessagingCenter.Subscribe<@(Model.Classifier.Name)IndexViewModel, @(Model.Classifier.Name)EditViewModel>(this, "Add@(Model.Classifier.Name)", async (sender, arg) => { await Add@(Model.Classifier.Name)s(arg);});                   
+@:        }
         
-        
-        private async System.Threading.Tasks.Task Add@(Model.Classifier.Name)s(@(Model.Classifier.Name)EditViewModel @(Model.Classifier.Name.LowerFirst())EditViewModel)
-        {
-
-            var page = new @(Model.Classifier.Name)EditPage();
-            page.BindingContext = @(Model.Classifier.Name.LowerFirst())EditViewModel;
-            await Navigation.PushAsync(page);
-            NavigationPage.SetHasBackButton(page, true);
-        }
-        
-        
-
-        async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
-        {
-            if (e.Item == null)
-                return;
-
-            //await DisplayAlert("Item Tapped", "An item was tapped.", "OK");
-            var page = new @(Model.Classifier.Name)EditPage();
-            await Navigation.PushAsync(page);
-            NavigationPage.SetHasBackButton(page, true);
-			await ((@(Model.Classifier.Name)EditViewModel)page.BindingContext).Load(((@(Model.Classifier.Name)View) e.Item).@(GetPrimaryKey(Model.Classifier)));
-            //Deselect Item
-            ((ListView)sender).SelectedItem = null;
-        }
-
-
-        
-    }
-
+@:        private async System.Threading.Tasks.Task Add@(Model.Classifier.Name)s(@(Model.Classifier.Name)EditViewModel @(Model.Classifier.Name.LowerFirst())EditViewModel)
+@:        {
+@:            var page = new @(Model.Classifier.Name)EditPage();
+@:            page.BindingContext = @(Model.Classifier.Name.LowerFirst())EditViewModel;
+@:            await Navigation.PushAsync(page);
+@:            NavigationPage.SetHasBackButton(page, true);
+@:        }
+@:
+@:        async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
+@:        {
+@:            if (e.Item == null)
+@:                return;
+@:            //await DisplayAlert("Item Tapped", "An item was tapped.", "OK");
+@:            var page = new @(Model.Classifier.Name)EditPage();
+@:            await Navigation.PushAsync(page);
+@:            NavigationPage.SetHasBackButton(page, true);
+@:			await ((@(Model.Classifier.Name)EditViewModel)page.BindingContext).Load(((@(Model.Classifier.Name)View) e.Item).@(GetPrimaryKey(Model.Classifier)));
+@:            //Deselect Item
+@:            ((ListView)sender).SelectedItem = null;
+@:        }        
+@:    }
+@:}
+}
 }
 
 @functions{

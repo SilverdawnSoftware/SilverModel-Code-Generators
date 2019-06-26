@@ -4,23 +4,23 @@
 @using SilverDawn.SilverModel.UML.Extensions;
 @using SilverDawn.SilverModel.UML.Interfaces.Classes;
 @using SilverDawn.SilverModel.UML.Classes;
-
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using SilverDawn.SilverModel.UML.Interfaces.Classes;
-
-namespace @Model.Diagram.QualifiedName
-{
-    public class @Model.Classifier.Name
-    {
-    	@foreach (var property in Model.Classifier.Attributes())
+@{
+@:using System;
+@:using System.Collections.Generic;
+@:using System.Linq;
+@:using System.Web;
+@:using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@:
+@:namespace @Model.Diagram.QualifiedName
+@:{
+@:    public class @Model.Classifier.Name
+@:    {
+    	foreach (var property in Model.Classifier.Attributes())
     	{     	
-    	<text>/// <summary>@property.Description</summary></text>   
-    	<text>/// <remarks>@Raw(property.Notes)</remarks></text>   
-    	<text>public @property.Type.TypeName("C#")</text> @property.Name <text> { get; set; } </text>
+@:    	/// <summary>@property.Description</summary>   
+@:    	/// <remarks>@Raw(property.Notes)</remarks> 
+@:    	public @property.Type.TypeName("C#") @property.Name  { get; set; } 
     	}
-    }
+@:    }
+@:}
 }

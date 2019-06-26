@@ -1,5 +1,30 @@
 ﻿@functions{
 
+
+ public string GetInterfaceUsings(IClassifier classifier)
+   {
+   		var result=new StringBuilder();
+		foreach (var att in classifier.Attributes().Where(w=>w.Visibility!=VisibilityKind.None))
+		{
+			if (att.Type.GetUMLType()==UmlTypeEnum.Class)
+			{
+				 if (att.Type is IClassifier)
+ 				{
+ 					var refClassifier=(IClassifier)att.Type;
+ 					var newusing="using "+GetInterfaceNameSpace(refClassifier)+".Models;";
+ 					if (!result.ToString().Contains(newusing))
+ 					{
+ 						result.AppendLine(newusing);
+ 					}
+ 					
+ 				}
+			}
+		}
+		
+		return result.ToString();
+   }
+
+
 public static IProperty GetParentMemberEnd(IProperty property,IClassifier queryClass,IOutput output)
 {
 	if (queryClass.GetParentAssociations().Any())
