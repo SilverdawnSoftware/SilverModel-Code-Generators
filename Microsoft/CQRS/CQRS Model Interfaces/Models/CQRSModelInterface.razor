@@ -22,7 +22,8 @@
 @:    { 
     	foreach (var att in Model.Classifier.Attributes().Where(w=>w.Visibility!=VisibilityKind.None))
     	{     	
-		
+			if (att["Serialization Metadata","CanSerialize"].AsString()=="True")
+			{
 			switch (att.Type.GetUMLType())
 				{
 				case UmlTypeEnum.PrimitiveType:				    		     				
@@ -42,6 +43,7 @@
 @:         @(att.Type.Name) @(att.Name) { get; set; }  
 				break;
 				} 
+			}
     	}    	 	
 
 @:	}

@@ -26,7 +26,7 @@
 @:    { 
     	foreach (var att in Model.Classifier.Attributes().Where(w=>w.Visibility!=VisibilityKind.None))
     	{     	
-			
+@:        /// <summary> @att.DefaultDescription() </summary>				
 @:        [DataMember]	
 			switch (att.Type.GetUMLType())
 				{
@@ -36,15 +36,10 @@
 		@:  	
 				break;
 				case UmlTypeEnum.Class:							
-@:        /// To avoid Many to Many Relationships, use primary key https://github.com/aspnet/EntityFrameworkCore/issues/1368
-@:        /// <summary>
-@:        /// @att.Description
-@:        /// </summary>	
-@:        //public virtual @att.Type.TypeName("C#") @att.Name <text> { get; set; }  				
+				
 @:          public @(GetPrimaryType(att.RelatedField.Type)) @(att.Name)@(GetPrimaryKey(att.RelatedField.Type))  { get; set; }		
 				break;
 				case UmlTypeEnum.Enumeration:
-@:        /// <summary> @att.Description </summary>	
 @:        public @(att.Type.Name) @(att.Name) { get; set; }  
 				break;
 				} 

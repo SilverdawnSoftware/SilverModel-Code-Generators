@@ -39,7 +39,13 @@ if(queryClass!=null)
 @:  	public partial class @(Model.Classifier.Name)Command : Orleans.Grain , I@(Model.Classifier.Name)Command
 @:    {
 @:
-@:		
+@:
+@:        /// <summary> @Model.Classifier.DefaultDescription() </summary>
+@:        /// <param name="invoiceAdd">this is a test</param>
+@:        /// <returns></returns>
+@:        /// <remarks>
+@:        /// @Raw(Model.Classifier.GetNotesAsHTML("///"))
+@:        /// </remarks>
 	switch(Model.Classifier["Query Metadata","OperationType"].AsString())
 		{
 		case "Insert":   					
