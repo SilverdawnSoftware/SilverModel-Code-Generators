@@ -4,30 +4,30 @@
 @using SilverDawn.SilverModel.UML.Extensions;
 @using SilverDawn.SilverModel.UML.Interfaces.Classes;
 @using SilverDawn.SilverModel.UML.Classes;
-// ALLOWOVERWRITE
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-
-
-namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model
-{
-    public class @(Model.Classifier.Name)Delete
-    {
-    	@foreach (var att in Model.Classifier.AllAttributes())    	{ 
-    	if ((@att["Database General Metadata","Primary Key"].AsString()=="True")) 
-    	{
-    	<text>
-    	
-    	/// <summary>
-        /// @att.Description
-        /// </summary>	 
-    	public @att.Type.TypeName("C#") </text> @att.Name <text> { get; set; } </text>
-    	    }	
-    	
-    	}
-    	
-    }
+@{
+@:// ALLOWOVERWRITE
+	if (Model.Classifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
+	{
+@:
+@:using System;
+@:using System.Collections.Generic;
+@:using System.Linq;
+@:
+@:namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model
+@:{
+@:    public class @(Model.Classifier.Name)Delete
+@:    {
+    	foreach (var att in Model.Classifier.AllAttributes())    	
+		{ 
+    		if ((@att["Database General Metadata","Primary Key"].AsString()=="True")) 
+    		{
+@:    	/// <summary>
+@:        /// @att.Description
+@:        /// </summary>	 
+@:    	public @att.Type.TypeName("C#") @att.Name  { get; set; }
+    	    }	    	
+    	}    	
+@:    }
+@:}
+	}
 }

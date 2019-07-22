@@ -4,43 +4,43 @@
 @using SilverDawn.SilverModel.UML.Extensions;
 @using SilverDawn.SilverModel.UML.Interfaces.Classes;
 @using SilverDawn.SilverModel.UML.Classes;
-<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewModels="clr-namespace:@(Model.Diagram.Name).Mobile.ViewModels"
-             x:Class="@(Model.Diagram.Name).Mobile.Views.@(Model.Classifier.Name).@(Model.Classifier.Name)EditPage" Title="@(Model.Classifier.Name) List">
-    <ContentPage.BindingContext>
-        <viewModels:@(Model.Classifier.Name)EditViewModel/>
-    </ContentPage.BindingContext>
-    <ContentPage.Content>
-        
-            <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="Fill" Margin="10">
-        @foreach (var att in Model.Classifier.AllAttributes())     	{
-          <text>  
-          		<StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                    <Label Text="@(att.Name): " HorizontalOptions="Start" TextColor="DarkGray" Margin="0,10,10,0"  WidthRequest="100"/>
-                    <Entry x:Name="@(att.Name.LowerFirst())" Text="{Binding @(att.Name)}" BackgroundColor="White" HorizontalOptions="FillAndExpand" ></Entry>
-                </StackLayout>
-               
-            </text>
-            }
-             
-              @foreach (var att in Model.Classifier.GetSourceAssociation()) {
+@{
+if (Model.Classifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
+{
+@:<?xml version="1.0" encoding="utf-8" ?>
+@:<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+@:             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+@:             xmlns:viewModels="clr-namespace:@(Model.Diagram.Name).Mobile.ViewModels"
+@:             x:Class="@(Model.Diagram.Name).Mobile.Views.@(Model.Classifier.Name).@(Model.Classifier.Name)EditPage" Title="@(Model.Classifier.Name) List">
+@:    <ContentPage.BindingContext>
+@:        <viewModels:@(Model.Classifier.Name)EditViewModel/>
+@:    </ContentPage.BindingContext>
+@:    <ContentPage.Content>
+@:        
+@:            <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="Fill" Margin="10">
+        foreach (var att in Model.Classifier.AllAttributes()) 
+        {  
+@:          		<StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+@:                    <Label Text="@(att.Name): " HorizontalOptions="Start" TextColor="DarkGray" Margin="0,10,10,0"  WidthRequest="100"/>
+@:                    <Entry x:Name="@(att.Name.LowerFirst())" Text="{Binding @(att.Name)}" BackgroundColor="White" HorizontalOptions="FillAndExpand" ></Entry>
+@:                </StackLayout>
+        }
+        foreach (var att in Model.Classifier.GetSourceAssociation())
+        {
     		var parent=(IClass)att.GetTargetMemberEnd().Type;   				
-		<text>
-			 <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
-                    <Button Text="View Tasks" Margin="0,10,0,0"  WidthRequest="120"  Command="{Binding View@(parent.Name)sCommand}" BackgroundColor="White" TextColor="CornflowerBlue" ></Button>
-                    <Label HorizontalOptions="EndAndExpand" Text=">" Margin="10,20,0,0"></Label>
-                </StackLayout>
-</text>
+@:			 <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+@:                    <Button Text="View Tasks" Margin="0,10,0,0"  WidthRequest="120"  Command="{Binding View@(parent.Name)sCommand}" BackgroundColor="White" TextColor="CornflowerBlue" ></Button>
+@:                    <Label HorizontalOptions="EndAndExpand" Text=">" Margin="10,20,0,0"></Label>
+@:                </StackLayout>
 		}
-
-             <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                    <Button Text="Cancel" WidthRequest="120" Margin="10" Command="{Binding CancelCommand}" HorizontalOptions="Start" BackgroundColor="Red" TextColor="White"></Button>
-                    <Button Text="Save"  WidthRequest="120"  Margin="10" BackgroundColor="CornflowerBlue" TextColor="White" Command="{Binding SaveCommand}" HorizontalOptions="EndAndExpand" ></Button>
-              </StackLayout>           
-         </StackLayout>
-      
-    </ContentPage.Content>
-</ContentPage>
+@:
+@:             <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+@:                    <Button Text="Cancel" WidthRequest="120" Margin="10" Command="{Binding CancelCommand}" HorizontalOptions="Start" BackgroundColor="Red" TextColor="White"></Button>
+@:                    <Button Text="Save"  WidthRequest="120"  Margin="10" BackgroundColor="CornflowerBlue" TextColor="White" Command="{Binding SaveCommand}" HorizontalOptions="EndAndExpand" ></Button>
+@:              </StackLayout>           
+@:         </StackLayout>      
+@:    </ContentPage.Content>
+@:</ContentPage>
+}
+}
 <!-- ALLOWOVERWRITE -->

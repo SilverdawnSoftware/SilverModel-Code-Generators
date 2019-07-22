@@ -4,233 +4,193 @@
 @using SilverDawn.SilverModel.UML.Extensions;
 @using SilverDawn.SilverModel.UML.Interfaces.Classes;
 @using SilverDawn.SilverModel.UML.Classes;
-// ALLOWOVERWRITE
-
-using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SilverdawnSoftware.Exceptions;
-using @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model;
-using @(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
-using data = @(Model.Solution.Name).@(Model.Diagram.Name);
-
-namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
+@{
+@:// ALLOWOVERWRITE
+if (Model.Classifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
 {
- public partial class @(Model.Classifier.Name)Transactions
- {
-     
- 
- 		// Add Transaction Code
- 		public async Task<@(Model.Classifier.Name)View> Add(@(Model.Classifier.Name)Add add)
-        {
-        	try
-            {
-	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
-	            {
-	                var result= await Add(db,add);
-	                await db.SaveChangesAsync();
-	                return (@(Model.Classifier.Name)View)result;
-	            }
-	        }
-            catch (Exception e)
-            {
-            	LogFactory.GetLogger().Log(LogLevel.Error,e);
-                return null;
-              
-            } 
-        } 	
- 	
- 	
- 	 public async Task<data.@(Model.Classifier.Name)> Add(data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString()) db, @(Model.Classifier.Name)Add add)
-        {
-         try
-            {
-            
-            var new@(Model.Classifier.Name)=new data.@(Model.Classifier.Name)();
-            	@foreach (var att in Model.Classifier.AllAttributes()) {
+@:
+@:using System;
+@:using System.Collections.Generic;
+@:using Microsoft.EntityFrameworkCore;
+@:using System.Linq;
+@:using System.Text;
+@:using System.Threading.Tasks;
+@:using SilverdawnSoftware.Exceptions;
+@:using @(Model.Solution.Name).@(Model.Diagram.Name).Transactions.Model;
+@:using @(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
+@:using data = @(Model.Solution.Name).@(Model.Diagram.Name);
+
+@:namespace @(Model.Solution.Name).@(Model.Diagram.Name).Transactions
+@:{
+@: public partial class @(Model.Classifier.Name)Transactions
+@: {
+@:      
+@: 		// Add Transaction Code
+@: 		public async Task<@(Model.Classifier.Name)View> Add(@(Model.Classifier.Name)Add add)
+@:        {
+@:        	try
+@:            {
+@:	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
+@:	            {
+@:	                var result= await Add(db,add);
+@:	                await db.SaveChangesAsync();
+@:	                return (@(Model.Classifier.Name)View)result;
+@:	            }
+@:	        }
+@:          catch (Exception e)
+@:            {
+@:            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                return null;              
+@:            } 
+@:        } 	
+@: 	
+@: 	
+@: 	 public async Task<data.@(Model.Classifier.Name)> Add(data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString()) db, @(Model.Classifier.Name)Add add)
+@:        {
+@:         try
+@:            {
+@:            
+@:            var new@(Model.Classifier.Name)=new data.@(Model.Classifier.Name)();
+            	foreach (var att in Model.Classifier.AllAttributes()) 
+            	{
             		switch (att.Type.GetUMLType())
-				{
-				case UmlTypeEnum.PrimitiveType:
-			
-	    		if (att["Database General Metadata","Primary Key"].AsString()=="True")
-			    		{
-			    		}
-			    		else
-			    		{
-	    	<text>new</text>@(Model.Classifier.Name)<text>.</text>@(att.Name) @:= add.@att.Name;   	
-	    				}
-				break;
-				
-				
-				case UmlTypeEnum.Class:
-				var primaryKey=GetPrimaryKey(att.Type);
-				<text>
-				
-			new@(Model.Classifier.Name).@(att.Name)@primaryKey  = add.@(att.Name)@primaryKey;
-				
-			//	  if (db.@att.Type.TypeName("C#")s.Any(w => w.@primaryKey == add.@(att.Name)@primaryKey))
-            //    {
-            //        new@(Model.Classifier.Name).@(att.Name) = db.@att.Type.TypeName("C#")s.First(w => w.@primaryKey == add. @(att.Name)@primaryKey);
-            //    }    
-				
-				 </text>				
-				break;
-				}
-	    	   
-            	
-					if (att.Type.IsPrimitiveType())
 					{
-	    				
-	    			}    	    		
+						case UmlTypeEnum.PrimitiveType:			
+		    				if (att["Database General Metadata","Primary Key"].AsString()=="True")
+				    		{
+				    		}
+				    		else
+				    		{
+@:		    	new@(Model.Classifier.Name).@(att.Name) = add.@att.Name;   	
+		    				}
+							break;
+				
+				
+						case UmlTypeEnum.Class:
+						var primaryKey=GetPrimaryKey(att.Type);
+@:			new@(Model.Classifier.Name).@(att.Name)@primaryKey  = add.@(att.Name)@primaryKey;				  			
+						break;
+					}	    		
     			}
     	
     		// Add references to parent Classes
-    	   @foreach (var att in Model.Classifier.GetTargetAssociation())      	   { 
-    		
-    		
+    	   foreach (var att in Model.Classifier.GetTargetAssociation())   
+    	   { 
     			if (!(att.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && att.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
     			{
-    			<text>var @(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup = await db.@(att.GetSourceMemberEnd().Type.Name)s.FirstOrDefaultAsync(w => w.@GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type) == add.@(((IClass)att.GetSourceMemberEnd().Type).Name)@GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type));</text>   
-				<text>if (@(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup !=null)</text>    
-				<text>{ new@(Model.Classifier.Name).@(att.GetSourceMemberEnd().Type.Name)=@(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup;}</text>	
-				}				
-    		}
-    	
-    	
-    		db.@(Model.Classifier.Name)s.Add(new@(Model.Classifier.Name));
-    		
-    		return new@(Model.Classifier.Name);
-            }
-            
-             catch (Exception e)
-            {
-            	LogFactory.GetLogger().Log(LogLevel.Error,e);
-                return null;
-              
-            }
-        }
+@:    			var @(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup = await db.@(att.GetSourceMemberEnd().Type.Name)s.FirstOrDefaultAsync(w => w.@GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type) == add.@(((IClass)att.GetSourceMemberEnd().Type).Name)@GetPrimaryKey((IClass)att.GetSourceMemberEnd().Type));   
+@:				if (@(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup !=null)   
+@:				{ 
+@:					new@(Model.Classifier.Name).@(att.GetSourceMemberEnd().Type.Name)=@(att.GetSourceMemberEnd().Type.Name.LowerFirst())Lookup;
+@:				}				
+    			}
+    		}	
+@:    		db.@(Model.Classifier.Name)s.Add(new@(Model.Classifier.Name));    		
+@:    		return new@(Model.Classifier.Name);
+@:            }            
+@:             catch (Exception e)
+@:            {
+@:            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                return null;              
+@:            }
+@:        }
 
 
-@if (!string.IsNullOrEmpty(GetPrimaryKey(Model.Classifier))){
-<text>
-// Update Transaction Code
- 		public async Task<@(Model.Classifier.Name)View> Update(@(Model.Classifier.Name)Update update)
-        {	
-        	try
-            {
-	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
-	            {
-	                var result= await Update(db,update);
-	                await db.SaveChangesAsync();
-	                return (@(Model.Classifier.Name)View)result;
-	            }
-            }
-            catch (Exception e)
-            {
-            	LogFactory.GetLogger().Log(LogLevel.Error,e);
-                return null;
-              
-            } 
-        } 			
- 	
- 	
- 	 public async Task<data.@(Model.Classifier.Name)> Update(data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString()) db, @(Model.Classifier.Name)Update update)
-        {
-         try
-            {
-            @{
-              <text>var </text>@(Model.Classifier.Name.LowerFirst())<text>ToUpdate = await db.</text>@(Model.Classifier.Name)<text>s.FirstOrDefaultAsync(w => w.@GetPrimaryKey(Model.Classifier) == update.@GetPrimaryKey(Model.Classifier));</text>
-            }
-               
-            	
-            	@foreach (var att in Model.Classifier.AllAttributes()) {
+if (!string.IsNullOrEmpty(GetPrimaryKey(Model.Classifier))){
+@:// Update Transaction Code
+@: 		public async Task<@(Model.Classifier.Name)View> Update(@(Model.Classifier.Name)Update update)
+@:        {	
+@:        	try
+@:            {
+@:	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
+@:	            {
+@:	                var result= await Update(db,update);
+@:	                await db.SaveChangesAsync();
+@:	                return (@(Model.Classifier.Name)View)result;
+@:	            }
+@:          }
+@:          catch (Exception e)
+@:            {
+@:            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                return null;              
+@:            } 
+@:        } 			
+@: 	 	
+@: 	 public async Task<data.@(Model.Classifier.Name)> Update(data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString()) db, @(Model.Classifier.Name)Update update)
+@:        {
+@:         try
+@:            {            
+@:              var @(Model.Classifier.Name.LowerFirst())ToUpdate = await db.@(Model.Classifier.Name)s.FirstOrDefaultAsync(w => w.@(GetPrimaryKey(Model.Classifier)) == update.@(GetPrimaryKey(Model.Classifier)));
+@:            
+            	foreach (var att in Model.Classifier.AllAttributes()) 
+            	{
             		switch (att.Type.GetUMLType())
-				{
-				case UmlTypeEnum.PrimitiveType:
+					{
+						case UmlTypeEnum.PrimitiveType:
 			
-	    		if (att["Entity Framework","EF Primary Key"].AsString()=="True")
+	    				if (att["Entity Framework","EF Primary Key"].AsString()=="True")
 			    		{
 			    		}
 			    		else
 			    		{
-	    	   @(Model.Classifier.Name.LowerFirst())<text>ToUpdate.</text>@(att.Name) @:= update.@att.Name;   	
+@:	    	   @(Model.Classifier.Name.LowerFirst())ToUpdate.@(att.Name) = update.@att.Name;   	
 	    				}
-				break;
-				
-				
-				case UmlTypeEnum.Class:
-				var primaryKey=GetPrimaryKey(att.Type);
-				
-				<text>
-				@(Model.Classifier.Name.LowerFirst())ToUpdate.@(att.Name)@primaryKey= update.@(att.Name)@primaryKey;
-				
-		   //	if (db.@att.Type.TypeName("C#")s.Any(w => w.@primaryKey == update.@(att.Name)@primaryKey))
-           //   {
-           //         @(Model.Classifier.Name.LowerFirst())ToUpdate.@(att.Name) = db.@att.Type.TypeName("C#")s.First(w => w.@primaryKey == update.@(att.Name)@primaryKey);
-           //   }    
-				
-				 </text>				
-				break;
+						break;
+						case UmlTypeEnum.Class:
+						var primaryKey=GetPrimaryKey(att.Type);				
+@:				@(Model.Classifier.Name.LowerFirst())ToUpdate.@(att.Name)@(primaryKey) = update.@(att.Name)@(primaryKey);
+			
+						break;
+						}            		
 				}
-				}
-            	
-    	
     		
-    		
-    		return @(Model.Classifier.Name.LowerFirst())ToUpdate;
-            }
-            
-             catch (Exception e)
-            {
-            	LogFactory.GetLogger().Log(LogLevel.Error,e);
-                return null;
-              
-            }
-        }
+@:    		return @(Model.Classifier.Name.LowerFirst())ToUpdate;
+@:            }            
+@:             catch (Exception e)
+@:            {
+@:            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                return null;              
+@:            }
+@:        }
 
 
-	// Delete Transaction Code
- 		public async System.Threading.Tasks.Task Delete(@(Model.Classifier.Name)Delete delete)
-        {
-        	try
-            {
-	            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
-	            {
-	                await Delete(db,delete);
-	                await db.SaveChangesAsync();	                
-	            }
-            }
-            catch (Exception e)
-            {
-            	LogFactory.GetLogger().Log(LogLevel.Error,e);
-               
-              
-            } 
-        } 	
- 	
- 	
- 	 public async System.Threading.Tasks.Task Delete(data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString()) db, @(Model.Classifier.Name)Delete delete)
-        {
-         try
-            {
-            
-              var @(Model.Classifier.Name.LowerFirst())ToDelete = await db.@(Model.Classifier.Name)s.FirstOrDefaultAsync(w => w.@GetPrimaryKey(Model.Classifier) == delete.@GetPrimaryKey(Model.Classifier));
-            
-             	db.@(Model.Classifier.Name)s.Remove(@(Model.Classifier.Name.LowerFirst())ToDelete);    		
-    		}
-             catch (Exception e)
-            {
-            	LogFactory.GetLogger().Log(LogLevel.Error,e);
-            }
-        }
-        </text>
+@:    // Delete Transaction Code
+@:    public async System.Threading.Tasks.Task Delete(@(Model.Classifier.Name)Delete delete)
+@:    {
+@:        try
+@:        {
+@:            using (var db = new data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
+@:            {
+@:	                await Delete(db,delete);
+@:	                await db.SaveChangesAsync();	                
+@:	            }
+@:          }
+@:            catch (Exception e)
+@:            {
+@:            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:            } 
+@:        } 	
+@: 	 	
+@: 	 public async System.Threading.Tasks.Task Delete(data.@(Model.Diagram["Entity Framework Core","DBContextName"].AsString()) db, @(Model.Classifier.Name)Delete delete)
+@:   {
+@:         try
+@:            {            
+@:              var @(Model.Classifier.Name.LowerFirst())ToDelete = await db.@(Model.Classifier.Name)s.FirstOrDefaultAsync(w => w.@GetPrimaryKey(Model.Classifier) == delete.@GetPrimaryKey(Model.Classifier));
+@:            
+@:             	db.@(Model.Classifier.Name)s.Remove(@(Model.Classifier.Name.LowerFirst())ToDelete);    		
+@:    		  }
+@:             catch (Exception e)
+@:            {
+@:            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:            }
+@:    }
+@:  }
+@:}
    }
+}
+}
 
-	}
- }
+
  
 @functions{
  

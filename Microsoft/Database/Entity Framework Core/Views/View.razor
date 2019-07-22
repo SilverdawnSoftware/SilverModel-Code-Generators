@@ -4,95 +4,89 @@
 @using SilverDawn.SilverModel.UML.Extensions;
 @using SilverDawn.SilverModel.UML.Interfaces.Classes;
 @using SilverDawn.SilverModel.UML.Classes;
-// ALLOWOVERWRITE
-
-using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using SilverdawnSoftware.Exceptions;
-using @(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
-
-
-namespace @(Model.Solution.Name).@(Model.Diagram.Name).Views
+@{
+@:// ALLOWOVERWRITE
+if (Model.Classifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
 {
-    public partial class @(Model.Classifier.Name)Views
-    {
+@:
+@:using System;
+@:using System.Collections.Generic;
+@:using Microsoft.EntityFrameworkCore;
+@:using System.Linq;
+@:using System.Threading.Tasks;
+@:using SilverdawnSoftware.Exceptions;
+@:using @(Model.Solution.Name).@(Model.Diagram.Name).Views.Model;
+@:
+@:namespace @(Model.Solution.Name).@(Model.Diagram.Name).Views
+@:{
+@:    public partial class @(Model.Classifier.Name)Views
+@:    {
+@:    	public async Task<List<@(Model.Classifier.Name)View>> GetAll()
+@:        {
+@:        	try
+@:            {
+@:	            using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
+@:	            {
+@:	                var temp = await db.@(Model.Classifier.Name)s.ToListAsync();
+@:	                return temp.ConvertAll(user => (@(Model.Classifier.Name)View) user);
+@:	            }
+@:            }
+@:            catch (Exception e)
+@:            {
+@:            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                return null;             
+@:            }            
+@:        }
     
     
-    	public async Task<List<@(Model.Classifier.Name)View>> GetAll()
-        {
-        	try
-            {
-	            using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
-	            {
-	                var temp = await db.@(Model.Classifier.Name)s.ToListAsync();
-	                return temp.ConvertAll(user => (@(Model.Classifier.Name)View) user);
-	            }
-            }
-            catch (Exception e)
-            {
-            	LogFactory.GetLogger().Log(LogLevel.Error,e);
-                return null;             
-            }            
-        }
-    
-    
-    	@if (!string.IsNullOrEmpty(GetPrimaryKey(Model.Classifier))){
-    	<text>
-    	public async Task<@(Model.Classifier.Name)View> Get(@(GetPrimaryKeyType(Model.Classifier)) @(GetPrimaryKey(Model.Classifier).LowerFirst()))
+    	if (!string.IsNullOrEmpty(GetPrimaryKey(Model.Classifier)))
     	{
-    		
-    		try
-            {
-	    		using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
-	            {
-	            	if (await db.@(Model.Classifier.Name)s.AnyAsync(w=>w.@(GetPrimaryKey(Model.Classifier))==@(GetPrimaryKey(Model.Classifier).LowerFirst())))
-	                {
-	                	return (@(Model.Classifier.Name)View)await db.@(Model.Classifier.Name)s.FirstAsync(w=>w.@(GetPrimaryKey(Model.Classifier))==@(GetPrimaryKey(Model.Classifier).LowerFirst()));
-	            	}
-	            }	    	
-	    		return null;
-    		 }
-            catch (Exception e)
-            {
-            	LogFactory.GetLogger().Log(LogLevel.Error,e);
-                return null;              
-            }     		
-    	}
+@:    	public async Task<@(Model.Classifier.Name)View> Get(@(GetPrimaryKeyType(Model.Classifier)) @(GetPrimaryKey(Model.Classifier).LowerFirst()))
+@:    	{    		
+@:    		try
+@:            {
+@:	    		using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
+@:	            {
+@:	            	if (await db.@(Model.Classifier.Name)s.AnyAsync(w=>w.@(GetPrimaryKey(Model.Classifier))==@(GetPrimaryKey(Model.Classifier).LowerFirst())))
+@:	                {
+@:	                	return (@(Model.Classifier.Name)View)await db.@(Model.Classifier.Name)s.FirstAsync(w=>w.@(GetPrimaryKey(Model.Classifier))==@(GetPrimaryKey(Model.Classifier).LowerFirst()));
+@:	            	}
+@:	            }	    	
+@:	    		return null;
+@:    		 }
+@:            catch (Exception e)
+@:            {
+@:            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                return null;              
+@:            }     		
+@:    	}
     	
     	
-    	@foreach (var att in Model.Classifier.GetTargetAssociation()) {
+    		foreach (var att in Model.Classifier.GetTargetAssociation()) 
+    		{
     		var parent=(IClass)att.GetSourceMemberEnd().Type;
     		var parentKey=GetPrimaryKey(parent);
-		
-		<text>
-		public async Task<List<@(Model.Classifier.Name)View>> Get@(Model.Classifier.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))
-    	{
-    		try
-            {
-    	
-	    		using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
-	            {
-	            	var result= await db.@(Model.Classifier.Name)s.Where(w=>w.@(parent.Name).@(parentKey) ==@(parentKey.LowerFirst())).ToListAsync();
-	            	return result.ConvertAll(user => (@(Model.Classifier.Name)View) user);
-	               
-	            }
-	        }
-            catch (Exception e)
-            {
-            	LogFactory.GetLogger().Log(LogLevel.Error,e);
-                return null;
-              
-            }    
-	            
+@:		public async Task<List<@(Model.Classifier.Name)View>> Get@(Model.Classifier.Name)sFor@(parent.Name)(int @(parentKey.LowerFirst()))
+@:    	{
+@:    		try
+@:            {    	
+@:	    		using (var db = new @(Model.Diagram["Entity Framework Core","DBContextName"].AsString())())
+@:	            {
+@:	            	var result= await db.@(Model.Classifier.Name)s.Where(w=>w.@(parent.Name).@(parentKey) ==@(parentKey.LowerFirst())).ToListAsync();
+@:	            	return result.ConvertAll(user => (@(Model.Classifier.Name)View) user);	               
+@:	            }
+@:	          }
+@:            catch (Exception e)
+@:            {
+@:            	LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                return null;             
+@:            }    	            
+@:    	}
+    		}
     	}
-</text>    	
-    	}
-    	</text>
-    	}
-    }
+@:    }
+@:}
+}
 }
 
 @functions{

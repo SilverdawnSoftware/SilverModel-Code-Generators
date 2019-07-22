@@ -14,6 +14,7 @@
 @:using System.Linq;
 @:using System.Runtime.Serialization;
 @:using @(GetInterfaceNameSpace(Model.Classifier)).Models;
+@(GetInterfaceUsings(Model.Classifier))
 @:
 @:namespace @(Model.Diagram.QualifiedName.Replace("::",".")).Models
 @:{
@@ -35,9 +36,21 @@
 @:        public @(att.Type.TypeName("C#")) @att.Name  { get; set; }
 		@:  	
 				break;
-				case UmlTypeEnum.Class:							
-				
-@:          public @(GetPrimaryType(att.RelatedField.Type)) @(att.Name)@(GetPrimaryKey(att.RelatedField.Type))  { get; set; }		
+				case UmlTypeEnum.Class:
+					var iClassifier=(IClassifier)att.Type;
+				 	if (iClassifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
+	       	 		{
+@:        /// To avoid Many to Many Relationships, use primary key https://github.com/aspnet/EntityFrameworkCore/issues/1368
+@:        /// <summary>
+@:        /// @att.Description
+@:        /// </summary>	
+@:        //public virtual @att.Type.TypeName("C#") @att.Name <text> { get; set; }  				
+@:          public @(GetPrimaryType(att.RelatedField.Type)) @(att.Name)@(GetPrimaryKey(att.RelatedField.Type))  { get; set; }	
+					}
+					else
+					{
+@:        public I@(att.Type.Name) @(att.Name) { get; set; }						
+					}
 				break;
 				case UmlTypeEnum.Enumeration:
 @:        public @(att.Type.Name) @(att.Name) { get; set; }  

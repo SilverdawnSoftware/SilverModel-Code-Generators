@@ -28,21 +28,29 @@
     	{     	
 			if (att["Serialization Metadata","CanSerialize"].AsString()=="True")
 			{
+@:
 @:        [DataMember]
 		switch (att.Type.GetUMLType())
 				{
-				case UmlTypeEnum.PrimitiveType:				    		
-						
+				case UmlTypeEnum.PrimitiveType:				    								
 @:        public @(att.Type.TypeName("C#")) @att.Name  { get; set; }
-		@:  	
+	  	
 				break;
-				case UmlTypeEnum.Class:							
+				case UmlTypeEnum.Class:	
+					var iClassifier=(IClassifier)att.Type;
+				 	if (iClassifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
+	       	 		{
 @:        /// To avoid Many to Many Relationships, use primary key https://github.com/aspnet/EntityFrameworkCore/issues/1368
 @:        /// <summary>
 @:        /// @att.Description
 @:        /// </summary>	
 @:        //public virtual @att.Type.TypeName("C#") @att.Name <text> { get; set; }  				
 @:        public @(GetPrimaryType(att.RelatedField.Type)) @(att.Name)@(GetPrimaryKey(att.RelatedField.Type))  { get; set; }		
+					}
+					else
+					{
+@:        public I@(att.Type.Name) @(att.Name) { get; set; } =new @(att.Type.Name)();						
+					}
 				break;
 				case UmlTypeEnum.Enumeration:
 @:        /// <summary> @att.Description </summary>	
@@ -51,7 +59,8 @@
 				} 
 			}			
 
-    	}    	 	
+    	}  
+@:    	
 @:    	 public @(Model.Classifier.Name)()
 @:        {
 @:            this.__CQRSModel = "@(Model.Diagram.QualifiedName.Replace("::",".")).@(Model.Classifier.Name)";

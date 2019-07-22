@@ -4,53 +4,61 @@
 @using SilverDawn.SilverModel.UML.Extensions;
 @using SilverDawn.SilverModel.UML.Interfaces.Classes;
 @using SilverDawn.SilverModel.UML.Classes;
-<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewModels="clr-namespace:@(Model.Diagram.Name).Mobile.ViewModels"
-             x:Class="@(Model.Diagram.Name).Mobile.Views.@(Model.Classifier.Name).@(Model.Classifier.Name)IndexPage" Title="@(Model.Classifier.Name)">
-             
-   <ContentPage.BindingContext>
-    <viewModels:@(Model.Classifier.Name)IndexViewModel/>
-	</ContentPage.BindingContext>
-  <StackLayout Orientation="Vertical" Margin="10">      
-	  <ListView ItemsSource="{Binding @(Model.Classifier.Name)Views}"
-	            ItemTapped="Handle_ItemTapped"
-	            CachingStrategy="RecycleElement"
-	            RowHeight="60">
-	            
-	    <!--Built in Cells-->
-	    <!--<ListView.ItemTemplate>
-	      <DataTemplate>
-	        <TextCell />
-	      </DataTemplate>
-	    </ListView.ItemTemplate>-->
-	    
-	    <!--Custom View Cells-->
-	    
-	    <ListView.ItemTemplate>
-	      <DataTemplate>
-	        <ViewCell>
-	          <StackLayout Orientation="Vertical">
-	          	<Label Text="{Binding @(Model.Classifier.AllAttributes().First().Name)}" FontSize="Medium" />
-	          	<StackLayout Orientation="Horizontal">
-	          @{
+@{
+if (Model.Classifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
+{
+@:<?xml version="1.0" encoding="utf-8" ?>
+@:<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+@:             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+@:             xmlns:viewModels="clr-namespace:@(Model.Diagram.Name).Mobile.ViewModels"
+@:             x:Class="@(Model.Diagram.Name).Mobile.Views.@(Model.Classifier.Name).@(Model.Classifier.Name)IndexPage" Title="@(Model.Classifier.Name)">
+@:             
+@:   <ContentPage.BindingContext>
+@:    <viewModels:@(Model.Classifier.Name)IndexViewModel/>
+@:	</ContentPage.BindingContext>
+@:  <StackLayout Orientation="Vertical" Margin="10">      
+@:	  <ListView ItemsSource="{Binding @(Model.Classifier.Name)Views}"
+@:	            ItemTapped="Handle_ItemTapped"
+@:	            CachingStrategy="RecycleElement"
+@:	            RowHeight="60">
+@:	            
+@:	    <!--Built in Cells-->
+@:	    <!--<ListView.ItemTemplate>
+@:	      <DataTemplate>
+@:	        <TextCell />
+@:	      </DataTemplate>
+@:	    </ListView.ItemTemplate>-->
+@:	    
+@:	    <!--Custom View Cells-->
+@:	    
+@:	    <ListView.ItemTemplate>
+@:	      <DataTemplate>
+@:	        <ViewCell>
+@:	          <StackLayout Orientation="Vertical">
+@:	          	<Label Text="{Binding @(Model.Classifier.AllAttributes().First().Name)}" FontSize="Medium" />
+@:	          	<StackLayout Orientation="Horizontal">
 	          var first=true;
-	          foreach (var att in Model.Classifier.AllAttributes())   {
-						if (first) {first=false;} 
-						else
-						{						
-	                    <text><Label Text="{Binding @att.Name}" FontSize="Small" /></text>      
-						}	                   
-	                 }
-	             }
-	          	</StackLayout>
-			  </StackLayout>
-			</ViewCell>
-	      </DataTemplate>
-	    </ListView.ItemTemplate>    
-	  </ListView>
-     <Button Margin="10" WidthRequest="100"  Text="Add @(Model.Classifier.Name)"  BackgroundColor="CornflowerBlue" TextColor="White"  Command="{Binding Add@(Model.Classifier.Name)Command}"></Button>
-  </StackLayout>
-</ContentPage>
+	          foreach (var att in Model.Classifier.AllAttributes())
+	          {
+					if (first) 
+					{
+						first=false;
+					} 
+					else
+					{						
+@:                    <Label Text="{Binding @att.Name}" FontSize="Small" />
+					}	                   
+	         }
+	             
+@:	          	</StackLayout>
+@:			  </StackLayout>
+@:			</ViewCell>
+@:	      </DataTemplate>
+@:	    </ListView.ItemTemplate>    
+@:	  </ListView>
+@:     <Button Margin="10" WidthRequest="100"  Text="Add @(Model.Classifier.Name)"  BackgroundColor="CornflowerBlue" TextColor="White"  Command="{Binding Add@(Model.Classifier.Name)Command}"></Button>
+@:  </StackLayout>
+@:</ContentPage>
+}
+}
 <!-- ALLOWOVERWRITE -->
