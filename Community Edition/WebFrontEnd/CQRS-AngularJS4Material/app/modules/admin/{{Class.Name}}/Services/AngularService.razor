@@ -1,0 +1,197 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
+
+@{
+var primaryKey=GetPrimaryKey(Model.Classifier);
+}
+
+
+import {Injectable} from '@@angular/core';
+
+
+import {Observable,of} from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+
+import {HttpClient} from '@@angular/common/http';
+
+import {@(Model.Classifier.Name)View} from '../Models/@(Model.Classifier.Name)View';
+
+
+@@Injectable()
+export class @(Model.Classifier.Name)Service {
+  constructor(private http: HttpClient) {
+  }
+
+  baseURL: string='@(Model.Diagram["REST Metadata","REST Server URL"].AsString())';
+
+ getAll(): Observable<@(Model.Classifier.Name)View[]> {
+    return this.http.get<@(Model.Classifier.Name)View[]>(this.baseURL + `/api/@(Model.Classifier.Name)/All`)
+      .pipe(
+        catchError(this.handleError('get@(Model.Classifier.Name)s', [])));
+  }  
+  @if (!string.IsNullOrEmpty(primaryKey)){
+	 	<text>
+ 	get(id: number | string): Observable<@(Model.Classifier.Name)View> {
+		return this.http.get<@(Model.Classifier.Name)View>(this.baseURL + `/api/@(Model.Classifier.Name)/${id}`)
+      		.pipe(
+         		catchError(this.handleError<@(Model.Classifier.Name)View>(`get@(GetPrimaryKey(Model.Classifier).LowerFirst())=${id}`)
+         	)
+   		);
+ 	}
+ 	 
+	add(@(Model.Classifier.Name.LowerFirst()): @(Model.Classifier.Name)View): Observable<@(Model.Classifier.Name)View > {
+    	return this.http.post<@(Model.Classifier.Name)View>(this.baseURL + '/api/@(Model.Classifier.Name)', @(Model.Classifier.Name.LowerFirst()))
+      		.pipe(
+    			catchError(this.handleError<@(Model.Classifier.Name)View>('add@(Model.Classifier.Name)')
+    		)	
+    	);
+  	}
+ 	 
+ 	 
+ 	update(@(GetPrimaryKey(Model.Classifier).LowerFirst()): number,  @(Model.Classifier.Name.LowerFirst()): @(Model.Classifier.Name)View): Observable<@(Model.Classifier.Name)View > {
+    	return this.http.put<@(Model.Classifier.Name)View >(this.baseURL + `/api/Entity/${@(GetPrimaryKey(Model.Classifier).LowerFirst())}`, @(Model.Classifier.Name.LowerFirst()))
+      		.pipe(
+        		catchError(this.handleError<@(Model.Classifier.Name)View>('add@(Model.Classifier.Name)')
+        	)
+      	);
+  	}
+ 	 
+ 	 
+ 	remove(@(GetPrimaryKey(Model.Classifier).LowerFirst()): number): Observable<@(Model.Classifier.Name)View > {
+     	return this.http.delete<@(Model.Classifier.Name)View >(this.baseURL + `/api/@(Model.Classifier.Name)/${@(GetPrimaryKey(Model.Classifier).LowerFirst())}`)
+        	.pipe(
+          		catchError(this.handleError<@(Model.Classifier.Name)View>('add@(Model.Classifier.Name)')
+          	)
+        );
+  	} 	  	 
+  		</text>  		
+  		foreach (var association in Model.Classifier.GetTargetAssociation())    	{ 
+    	if (!(association.GetSourceMemberEnd().Multiplicity==Multiplicity.Many && association.GetTargetMemberEnd().Multiplicity==Multiplicity.Many))
+    			{
+		    	IClass associatedClass=(IClass)association.GetSourceMemberEnd().Type;
+		    	var associatedPK=GetPrimaryKey(associatedClass);
+		    	if (!string.IsNullOrEmpty(primaryKey)){
+		    	<text>
+		    	get@(Model.Classifier.Name)sBy@(associatedClass.Name)(@(associatedPK.LowerFirst()): number): Observable<@(Model.Classifier.Name)View[]> {
+    return this.http.get<@(Model.Classifier.Name)View[]>(this.baseURL + `/api/@(associatedClass.Name)/${@(associatedPK.LowerFirst())}/@(Model.Classifier.Name)s`)
+     .pipe(
+        catchError(this.handleError('get@(Model.Classifier.Name)sBy@(associatedClass.Name)', [])));
+  }
+		    	</text>
+		    		}
+				}
+    	}
+  		
+   }
+   
+   	
+	/**
+	* Handle Http operation that failed.
+	* Let the app continue.
+	* @@param operation - name of the operation that failed
+	* @@param result - optional value to return as the observable result
+	*/
+	private handleError<T> (operation = 'operation', result?: T) {
+		return (error: any): Observable<T> => {
+		
+		  // TODO: send the error to remote logging infrastructure
+		  console.error(error); // log to console instead
+		
+		  // TODO: better job of transforming error for user consumption
+		 // this.log(`${operation} failed: ${error.message}`);
+		
+		  // Let the app keep running by returning an empty result.
+		  return of(result as T);
+		};
+	}
+   
+
+  }
+
+    
+  
+
+	
+
+
+@functions{
+ 
+ 
+ 
+ public static string GetDescriptor(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetDescriptor(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Default Descriptor"].AsString()=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+ 
+}
+

@@ -1,0 +1,72 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+<!-- ALLOWOVERWRITE -->
+
+<div class="app-datatable">
+<ngx-datatable
+  class='material'
+  [rows]='rows'
+  [columnMode]="'force'"
+  [headerHeight]="50"
+  [footerHeight]="50"
+  [rowHeight]="45"
+  [scrollbarV]="true"
+  [limit]="10"
+  (page)="onPage($event)" style="width: 100%; height: 100%; position: relative" >
+  @foreach (var att in Model.Classifier.AllAttributes()) 	{
+  <text><ngx-datatable-column name="@att.Name" width="300"></ngx-datatable-column></text> 
+  }
+  
+  <ngx-datatable-column name="Edit" width="300" prop="@(GetPrimaryKey(Model.Classifier).LowerFirst())">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+      <button mat-icon-button	routerLink="/admin/@(Model.Classifier.Name.LowerFirst())/edit/{{value}}" color="primary"><mat-icon>edit</mat-icon></button>
+
+    </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column name="Delete" width="300" prop="@(GetPrimaryKey(Model.Classifier).LowerFirst())">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+        <button mat-icon-button	(click)="delete(value)" color="warn"><mat-icon>delete</mat-icon></button>
+
+      </ng-template>
+    </ngx-datatable-column>
+  
+  
+</ngx-datatable>
+
+<a mat-raised-button color="primary" href="/admin/@Model.Classifier.Name.LowerFirst()/add">Add @(Model.Classifier.Name)</a>
+
+</div>
+
+
+
+
+
+@functions{
+
+string GetPrimaryKey(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Attributes())
+   	{
+		if (att2["Database General Metadata","Primary Key"].AsString()=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+string GetDescriptor(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Attributes())
+   	{
+		if (att2["Database General Metadata","Default Descriptor"].AsString()=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+}

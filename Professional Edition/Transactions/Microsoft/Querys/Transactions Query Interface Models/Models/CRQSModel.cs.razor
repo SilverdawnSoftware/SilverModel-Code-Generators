@@ -1,0 +1,77 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using SilverDawn.SilverModel.Interfaces;
+@using System.Text;
+@{
+@:// ALLOWOVERWRITE
+@:
+@:using System;
+@:using System.Collections.Generic;
+@:using System.Linq;
+@:using System.Runtime.Serialization;
+@:using @(GetInterfaceNameSpace(Model.Classifier)).Models;
+@:using SilverdawnSoftware.Transactions.Models;
+@(GetAttrbiuteUsings(Model.Classifier))
+@:
+@:namespace @(Model.Diagram.QualifiedName.Replace("::",".")).Models 
+@:{
+
+	if (Model.Classifier["Serialization","CanSerialize"].AsString()=="True")
+	{
+	@:[DataContract]
+	}
+@:    public partial class @(Model.Classifier.Name) : @(GetInheritance(@Model.Classifier)),I@(Model.Classifier.Name) 
+@:    { 
+    	foreach (var att in Model.Classifier.Attributes().Where(w=>w.Visibility!=VisibilityKind.None))
+    	{     	
+			if (att["Serialization Metadata","CanSerialize"].AsString()=="True")
+			{
+@:
+@:        [DataMember]
+		switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.PrimitiveType:				    								
+@:        public @(att.Type.TypeName("C#")) @att.Name  { get; set; }
+	  	
+				break;
+				case UmlTypeEnum.Class:	
+					var iClassifier=(IClassifier)att.Type;
+//				 	if (iClassifier["Database General Metadata","Entity Type"].AsString()!="OwnedEntity") 				
+//	       	 		{
+@:        /// To avoid Many to Many Relationships, use primary key https://github.com/aspnet/EntityFrameworkCore/issues/1368
+@:        /// <summary>
+@:        /// @att.Description
+@:        /// </summary>	
+@:        //public virtual @att.Type.TypeName("C#") @att.Name <text> { get; set; }  				
+//@:        public @(GetPrimaryType(att.RelatedField.Type)) @(att.Name)@(GetPrimaryKey(att.RelatedField.Type))  { get; set; }		
+//					}
+//					else
+//					{
+@:        public I@(att.Type.Name) @(att.Name) { get; set; } =new @(att.Type.Name)();						
+//					}
+				break;
+				case UmlTypeEnum.Enumeration:
+@:        /// <summary> @att.Description </summary>	
+@:        public @(att.Type.Name) @(att.Name) { get; set; }  
+				break;
+				} 
+			}			
+
+    	}  
+@:    	
+@:    	 public @(Model.Classifier.Name)()
+@:        {
+@:            this.__TransactionsModel = "@(Model.Diagram.QualifiedName.Replace("::",".")).@(Model.Classifier.Name)";
+@:        }	
+@:	}
+	
+
+	
+	
+@:}
+@IncludeFile("..\..\..\..\Transactions Shared Code\SharedFunctions.razor")
+}

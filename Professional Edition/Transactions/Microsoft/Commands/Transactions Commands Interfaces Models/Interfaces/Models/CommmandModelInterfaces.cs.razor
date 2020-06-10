@@ -1,0 +1,52 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using SilverDawn.SilverModel.Interfaces;
+@using System.Text;
+@{
+@:// ALLOWOVERWRITE
+@:
+@:using System;
+@:using System.Collections.Generic;
+@:using System.Linq;
+@:using System.Runtime.Serialization;
+@:using SilverdawnSoftware.Transactions.Interfaces;
+@(GetInterfaceUsings(Model.Classifier))
+@(GetAttrbiuteUsings(Model.Classifier))
+@:namespace @(GetInterfaceNameSpace(Model.Classifier)).Models
+@:{
+@:    public partial interface I@(Model.Classifier.Name) : ITransactionsBase
+@:    { 
+    	foreach (var att in Model.Classifier.Attributes().Where(w=>w.Visibility!=VisibilityKind.None))
+    	{
+@:
+		switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.PrimitiveType:				    		
+						
+@:         @(att.Type.TypeName("C#")) @att.Name  { get; set; } 	
+				break;
+				case UmlTypeEnum.Class:							
+		  if (att.Type is IClassifier)
+ 				{
+ 					var iClassifier=(IClassifier)att.Type; 					
+@:         I@(iClassifier.Name)  @(att.Name)   { get; set; }
+ 					}	
+				break;
+				case UmlTypeEnum.Enumeration:
+@:        /// <summary> @att.Description </summary>	
+@:         @(att.Type.Name) @(att.Name) { get; set; }  
+				break;
+				} 
+    	}    	 	    
+@:	}
+	
+
+	
+	
+@:}
+@IncludeFile("..\..\..\..\..\Transactions Shared Code\SharedFunctions.razor")
+}

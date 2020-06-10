@@ -1,0 +1,234 @@
+﻿@using System;
+@using System.Text;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
+@{
+
+
+@:import {Injectable} from '@@angular/core';
+@:import {Observable, throwError} from 'rxjs';
+@:import { catchError, map, tap } from 'rxjs/operators';
+@:import {HttpClient} from '@@angular/common/http';
+@:import {environment} from "../../../../../../../environments/environment";
+var resultImports=new StringBuilder();
+foreach(var umlClass in Model.Diagram.Classes())		
+		{
+@:import {@(umlClass.Name)} from '../../../../Models/Querys/Requests/@(umlClass.GetModel().Name)/@(umlClass.Name)';
+	var queryResult=umlClass["Query Metadata","Query Result"].AsClass();
+	if (queryResult!=null)
+	{
+	 var import="import {"+queryResult.Name+"} from '../../../../Models/Querys/Results/"+queryResult.Name+"';";
+	 if (!resultImports.ToString().Contains(import))
+	 {
+	 	resultImports.AppendLine(import);
+	 }	 
+	}
+}
+@:@(Raw(resultImports.ToString()))
+@:
+@:@@Injectable()
+@:export class @(Model.Diagram.Name)RequestsService {
+@:  constructor(private http: HttpClient) {
+@:  }
+
+@:  baseURL: string='@(Model.Diagram["REST Metadata","REST Server URL"].AsString())';
+	foreach(var umlClass in Model.Diagram.Classes())		
+		{
+			var queryResult=umlClass["Query Metadata","Query Result"].AsClass();
+			if (queryResult==null)
+			{
+				if (!(umlClass["Query Metadata","OperationType"].AsString()=="Delete"))
+				{
+					Model.Output.WriteError("Query Result not set for "+umlClass.Name);
+				}
+			}
+			var opType=umlClass["Query Metadata","OperationType"].AsString();
+			switch (opType)
+			{
+			   case "Select":
+			   if (HasMany(umlClass))  
+					{
+@:	@(umlClass.Name)(@(umlClass.Name.LowerFirst()): @(umlClass.Name)): Observable<@(queryResult.Name)[]> {
+@:    	return this.http.get<@(queryResult.Name)[]>(environment.baseURL + @(Raw(BuildRoute(umlClass))))
+@:      		.pipe(
+@:    			catchError(this.handleError<@(queryResult.Name)[]>('@(umlClass.Name)')
+@:    		)	
+@:    	);
+@:  	}	
+					}
+					else
+					{
+@:	@(umlClass.Name)(@(umlClass.Name.LowerFirst()): @(umlClass.Name)): Observable<@(queryResult.Name)> {
+@:    	return this.http.get<@(queryResult.Name)>(environment.baseURL + @(Raw(BuildRoute(umlClass))))
+@:      		.pipe(
+@:    			catchError(this.handleError<@(queryResult.Name)>('@(umlClass.Name)')
+@:    		)	
+@:    	);
+@:  	}						
+					}
+			   break;
+			
+  			}	
+  		}
+@:	/**
+@:	* Handle Http operation that failed.
+@:	* Let the app continue.
+@:	* @@param operation - name of the operation that failed
+@:	* @@param result - optional value to return as the observable result
+@:	*/
+@:	private handleError<T> (operation = 'operation', result?: T) {
+@:		return (error: any): Observable<T> => {
+@:		
+@:		  // TODO: send the error to remote logging infrastructure
+@:		  console.error(error); // log to console instead
+@:		
+@:		  // TODO: better job of transforming error for user consumption
+@:		 // this.log(`${operation} failed: ${error.message}`);
+@:		
+@:		  // Let the app keep running by returning an empty result.
+@:		  return throwError('Something bad happened; please try again later.');
+@:		};
+@:	}
+@:  }
+
+}    
+  
+
+	
+
+
+@functions
+{
+ 
+ 	public static bool HasMany(IClassifier iClass)
+	{
+		if (iClass["Query Metadata","Query Result Multiplicity"].AsString()=="Many")
+			return true;
+			
+		return false;
+	}
+ 
+ public static string BuildRoute(IClass umlClass)
+    {
+    	string route="'api'";
+    	
+    	if (!string.IsNullOrEmpty(umlClass.FindParentModel()["REST Metadata","Parent Resource"].AsString()))
+    	{
+    		route=route+"/"+umlClass.FindParentModel()["REST Metadata","Parent Resource"].AsString();
+    	}
+    	
+    	if (!string.IsNullOrEmpty(umlClass["REST Metadata","Resource"].AsString()))
+    	{
+    	route=route+" + '/"+umlClass["REST Metadata","Resource"].AsString()+"'";
+    	}
+    	
+    	
+    	foreach(var att in umlClass.Attributes().Where(w=>w["REST Metadata","URL Part"].AsString()=="Route").OrderBy(w => w["REST Metadata","ResouceId Order"]))
+    	{
+    		route=route+@"+ '/' + "+umlClass.Name.LowerFirst()+"."+att.Name.LowerFirst() ;
+    	}
+    	
+    	
+    	if (umlClass["REST Metadata","Action"].AsString().Length>0)
+    	{
+    		route=route+@" + '/"+umlClass["REST Metadata","Action"].AsString()+"'";
+    	}
+    	
+    	bool first=true;
+    	
+    	foreach(var att in umlClass.Attributes().Where(w=>w["REST Metadata","URL Part"].AsString()=="Query").OrderBy(w => w["REST Metadata","ResouceId Order"]))
+    	{
+    		if (first)
+    		{
+    			first=false;
+    			route=route+@"+'?"+att.Name.LowerFirst()+"='+"+umlClass.Name.LowerFirst()+"."+att.Name.LowerFirst();
+    		}
+    		else
+    		{
+    			route=route+@"+'&"+att.Name.LowerFirst()+"='+"+umlClass.Name.LowerFirst()+"."+att.Name.LowerFirst();
+    		}
+    	
+    	}
+    	
+    	
+    	return route;
+    	
+    }
+ 
+ 
+ public static string GetDescriptor(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetDescriptor(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Default Descriptor"].AsString()=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+ 
+}
+

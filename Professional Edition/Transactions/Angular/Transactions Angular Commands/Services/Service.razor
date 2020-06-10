@@ -1,0 +1,156 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using System.Text;
+@using SilverDawn.SilverModel.Interfaces;
+@{
+@:// ALLOWOVERWRITE
+
+@:
+@:import {Injectable} from '@@angular/core';
+@:import {Observable,of} from 'rxjs';
+@:import { catchError, map, tap } from 'rxjs/operators';
+@:import {HttpClient} from '@@angular/common/http';
+foreach(var iClass in Model.Diagram.Classes())
+{
+@:import {@(iClass.Name)View} from '../models/@(iClass.Name)View';
+}
+@:
+@:@@Injectable()
+@:export class @(Model.Diagram.Name)Service {
+@:  constructor(private http: HttpClient) {
+@:  }
+@:
+@:  baseURL: string='@(Model.Diagram["REST Metadata","REST Server URL"].AsString())';
+@:
+foreach(var iClass in Model.Diagram.Classes())
+{
+@:
+	switch (iClass["REST Metadata","Method"].AsString())
+	{
+		case "POST":
+@:	    @(iClass.Name.LowerFirst())(@(iClass.Name.LowerFirst()): @(iClass.Name)View): Observable<@(iClass.Name)View > {
+@:    	return this.http.post<@(iClass.Name)View>(this.baseURL + '@(BuildRoute(iClass))', @(iClass.Name.LowerFirst()))
+@:      		.pipe(
+@:    			catchError(this.handleError<@(iClass.Name)View>('add@(iClass.Name)')
+@:    		)	
+@:    	);
+@:  	}		
+		break;
+		
+		case "PUT":
+@: 	   @(iClass.Name.LowerFirst())(@(GetRestKey(iClass).LowerFirst()): number,  @(iClass.Name.LowerFirst()): @(iClass.Name)View): Observable<@(iClass.Name)View > {
+@:    	return this.http.put<@(iClass.Name)View >(this.baseURL + `@(BuildRoute(iClass))`, @(iClass.Name.LowerFirst()))
+@:      		.pipe(
+@:        		catchError(this.handleError<@(iClass.Name)View>('add@(iClass.Name)')
+@:        	)
+@:      	);
+@:  	}
+		break;
+		
+		case "GET":
+@: 	    @(iClass.Name.LowerFirst())(@(iClass.Name.LowerFirst()): @(iClass.Name)View): Observable<@(iClass.Name)View> {
+@:		return this.http.get<@(iClass.Name)View>(this.baseURL + `@(BuildRoute(iClass))`)
+@:      		.pipe(
+@:         		catchError(this.handleError<@(iClass.Name)View>(`get@(GetPrimaryKey(iClass).LowerFirst())=${id}`)
+@:         	)
+@:   		);
+@: 	}
+		break;
+		
+		case "DELETE":
+@: 	    @(iClass.Name.LowerFirst())(@(GetRestKey(iClass).LowerFirst()): number): Observable<@(iClass.Name)View > {
+@:     	return this.http.delete<@(iClass.Name)View >(this.baseURL + `@(BuildRoute(iClass))`)
+@:        	.pipe(
+@:          		catchError(this.handleError<@(iClass.Name)View>('add@(iClass.Name)')
+@:          	)
+@:        );
+@:  	} 
+		break;
+	}
+
+}
+  		
+@:	/**
+@:	* Handle Http operation that failed.
+@:	* Let the app continue.
+@:	* @@param operation - name of the operation that failed
+@:	* @@param result - optional value to return as the observable result
+@:	*/
+@:	private handleError<T> (operation = 'operation', result?: T) {
+@:		return (error: any): Observable<T> => {
+@:		
+@:		  // TODO: send the error to remote logging infrastructure
+@:		  console.error(error); // log to console instead
+@:		
+@:		  // TODO: better job of transforming error for user consumption
+@:		 // this.log(`${operation} failed: ${error.message}`);
+@:		
+@:		  // Let the app keep running by returning an empty result.
+@:		  return of(result as T);
+@:		};
+@:	}
+@:}   
+
+  }
+
+    
+  
+@IncludeFile("..\..\..\Transactions Shared Code\SharedFunctions.razor")
+	
+
+
+@functions{
+ 
+ 
+ public static string GetRestKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return att.Name;
+			}
+			
+			if (att.RelatedField["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return att.Name;
+			}
+			
+		}    	
+    	return "";
+    }
+ 
+ 
+ public static string GetDescriptor(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetDescriptor(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Default Descriptor"].AsString()=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 
+ 
+
+ 
+}
+

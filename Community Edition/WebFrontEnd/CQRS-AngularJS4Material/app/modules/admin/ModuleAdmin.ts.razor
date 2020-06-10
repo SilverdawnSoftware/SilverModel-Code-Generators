@@ -1,0 +1,77 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
+
+
+import { NgModule }             from '@@angular/core';
+import { RouterModule, Routes } from '@@angular/router';
+
+@foreach (var att in @Model.Diagram.Classes())    {
+<text>import {@(att.Name)Index} from './@(att.Name)/Views/@(att.Name)Index'</text>
+<text>import {@(att.Name)Edit} from './@(att.Name)/Views/@(att.Name)Edit'</text>
+}
+
+const appRoutes: Routes = [
+  @foreach (var att in @Model.Diagram.Classes())    {
+  <text>
+  {
+    path: 'admin/@(att.Name.LowerFirst())/',
+    component: @(att.Name)Index,
+
+  },
+  {
+    path: 'admin/@(att.Name.LowerFirst())/edit/:id',
+    component: @(att.Name)Edit
+  },
+  {
+    path: 'admin/@(att.Name.LowerFirst())/add',
+    component: @(att.Name)Edit
+  },
+  </text>
+}
+  { path: '',   redirectTo: '/admin/user', pathMatch: 'full' },
+  { path: '**', component: UserIndex }
+];
+
+@@NgModule({
+  imports: [
+    RouterModule.forRoot(appRoutes )
+  ],
+  exports: [
+    RouterModule
+  ],
+  providers: [
+  ]
+})
+export class AdminRoutingModule { }
+
+
+@functions{
+
+string GetPrimaryKey(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Attributes())
+   	{
+		if (att2["Database General Metadata","Primary Key"].AsString()=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+string GetDescriptor(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Attributes())
+   	{
+		if (att2["Database General Metadata","Default Descriptor"].AsString()=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+}

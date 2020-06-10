@@ -1,0 +1,38 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using System.Text;
+@using SilverDawn.SilverModel.Interfaces;
+@{
+var queryResult=Model.Classifier["Query Metadata","Query Result"].AsClass();
+@:// ALLOWOVERWRITE
+@:using System.Threading.Tasks;
+@:using SilverdawnSoftware.Transactions.Interfaces;
+if (queryResult!=null){
+@:using @(GetInterfaceNameSpace(queryResult)).Models;
+}
+@:using @(GetInterfaceNameSpace(Model.Classifier)).Models;
+@:namespace @(GetInterfaceNameSpace(Model.Classifier)) 
+@:{
+@:    public partial interface I@(Model.Classifier.Name)Command : Orleans.IGrainWithIntegerKey
+@:    {
+	switch(Model.Classifier["Query Metadata","OperationType"].AsString())
+		{
+		case "Insert":   					
+@:        Task<I@(queryResult.Name)> @(Model.Classifier.Name)(I@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()));
+		break;
+		case "Update":
+@:        Task<I@(queryResult.Name)> @(Model.Classifier.Name)(I@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()));			
+		break;
+		case "Delete":
+@:        Task<ITransactionsBase> @(Model.Classifier.Name)(I@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()));			
+		break;}
+@:    }
+@:}
+
+
+@IncludeFile("..\..\..\..\Transactions Shared Code\SharedFunctions.razor")
+}

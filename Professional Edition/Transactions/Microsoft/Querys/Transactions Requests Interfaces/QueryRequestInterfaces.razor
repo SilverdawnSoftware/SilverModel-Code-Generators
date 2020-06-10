@@ -1,0 +1,70 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using System.Text;
+@using SilverDawn.SilverModel.Interfaces;
+@{
+var queryResult=Model.Classifier["Query Metadata","Query Result"].AsClass();
+@:// ALLOWOVERWRITE
+@:using System.Collections.Generic;
+@:using System.Threading.Tasks;
+@:using SilverdawnSoftware.Transactions.Interfaces;
+if (queryResult!=null){
+@:using @(GetInterfaceNameSpace(queryResult)).Models;
+}
+@:using @(GetInterfaceNameSpace(Model.Classifier)).Models;
+@(GetAttrbiuteUsings(Model.Classifier))
+@:namespace @(GetInterfaceNameSpace(Model.Classifier)) 
+@:{
+@:    public partial interface I@(Model.Classifier.Name)Request : @(GetConcurrencyType(Model.Classifier,Model.Output))
+@:    {
+		if (HasMany(Model.Classifier))
+   			{
+@:        Task<List<I@(queryResult.Name)>> @(Model.Classifier.Name)(I@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()));
+			}
+			else
+			{
+@:        Task<I@(queryResult.Name)> @(Model.Classifier.Name)(I@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()));			
+			}
+@:    }
+@:}
+
+
+@IncludeFile("..\..\..\Transactions Shared Code\SharedFunctions.razor")
+}
+
+@functions{
+
+ public static string GetConcurrencyType(IClassifier umlClass,IOutput output)
+ {
+ 	if (umlClass["Concurrency Metadata","Require Concurrency"].AsBoolean())
+ 	{
+ 		if (umlClass.AllAttributes().Where(w=>w["Concurrency Metadata","Concurrency Key"].AsBoolean()==true).Any())
+ 		{
+ 			var att=umlClass.AllAttributes().Where(w=>w["Concurrency Metadata","Concurrency Key"].AsBoolean()==true).First();
+ 			switch (att.Type.GetUMLType())
+			{
+				case UmlTypeEnum.PrimitiveType:
+					if (att.Type.Name=="Integer")
+						return  "Orleans.IGrainWithIntegerKey";
+                	if (att.Type.Name=="Guid")
+                		return  "Orleans.IGrainWithGuidKey";
+                  	break;
+             }
+ 		 }
+ 	}
+ 	else
+ 	{
+ 		return "Orleans.IGrainWithGuidKey";
+ 	}
+ 	
+ 	output.WriteError("Unable to find concurrecny type for class "+umlClass.Name + " : "+umlClass.QualifiedName);
+ 	
+ 	return "";
+ 
+ }
+ 
+}

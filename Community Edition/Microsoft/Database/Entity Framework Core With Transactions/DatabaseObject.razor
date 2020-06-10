@@ -1,0 +1,176 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@{
+@:// ALLOWOVERWRITE
+@:
+@:using System;
+@:using System.Collections.Generic;
+@:using System.ComponentModel.DataAnnotations;
+@:using System.ComponentModel.DataAnnotations.Schema;
+@:using System.Linq;
+@:using Microsoft.EntityFrameworkCore;
+@:
+@:namespace @(Model.Solution.Name).@(Model.Diagram.Name)
+@:{
+@:	
+	if (Model.Classifier["Database General Metadata","Entity Type"].AsString()=="OwnedEntity")
+    	{
+@:    [Owned]
+    	}
+@:    public class @Model.Classifier.Name @GetInheritance(@Model.Classifier)
+@:    {
+    	foreach (var att in Model.Classifier.Attributes()) { 
+@:
+			switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.PrimitiveType:
+@:        /// <summary> @att.Description </summary>
+					if (att["Database General Metadata","Primary Key"].AsString()=="True")
+					{
+@:        [Key]			
+					}
+					if (att["Database General Metadata","Not Mapped"].AsString()=="True")
+					{
+@:        [NotMapped]			
+					}
+
+
+@:        public @(att.Type.TypeName("C#")) @(att.Name) { get; set; }     	
+				break;
+				case UmlTypeEnum.Class:	
+				if (att.Type is IClassifier)
+ 				{
+ 					var iClassifier=(IClassifier)att.Type;
+ 					if (iClassifier["Database General Metadata","Entity Type"].AsString()=="OwnedEntity")
+ 					{
+@:        /// <summary> @att.Description </summary>	
+@:        public virtual @(iClassifier.Name)  @(att.Name)   { get; set; }
+					} 				
+ 					else
+ 					{
+@:        /// To avoid Many to Many Relationships, use primary key https://github.com/aspnet/EntityFrameworkCore/issues/1368
+@:        /// <summary>
+@:        /// @att.Description
+@:        /// </summary>	
+@:        public virtual @att.Type.TypeName("C#") @att.Name  { get; set; }  				
+@:       // public @(GetPrimaryType(att.Type)) @(att.Name)@(GetPrimaryKey(att.Type))  { get; set; }	
+					}
+				}
+				break;
+				case UmlTypeEnum.Enumeration:
+@:        /// <summary> @att.Description </summary>	
+@:        public @(att.Type.Name) @(att.Name) { get; set; }  
+				break;
+				}    		
+    	}
+    	
+    	foreach (var att in Model.Classifier.GetTargetAssociation()) { 
+    	
+@:    	/// <summary>
+@:        /// Reference to  @att.GetSourceMemberEnd().Type.Name
+@:        /// </summary>	
+@:    	public virtual @(att.GetSourceMemberEnd().Type.Name) @(att.GetSourceMemberEnd().Type.Name) { get; set; } 
+    	}
+    	
+    	foreach (var att in Model.Classifier.GetSourceAssociation()) { 
+@:    	/// <summary>
+@:        /// List of @(att.GetTargetMemberEnd().Type.Name)s
+@:        /// </summary>	
+@:    	public virtual List<@(att.GetTargetMemberEnd().Type.Name)> @(att.GetTargetMemberEnd().Type.Name)s { get; set; }
+    	}
+@:    }
+@:}
+
+}
+
+
+
+@functions{
+ 
+    public static string GetInheritance(IClassifier umlClass)
+    {
+    	
+    	var generals=umlClass.GetTargetGeneralizations();
+    	
+    	if (generals.Any())
+    	{
+    		return ": "+((INamedElement)generals.First().Source).Name;
+    	}
+    	
+    	return "";
+    }
+ 
+}
+
+@functions{
+ 
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+ 
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+ 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

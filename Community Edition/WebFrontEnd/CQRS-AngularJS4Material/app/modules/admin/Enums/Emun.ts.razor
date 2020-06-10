@@ -1,0 +1,26 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
+
+export enum @Model.Enumeration.Name
+    {
+    	@foreach (var att in Model.Enumeration.EnumerationLiterals())
+    	{
+    		
+    		if (att.Value!=null)
+    		{
+    		@att.Name@:= @att.Value
+    		}
+    		else
+    		{
+    		@att.Name
+    		}
+    		@:,
+    		
+    	}
+    	
+    }

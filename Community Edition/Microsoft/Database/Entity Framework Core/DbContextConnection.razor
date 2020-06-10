@@ -1,0 +1,35 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
+
+
+namespace @(Model.Diagram.QualifiedName.Replace("::","."))
+{
+    public partial class @Model.Diagram["Entity Framework Core","DBContextName"].AsString() : DbContext
+    {
+    
+   
+	// Delete if not required	
+	 protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            //IConfigurationRoot configuration = new ConfigurationBuilder()
+            //    .AddJsonFile("appsettings.json", optional: true)
+            //    .Build();
+            //var conn = configuration["ConnectionStrings:@(Model.Diagram.Name)Connection"].AsString();
+
+            //optionsBuilder.UseSqlServer(conn);
+
+           optionsBuilder.UseSqlServer(@@"Server=.;Database=@(Model.Diagram.Name);Trusted_Connection=True;MultipleActiveResultSets=true");
+        }	
+
+
+     }
+ }

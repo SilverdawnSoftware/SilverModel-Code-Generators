@@ -1,0 +1,172 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using System.Text;
+@using SilverDawn.SilverModel.Interfaces;
+@{
+@:// ALLOWOVERWRITE
+@:
+@:using System;
+@:using System.Collections.Generic;
+@:using System.Linq;
+@:using System.Threading.Tasks;
+@:using Microsoft.AspNetCore.Mvc;
+@:using SilverdawnSoftware.Exceptions;
+@:
+@:@(GetUsings(Model.Diagram))
+@:using @(Model.Solution.Name).RESTAPI.Shared.Services;
+@:
+@:namespace @(Model.Diagram["REST Metadata","REST API Namespace"].AsString()).Controllers.Commands
+@:{
+@:	
+@:    public partial class @(Model.Diagram.Name)APIController : Controller
+@:    {
+@:   		private readonly OrleansService.IOrleansService _orleansService;
+@:
+@:        public @(Model.Diagram.Name)APIController(OrleansService.IOrleansService orleansService)
+@:        {
+@:            _orleansService = orleansService;
+@:        }
+@:    
+       {foreach(var umlClass in Model.Diagram.Classes())
+       {
+       		var queryResult=umlClass["Query Metadata","Query Result"].AsClass();
+       		switch(umlClass["REST Metadata","Method"].AsString())
+       		{
+       			case "GET":
+       			@:    	  /// <summary>
+@:        /// @(umlClass.Description)
+@:        /// </summary>   	
+@:    	[Route("@(BuildRoute(umlClass))")]
+@:    	[HttpPost]
+@:        public async Task<ActionResult<I@(queryResult.Name)>> Get([FromBody]@(umlClass.Name) @(umlClass.Name.LowerFirst()))
+@:        {
+@:            try
+@:            {
+@:                var grain = _orleansService.Client.GetGrain<I@(umlClass.Name)Command>(0);
+@:                var result=await  grain.@(umlClass.Name)(@(umlClass.Name.LowerFirst()));
+@:                if (result.__TransactionsSuccessful)
+@:                   return new ActionResult<I@(queryResult.Name)>(result);
+@:                else
+@:                {
+@:                    return new ContentResult() {StatusCode = result.__TransactionsStatusCode, Content = result.__TransactionsErrorMessage, ContentType = "text/plain"};
+@:                }
+@:            }
+@:            catch (Exception e)
+@:            {
+@:                 LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                 return new ContentResult() { StatusCode = 500, Content = "Fatal API Error", ContentType = "text/plain" };     
+@:            } 
+@:        }
+       			break;
+       			
+       			case "POST":
+       			
+@:    	  /// <summary>
+@:        /// @(umlClass.Description)
+@:        /// </summary>   	
+@:    	[Route("@(BuildRoute(umlClass))")]
+@:    	[HttpPost]
+@:        public async Task<ActionResult<I@(queryResult.Name)>> Add([FromBody]@(umlClass.Name) @(umlClass.Name.LowerFirst()))
+@:        {
+@:            try
+@:            {
+@:                var grain = _orleansService.Client.GetGrain<I@(umlClass.Name)Command>(0);
+@:                var result=await  grain.@(umlClass.Name)(@(umlClass.Name.LowerFirst()));
+@:                if (result.__TransactionsSuccessful)
+@:                   return new ActionResult<I@(queryResult.Name)>(result);
+@:                else
+@:                {
+@:                    return new ContentResult() {StatusCode = result.__TransactionsStatusCode, Content = result.__TransactionsErrorMessage, ContentType = "text/plain"};
+@:                }
+@:            }
+@:            catch (Exception e)
+@:            {
+@:                 LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                 return new ContentResult() { StatusCode = 500, Content = "Fatal API Error", ContentType = "text/plain" };     
+@:            } 
+@:        }
+       			break;
+       			case "PUT":       			
+@:         /// <summary>
+@:        /// @(umlClass.Description)
+@:        /// </summary>	
+@:    	[Route("@(BuildRoute(umlClass))")]
+@:    	[HttpPut]
+@:        public async Task<ActionResult<I@(queryResult.Name)>> Update([FromRoute]int id,[FromBody]@(umlClass.Name) @(umlClass.Name.LowerFirst()))
+@:        {
+@:            try
+@:            {
+@:               var grain = _orleansService.Client.GetGrain<@(umlClass.Name)Command>(0);
+@:               var result=await grain.@(umlClass.Name)(@(umlClass.Name.LowerFirst()));
+@:               if (result.__TransactionsSuccessful)
+@:                    return new ActionResult<I@(queryResult.Name)>(result);
+@:                else
+@:                {
+@:                    return new ContentResult() {StatusCode = result.__TransactionsStatusCode, Content = result.__TransactionsErrorMessage, ContentType = "text/plain"};
+@:                }
+@:            }
+@:            catch (Exception e)
+@:            {
+@:                 LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                 return new ContentResult() { StatusCode = 500, Content = "Fatal API Error", ContentType = "text/plain" };   
+@:            }                      
+@:        }
+       			break;
+       			
+       			case "DELETE":
+@:         /// <summary>
+@:        /// @(umlClass.Description)
+@:        /// </summary>
+@:    	[Route("@(BuildRoute(umlClass))")]
+@:    	[HttpDelete]
+@:        public async Task<ActionResult> Delete([FromRoute]int id,[FromBody]@(umlClass.Name) @(umlClass.Name.LowerFirst()))
+@:        {
+@:            try
+@:            {
+@:                var grain = _orleansService.Client.GetGrain<@(umlClass.Name)Command>(0);
+@:                var result=await grain.@(umlClass.Name)(@(umlClass.Name.LowerFirst()));
+@:                if (result.__TransactionsSuccessful)
+@:                   return new ContentResult() {StatusCode = 200};
+@:                else
+@:                {
+@:                    return new ContentResult() {StatusCode = result.__TransactionsStatusCode, Content = result.__TransactionsErrorMessage, ContentType = "text/plain"};
+@:                }
+@:            }
+@:            catch (Exception e)
+@:            {
+@:                 LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                 return new ContentResult() { StatusCode = 500, Content = "Fatal API Error", ContentType = "text/plain" };          
+@:            } 
+@:        }
+       			break;
+       		}
+         }
+       }
+    	
+    	
+        
+    }
+}
+
+}
+
+@IncludeFile("..\..\..\Transactions Shared Code\SharedFunctions.razor")
+
+@functions{
+ 
+ 	
+ 
+ 	
+	
+   
+    
+    
+    
+
+    
+ 
+}

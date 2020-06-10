@@ -1,0 +1,26 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@{
+@:// ALLOWOVERWRITE
+@:using System.Collections.Generic;
+@:using System.Linq;
+@:using System.Text;
+@:using System.Data.Entity;
+@:using @(Model.Diagram.Name).Database;
+@:
+@:namespace @(Model.Diagram.Name).Database
+@:{
+@:    public class @Model.Diagram["Entity Framework","DBContextName"].AsString() : DbContext
+@:    {    
+    foreach (var att in @Model.Diagram.Classes())
+    {
+@:        public DbSet<@(att.Name)> @(att.Name)s { get; set; } 
+     }
+     
+@:     }
+@: }
+ }

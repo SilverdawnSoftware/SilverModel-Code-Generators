@@ -1,0 +1,160 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using System.Text;
+@using SilverDawn.SilverModel.Interfaces;
+@{
+@:// ALLOWOVERWRITE
+@:
+@:using System;
+@:using System.Collections.Generic;
+@:using System.Linq;
+@:using System.Threading.Tasks;
+@:using Microsoft.AspNetCore.Mvc;
+@:using SilverdawnSoftware.Exceptions;
+@:
+@:@(GetUsings(Model.Diagram))
+@:using @(Model.Solution.Name).RESTAPI.Shared.Services;
+@:
+@:namespace @(Model.Diagram["REST Metadata","REST API Namespace"].AsString()).Controllers.Requests
+@:{
+@:	
+@:    public partial class @(Model.Diagram.Name)ModelAPIController : Controller
+@:    {
+@:   		private readonly OrleansService.IOrleansService _orleansService;
+@:
+@:        public @(Model.Diagram.Name)ModelAPIController(OrleansService.IOrleansService orleansService)
+@:        {
+@:            _orleansService = orleansService;
+@:        }
+@:    
+       {foreach(var umlClass in Model.Diagram.Classes())
+       {
+       		var queryResult=umlClass["Query Metadata","Query Result"].AsClass();
+       		switch(umlClass["REST Metadata","Method"].AsString())
+       		{
+       			case "GET":
+				if (HasMany(umlClass))  
+				{
+@:       			/// <summary>
+@:         /// 
+@:         /// </summary>   	
+@:         [Route("@(BuildRoute(umlClass))")]
+@:         [HttpGet]
+@:          public async Task<ActionResult<List<I@(queryResult.Name)>>> @(umlClass.Name)(@(BuildParamters(umlClass)))
+@:         {
+@:             try
+@:             {
+if (umlClass["Concurrency Metadata","Require Concurrency"].AsBoolean())
+{
+@:              var grain = _orleansService.Client.GetGrain<I@(umlClass.Name)Request>(0);
+}
+else
+{
+@:              var grain = _orleansService.Client.GetGrain<I@(umlClass.Name)Request>(Guid.NewGuid());
+}
+@:                 var result = await grain.@(umlClass.Name)(new @(umlClass.Name)()
+@:@(buildQueryObject(umlClass))
+@:);
+@: 
+@:                 return new ActionResult<List<I@(queryResult.Name)>>(result);
+@:             }
+@:             catch (Exception e)
+@:             {
+@:                 LogFactory.GetLogger().Log(LogLevel.Error, e);
+@:                return new ContentResult() {StatusCode = 500, Content = "Fatal API Error", ContentType = "text/plain"};
+@:             }
+@:         }
+					}
+					else
+					{
+
+@:    	  /// <summary>
+@:        /// @(umlClass.Description)
+@:        /// </summary>   	
+@:    	[Route("@(BuildRoute(umlClass))")]
+@:    	[HttpGet]
+@:        public async Task<ActionResult<I@(queryResult.Name)>> @(umlClass.Name)(@(BuildParamters(umlClass)))
+@:        {
+@:            try
+@:            {
+		if (umlClass["Concurrency Metadata","Require Concurrency"].AsBoolean())
+		{
+@:                var grain = _orleansService.Client.GetGrain<I@(umlClass.Name)Request>(@(GetConcurrencyType(umlClass,Model.Output)));
+		}
+		else
+		{
+@:                var grain = _orleansService.Client.GetGrain<I@(umlClass.Name)Request>(Guid.NewGuid());		
+		}
+@:                var result=await  grain.@(umlClass.Name)(new @(umlClass.Name)()
+@:				  	@(buildQueryObject(umlClass)));
+@:                if (result.__TransactionsSuccessful)
+@:                   return new ActionResult<I@(queryResult.Name)>(result);
+@:                else
+@:                {
+@:                    return new ContentResult() {StatusCode = result.__TransactionsStatusCode, Content = result.__TransactionsErrorMessage, ContentType = "text/plain"};
+@:                }
+@:            }
+@:            catch (Exception e)
+@:            {
+@:                 LogFactory.GetLogger().Log(LogLevel.Error,e);
+@:                 return new ContentResult() { StatusCode = 500, Content = "Fatal API Error", ContentType = "text/plain" };     
+@:            } 
+@:        }
+					}
+       			break;
+       			
+
+       		}
+         }
+       }
+    	
+    	
+        
+    }
+}
+
+}
+
+@IncludeFile("..\..\..\Transactions Shared Code\SharedFunctions.razor")
+
+@functions{
+ 
+	public static string buildQueryObject(IClass umlClass)
+	{
+		var queryClass=new StringBuilder();
+		queryClass.AppendLine("{");
+		
+		foreach(var att in umlClass.Attributes().Where(w=>w["REST Metadata","URL Part"].AsString()=="Route"))
+		{
+			queryClass.AppendLine(att.Name +" = "+att.Name.LowerFirst() +",");
+		}
+		
+		foreach(var att in umlClass.Attributes().Where(w=>w["REST Metadata","URL Part"].AsString()=="Query"))
+		{
+			queryClass.AppendLine(att.Name +" = "+att.Name.LowerFirst() +",");
+		}
+		queryClass.AppendLine("}");
+		
+		return queryClass.ToString();
+	}
+
+	public static string GetConcurrencyType(IClassifier umlClass,IOutput output)
+	{
+	 	if (umlClass["Concurrency Metadata","Require Concurrency"].AsBoolean())
+	 	{
+	 		if (umlClass.AllAttributes().Where(w=>w["Concurrency Metadata","Concurrency Key"].AsBoolean()==true).Any())
+	 		{
+	 			var att=umlClass.AllAttributes().Where(w=>w["Concurrency Metadata","Concurrency Key"].AsBoolean()==true).First();
+	 			return att.Name;
+	 		}
+	 	}
+	 	
+	 	output.WriteError("Unable to find concurrecny key for class "+umlClass.Name + " : "+umlClass.QualifiedName);
+ 	
+ 		return "";
+	}
+}

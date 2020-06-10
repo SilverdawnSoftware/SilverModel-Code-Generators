@@ -1,0 +1,163 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using System.Text;
+@using SilverDawn.SilverModel.Interfaces;
+@{
+@:@@inherits @(Model.Classifier.Name)Base
+@:@@page "/@(Model.Classifier.Name.LowerFirst())"
+@:@@using SilverdawnSofware.Invoice.Client.Web.Data
+@:@@using SilverdawnSofware.Invoice.Client.Web.ViewModels
+@:@@using MatBlazor
+@:@@inject WeatherForecastService ForecastService
+@:
+@:<h1>@(Model.Classifier.Name)</h1>
+@:
+@:<p>This component demonstrates fetching data from a service.</p>
+@:
+@:@@if (@(Model.Classifier.Name)ViewModel != null)
+@:{
+@:    <p><em>Loading...</em></p>
+@:}
+@:else
+@:{
+@:    <form>
+@:            <MatTabGroup>        	
+        
+        	 // complex form layout
+        	 //build the sort order for the form
+        	 string[] tabs=Model.Classifier["Form Design Metadata","TabOrder"].AsString().Split(',');
+        	
+        	
+        	 var altmode=false;
+        	 if (tabs.Length==0 ){ tabs=new string[]{""}; }
+        	 if (tabs.Length==1 && string.IsNullOrWhiteSpace(tabs[0])) {altmode=true;}
+        	
+	        	 foreach(var tab in tabs)
+	        	 {
+	        	 	int maxrow=0;
+	        	 	int maxcol=0;
+	        	 	if (Model.Classifier.AllAttributes().Any(w=>w["Form Design Metadata","TabName"].AsString()==tab)){        	 	
+	        	  		maxrow = Model.Classifier.AllAttributes().Where(w=>w["Form Design Metadata","TabName"].AsString()==tab).Max(m => SafeParse(m["Form Design Metadata", "Row"].AsString()));
+	        	  	}
+	        	  	if (Model.Classifier.AllAttributes().Any(w => w["Form Design Metadata", "TabName"].AsString() == tab)){
+	             		maxcol = Model.Classifier.AllAttributes().Where(w => w["Form Design Metadata", "TabName"].AsString() == tab).Max(m => SafeParse(m["Form Design Metadata", "Column"].AsString()));
+	             	}
+	        	 	if (altmode) {maxrow=Model.Classifier.AllAttributes().Where(w=>w["Form Design Metadata","IsVisible"].AsBoolean()==true).Count()-1;
+	        	 }
+        	 var tabName=!string.IsNullOrWhiteSpace(tab) ? tab : "Main";
+@:        	   <MatTab Label="@(tabName)"> 
+@:         
+        	 	for(int i=0; i <= maxrow;i++){
+        	 		for( int j=0; j <= maxcol;j++){
+        	 			
+        	 			var atts=new List<IProperty>();
+        	 			if (altmode)
+        	 			{
+        	 				atts.Add(Model.Classifier.AllAttributes().ToList()[i]);	
+        	 			}
+        	 			else
+        	 			{
+        	 				atts=Model.Classifier.AllAttributes().Where(w=>w["Form Design Metadata","TabName"].AsString()==tab && SafeParse(w["Form Design Metadata","Row"].AsString())==i && SafeParse(w["Form Design Metadata","Column"].AsString())==j ).ToList();
+        	 				
+        	 			}
+        	 			
+        	 			foreach (var att in atts.Where(w=>w["Form Design Metadata","IsVisible"].AsBoolean()==true))
+        	 			{
+						  	switch (att.Type.GetUMLType())
+							{
+							case UmlTypeEnum.Class:				
+				    		
+								var refclass=(IClass)att.Type;	
+			
+								var pKey=GetPrimaryKey(refclass);
+								var descriptor=GetDescriptor(refclass);
+								
+								if (!string.IsNullOrEmpty(pKey) && !string.IsNullOrEmpty(descriptor))
+								{
+@:								 <div class="form-group">
+@:								 		
+@:			                            <label for="@Model.Classifier.Name.LowerFirst()@att.Name" class="col-sm-2 control-label">@(att.Name)</label>
+@:			                            <div class="col-sm-10">
+@:			
+@:			                                <select id="@Model.Classifier.Name@att.Name" class="form-control" ng-model="@(Model.Classifier.Name.LowerFirst())View.@(att.Name.LowerFirst())@pKey" ng-options="@(refclass.Name.LowerFirst()).@(pKey.LowerFirst()) as @(refclass.Name.LowerFirst()).@(descriptor.LowerFirst()) for @refclass.Name.LowerFirst() in @(refclass.Name.LowerFirst())s" required>
+@:			                                    <option value="">-- Choose @refclass.Name --</option>
+@:			                                </select>
+@:			                            </div>
+@:			                       	</div>
+								}
+								break;
+							   default:
+									switch (att.Type.TypeName("HtmlInput").ToUpper())
+							  		{
+							  			case "CHECKBOX":
+@:			                         <p>
+@:                                           <MatCheckbox @@bind-Checked="@@@(Model.Classifier.Name)ViewModel.@(att.Name)" Label="@(att.Name)" HelperText="@(att.Description)"></MatCheckbox>
+@:                                          
+@:									 </p>							  			
+							  			break;
+							  			default:
+@:			                         <p>
+@:                                          <MatTextField @@bind-Value="@@@(Model.Classifier.Name)ViewModel.@(att.Name)" HelperText="@(att.Description)" Label="@(att.Name)"></MatTextField>
+@:									 </p>
+										break;
+							  		}
+				    			
+				    			break;
+				    		  }    	
+    		
+    			
+        	 			
+        	 			}
+
+        	 		}
+
+        	 	}
+@:			        </MatTab>
+			 }
+@:			 	</MatTabGroup>
+			 
+			 
+ 			
+@:        <MatButton Raised="true" OnClick="@@Save">Save</MatButton>
+@:    </form>
+@:}
+
+}
+
+@IncludeFile("..\..\..\..\..\Transactions Shared Code\SharedFunctions.razor")
+
+@functions{
+
+
+
+string GetDescriptor(IClassifier iClass)
+{
+	foreach (var att2 in iClass.Attributes())
+   	{
+		if (att2["Database General Metadata","Default Descriptor"].AsString()=="True")
+		 return att2.Name;
+	}
+	
+	return "";
+}
+
+int GetTabCount(IClassifier iClass)
+{
+var tabs=iClass["Form Design Metadata","Tab Order"].AsString().Split(',');
+return tabs.Length;
+}
+
+
+ public int SafeParse(string number)
+        {
+            int result=0;
+
+            int.TryParse(number, out result);
+
+            return result;
+        }
+}

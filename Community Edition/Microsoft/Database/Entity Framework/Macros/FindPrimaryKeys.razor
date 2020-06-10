@@ -1,0 +1,22 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+
+@foreach (var classifier in Model.Diagram.Classifiers())
+{
+
+foreach (var prop in classifier.AllAttributes())
+		{
+		
+		
+		if  (prop.Name!=null && classifier.Name.ToUpper()==prop.Name.ToUpper().Replace("ID",""))
+		{
+		@:PrimaryKey Set Classifier:@classifier.Name  Property:@prop.Name
+			prop["Database General Metadata","Primary Key"].AsString()="True";
+		}
+}
+
+}

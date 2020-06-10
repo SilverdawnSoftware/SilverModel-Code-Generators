@@ -1,0 +1,33 @@
+﻿
+@:      public async Task<ITransactionsBase> @(Model.Classifier.Name)(I@(Model.Classifier.Name) @(Model.Classifier.Name.LowerFirst()))
+@:      {
+@:          var result=new TransactionsBase();
+@:			try
+@:          {
+@:              using (var db=new @(GetDbContext(queryClass,Model.Output))())
+@:              {
+@:                   if (db.@(queryClass.Name)s.Any(w => @Raw(GetWhereForClassifier(Model.Classifier,queryClass,Model.Output))))
+@:                   {
+@:                       var @(queryClass.Name.LowerFirst()) = db.@(queryClass.Name)s.First(w => @Raw(GetWhereForClassifier(Model.Classifier,queryClass,Model.Output)));
+@:                       db.@(queryClass.Name)s.Remove(@(queryClass.Name.LowerFirst()));
+
+@:                       await db.SaveChangesAsync();
+@:		
+@:                      result.__TransactionsSuccessful=true; 
+@:						return result;
+@:                   }
+@:                   else
+@:                   {
+@:                    result.__TransactionsSuccessful=false;
+@:                    result.__TransactionsErrorMessage="@(queryClass.Name) was not found";
+@:                   }
+@:               }
+@:           }
+@:           catch (Exception e)
+@:               {
+@:                    LogFactory.GetLogger().Log(LogLevel.Error,e);                 
+@:                    return new TransactionsBase(){__TransactionsSuccessful = false,__TransactionsErrorMessage = "Unable to delete @(queryClass.Name)",__TransactionsStatusCode = 500};
+@:                }  
+@:                return result;      
+@:           }
+

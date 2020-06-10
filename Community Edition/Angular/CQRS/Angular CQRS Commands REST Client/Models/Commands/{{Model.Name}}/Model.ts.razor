@@ -1,0 +1,29 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+// ALLOWOVERWRITE
+@{
+foreach (var att in Model.Classifier.AllAttributes())  {
+			switch (att.Type.GetUMLType())
+				{
+				case UmlTypeEnum.Enumeration:		
+//@:					import {@(att.Type.Name)} from "../../Enums/@(att.Type.Name)"
+					break;
+				}
+}
+@:import {I@(Model.Classifier.Name)} from '../../../Interfaces/Commands/@(Model.Classifier.GetModel().Name)/I@(Model.Classifier.Name)';
+
+@:export class @(Model.Classifier.Name) implements I@(Model.Classifier.Name) {
+      foreach (var att in Model.Classifier.AllAttributes())    	
+      		{			
+@:      @(att.Name.LowerFirst()): @(att.Type.TypeName("TypeScript"));
+	    	}    
+@:
+@:      public constructor(init?:Partial<@(Model.Classifier.Name)>) {
+@:          Object.assign(this, init);
+@:      }	
+@:}
+}

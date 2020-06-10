@@ -1,0 +1,99 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using SilverDawn.SilverModel.UML.Extensions;
+@using SilverDawn.SilverModel.UML.Interfaces.Classes;
+@using SilverDawn.SilverModel.UML.Classes;
+@using System.Text;
+@using SilverDawn.SilverModel.Interfaces;
+@{
+@:// ALLOWOVERWRITE
+@:using System;
+@:using System.Collections.Generic;
+@:using System.Net;
+@:using System.Net.Http;
+@:using System.Text;
+@:using System.Threading.Tasks;
+@:using Newtonsoft.Json;
+@:using SilverdawnSoftware.Transactions.Interfaces;
+@:@(GetUsings(Model.Diagram))
+@:
+@:namespace @(Model.Diagram.QualifiedName.Replace("::",".")).ClientAccess
+@:{
+@:    public class @(Model.Diagram.Name)ClientAccess
+@:    {
+@:
+@:        public @(Model.Diagram.Name)ClientAccess()
+@:        {
+@:            _authenticate = false;
+@:        }
+@:
+@:        public @(Model.Diagram.Name)ClientAccess(string user, string password)
+@:        {
+@:            this.User = user;
+@:            this.Password = password;
+@:            _authenticate = true;
+@:        }
+@:
+@:        public string User { get; set; }
+@:
+@:        public string Password { get; set; }
+@:
+@:        private bool _authenticate = false;
+@:
+@:        private HttpClientHandler getHandler()
+@:        {
+@:            HttpClientHandler handler;
+@:
+@:            if (_authenticate)
+@:            {
+@:                var credentials = new NetworkCredential(this.User, this.Password);
+@:                handler = new HttpClientHandler {Credentials = credentials};
+@:            }
+@:            else
+@:            {
+@:                handler = new HttpClientHandler { };
+@:            }
+@:            return handler;
+@:        }
+@:
+		foreach(var umlClass in Model.Diagram.Classes())		
+		{
+			var queryResult=umlClass["Query Metadata","Query Result"].AsClass();
+			if (HasMany(umlClass))  
+			{
+@:        public async Task<List<I@(queryResult.Name)>> @(umlClass.Name)(I@(umlClass.Name) @(umlClass.Name.LowerFirst()))
+@:        {
+@:            using (var http = new HttpClient(getHandler()))
+@:            {
+@:                var result = http.GetAsync(TransactionsConfig.BaseURL+@Raw(BuildRouteWithValues(umlClass)));
+@:                string content = await result.Result.Content.ReadAsStringAsync();
+@:                return JsonConvert.DeserializeObject<List<@(queryResult.Name)>>(content).ConvertAll(w => (I@(queryResult.Name))w);;
+@:            }
+@:        }
+			}
+			else
+			{
+@:        public async Task<I@(queryResult.Name)> @(umlClass.Name)(I@(umlClass.Name) @(umlClass.Name.LowerFirst()))
+@:        {
+@:            using (var http = new HttpClient(getHandler()))
+@:            {
+@:                var result = http.GetAsync(TransactionsConfig.BaseURL+@Raw(BuildRouteWithValues(umlClass)));
+@:                string content = await result.Result.Content.ReadAsStringAsync();
+@:                return JsonConvert.DeserializeObject<@(queryResult.Name)>(content);
+@:            }
+@:        }
+			}
+		}
+@:    }
+@:}
+}
+
+@IncludeFile("..\..\..\Transactions Shared Code\SharedFunctions.razor")
+
+@functions 
+{
+
+
+}
+

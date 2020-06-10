@@ -1,0 +1,600 @@
+﻿@functions
+{
+
+	public static string GetInheritance(IClassifier umlClass)
+    {
+    	
+    	var generals=umlClass.GetTargetGeneralizations();
+    	
+    	if (generals.Any())
+    	{
+    		return ((INamedElement)generals.First().Source).Name;
+    	}
+    	
+    	return "TransactionsBase";
+    }
+    
+    public static string GetInheritanceInterfaces(IClassifier umlClass)
+    {
+    	
+    	var generals=umlClass.GetTargetGeneralizations();
+    	
+    	if (generals.Any())
+    	{
+    		return ", I"+((INamedElement)generals.First().Source).Name;
+    	}
+    	
+    	return "";
+    }
+    
+
+	public static string GetUsings(IModel model)
+	{
+		var usings=new List<string>();
+		
+		foreach(var umlClass in model.Classes())
+		{
+			var refclass=umlClass["Query Metadata","Query Result"].AsClass();
+			if (refclass is IClass)
+			{
+				var using1="using "+refclass.GetModel().QualifiedName.Replace("::",".")+".Models;";
+				if (!usings.Any(w=>w==using1))
+					usings.Add(using1);
+			}
+			
+			var commandClassUsing="using "+ GetNameSpaceForClass(umlClass)+";";
+			if (!usings.Any(w=>w==commandClassUsing))
+					usings.Add(commandClassUsing);
+		
+		
+			var csm="using "+ GetNameSpaceForClass(umlClass)+".Models;";
+			if (!usings.Any(w=>w==csm))
+					usings.Add(csm);
+		
+			var ins="using "+GetInterfaceNameSpace(umlClass)+";";
+			if (!usings.Any(w=>w==ins))
+					usings.Add(ins);
+					
+			var insm="using "+GetInterfaceNameSpace(umlClass)+".Models;";	
+			if (!usings.Any(w=>w==insm))
+					usings.Add(insm);
+			
+			var queryResult=umlClass["Query Metadata","Query Result"].AsClass();
+			if (queryResult!=null)
+			{
+				var qrns="using "+GetInterfaceNameSpace(queryResult)+".Models;";	
+				if (!usings.Any(w=>w==qrns))
+						usings.Add(qrns);
+			}
+		}
+
+        var result=new StringBuilder();
+		foreach(var add in usings)
+		{
+			result.AppendLine(add);
+		}
+		
+		return result.ToString();
+	}
+
+
+	public static bool HasMany(IClassifier iClass)
+	{
+		if (iClass["Query Metadata","Query Result Multiplicity"].AsString()=="Many")
+			return true;
+			
+		return false;
+	}
+
+public static string BuildRoute(IClass umlClass)
+    {
+    	string route="api";
+    	
+    	
+    	
+    	if (!string.IsNullOrEmpty(umlClass.FindParentModel()["REST Metadata","Parent Resource"].AsString()))
+    	{
+    		route=route+"/"+umlClass.FindParentModel()["REST Metadata","Parent Resource"].AsString();
+    	}
+    	
+    	if (!string.IsNullOrEmpty(umlClass["REST Metadata","Resource"].AsString()))
+    	{
+    	route=route+"/"+umlClass["REST Metadata","Resource"].AsString();
+    	}
+    	
+    	
+    	foreach(var att in umlClass.Attributes().Where(w=>w["REST Metadata","URL Part"].AsString()=="Route").OrderBy(w => w["REST Metadata","ResouceId Order"]))
+    	{
+    		route=route+@"/{"+att.Name.LowerFirst()+"}";
+    	}
+    	
+    	
+    	if (umlClass["REST Metadata","Action"].AsString().Length>0)
+    	{
+    		route=route+@"/"+umlClass["REST Metadata","Action"].AsString();
+    	}
+    	
+    	bool first=true;
+    	
+    	foreach(var att in umlClass.Attributes().Where(w=>w["REST Metadata","URL Part"].AsString()=="Query").OrderBy(w => w["REST Metadata","ResouceId Order"]))
+    	{
+    		if (first)
+    		{
+    			first=false;
+    			//route=route+@"?"+att.Name.LowerFirst()+"={"+att.Name.LowerFirst()+"}";
+    		}
+    		else
+    		{
+    			//route=route+@"&"+att.Name.LowerFirst()+"={"+att.Name.LowerFirst()+"}";
+    		}
+    	
+    	}
+    	
+    	
+    	return route;
+    	
+    }
+
+public static string BuildParamters(IClass umlClass)
+    {
+    	string route="";
+    	
+    	//route=route+umlClass["REST Metadata","Resource"].AsString();
+    	
+    	foreach(var att in umlClass.Attributes().Where(w=>w["REST Metadata","URL Part"].AsString()=="Route").OrderBy(w => w["REST Metadata","ResouceId Order"]))
+    	{
+    		route=route+@"[FromRoute] "+ att.Type.TypeName("C#")+ " "+att.Name.LowerFirst()+",";
+    	}
+
+    	foreach(var att in umlClass.Attributes().Where(w=>w["REST Metadata","URL Part"].AsString()=="Query").OrderBy(w => w["REST Metadata","ResouceId Order"]))
+    	{
+    		route=route+@"[FromQuery] "+ att.Type.TypeName("C#")+ " "+att.Name.LowerFirst()+",";
+    	}
+    	
+    	if (route.Length>0)
+    		return (route.Remove(route.Length-1));
+    	
+    	return route;
+    	
+    }
+
+public static string BuildRouteWithValues(IClass umlClass)
+    {
+    	string route=@"""/api";
+    	
+    	
+    	
+    	if (!string.IsNullOrEmpty(umlClass.FindParentModel()["REST Metadata","Parent Resource"].AsString()))
+    	{
+    		route=route+"/"+umlClass.FindParentModel()["REST Metadata","Parent Resource"].AsString();
+    	}
+    	
+    	if (!string.IsNullOrEmpty(umlClass["REST Metadata","Resource"].AsString()))
+    	{
+    	route=route+"/"+umlClass["REST Metadata","Resource"].AsString();
+    	}
+    	
+    	route=route+@"""";
+    	
+    	foreach(var att in umlClass.Attributes().Where(w=>w["REST Metadata","URL Part"].AsString()=="Route").OrderBy(w => w["REST Metadata","ResouceId Order"]))
+    	{
+    		route=route+@"+""/""+"+umlClass.Name.LowerFirst()+"."+att.Name;
+    	}
+    	
+    	
+    	if (umlClass["REST Metadata","Action"].AsString().Length>0)
+    	{
+    		route=route+@"+""/"+umlClass["REST Metadata","Action"].AsString()+@"""";
+    	}
+    	
+    	bool first=true;
+    	
+    	foreach(var att in umlClass.Attributes().Where(w=>w["REST Metadata","URL Part"].AsString()=="Query").OrderBy(w => w["REST Metadata","ResouceId Order"]))
+    	{
+    		if (first)
+    		{
+    			first=false;
+    			route=route+@"+""?""";
+    		}
+    		else
+    		{
+    			route=route+@"+""&""";
+    		}
+    		
+    		route=route+@"+"""+att.Name+@"=""+"+umlClass.Name.LowerFirst()+"."+att.Name;
+    	
+    	}
+    	
+    	
+    	return route;
+    	
+    }
+
+ public string GetAttrbiuteUsings(IClassifier classifier)
+   {
+   		var result=new StringBuilder();
+		foreach (var att in classifier.Attributes().Where(w=>w.Visibility!=VisibilityKind.None))
+		{
+			if ( att.Type.GetUMLType()==UmlTypeEnum.Enumeration)
+			{
+				 if (att.Type is IClassifier)
+ 				 {
+ 					var refClassifier=(IClassifier)att.Type;
+ 					var newusing="using "+GetNameSpace(refClassifier)+";";
+ 					if (!result.ToString().Contains(newusing))
+ 					{
+ 						result.AppendLine(newusing);
+ 					} 					
+ 				}
+			}
+		}
+		
+		return result.ToString();
+   }
+
+
+
+ public string GetInterfaceUsings(IClassifier classifier)
+   {
+   		var result=new StringBuilder();
+		foreach (var att in classifier.Attributes().Where(w=>w.Visibility!=VisibilityKind.None))
+		{
+			if (att.Type.GetUMLType()==UmlTypeEnum.Class)
+			{
+				 if (att.Type is IClassifier)
+ 				{
+ 					var refClassifier=(IClassifier)att.Type;
+ 					var newusing="using "+GetInterfaceNameSpace(refClassifier)+".Models;";
+ 					if (!result.ToString().Contains(newusing))
+ 					{
+ 						result.AppendLine(newusing);
+ 					}
+ 					
+ 				}
+			}
+		}
+		
+		return result.ToString();
+   }
+
+
+public static IProperty GetParentMemberEnd(IProperty property,IClassifier queryClass,IOutput output)
+{
+	if (queryClass.GetParentAssociations().Any())
+	{
+		var parent=queryClass.GetParentAssociations().First().FirstRole;
+		if (parent.Type.Name==property.RelatedField.Class.Name)
+		{		
+			return parent;
+		}
+		else
+		{
+			output.WriteLine("Unable to find parent end for "+property.Name);
+		}
+	}
+	
+	
+	return null;
+}
+
+
+
+ 	public static string GetPrimaryKey(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryKey((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 	
+ 
+   
+ 	public static string GetPrimaryType(IType iType)
+ 	{
+ 		if (iType is IClassifier)
+ 		{
+ 		return GetPrimaryType((IClassifier)iType);
+ 		}
+ 		
+ 		return "";
+ 	}
+ 
+    public static string GetPrimaryType(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return  @att.Type.TypeName("C#");
+				
+			}
+		}    	
+    	return "";
+    }
+
+	public static string GetNameSpace(INamedElement element)
+	{	
+		var ns=element.QualifiedName.Replace("::",".");
+	    var found=ns.LastIndexOf(".");		
+		
+	    return ns.Substring(0,found);
+	}
+
+
+	public static string GetInterfaceNameSpace(IClassifier iClass)
+	{
+//		var model=iClass.GetModel();
+//		var sol=iClass.GetSolution();
+//	   var tempNS= model.QualifiedName.Replace("::",".");	   
+//	   var interfaceStart=sol.Name+".Interfaces";	   
+//	   return tempNS.Replace(sol.Name,interfaceStart);
+	   
+	    var ns=iClass.QualifiedName.Replace("::",".");
+	    var found=ns.LastIndexOf(".");		
+		if (found>=0)
+	    	return ns.Substring(0,found)+".Interfaces";
+	    else
+	    	return ns+".Interfaces";
+
+	}
+
+	public static string GetUsings(IClassifier iClass)
+	{
+		var usings=new List<string>();
+		
+		foreach(var operation in iClass.Operations())
+		{			
+			var using1="using "+GetNameSpaceForClass((IClass)operation.Type)+";";
+			if (!usings.Any(w=>w==using1))
+				usings.Add(using1);
+				
+			var using2="using "+GetNameSpaceForClass(GetLookupObject(operation,null))+";";
+			if (!usings.Any(w=>w==using2))
+				usings.Add(using2);	
+				
+			foreach(var para in operation.OwnedParameters)
+			{
+				if (para.Type is IClass)
+				{
+					var using3="using "+GetNameSpaceForClass((IClass)para.Type)+";";
+					if (!usings.Any(w=>w==using3))
+					usings.Add(using3);			
+				}
+			}
+		}
+
+
+
+        var result=new StringBuilder();
+		foreach(var add in usings)
+		{
+			result.AppendLine(add);
+		}
+		
+		return result.ToString();
+	}
+
+
+	public static string GetNameSpaceForClass(IClassifier iClass)
+	{
+		return GetNameSpaceForModel((IModel)iClass.Owner);
+	}
+	
+	public static string GetNameSpaceForModel(IModel model)
+	{
+		
+		if (model.Parent is IModel)
+		{
+			return GetNameSpaceForModel((IModel)model.Parent)+"."+model.Name;
+		}
+		if (model.Parent is ISolution)
+		{
+			return ((ISolution)model.Parent).Name +"."+ model.Name;
+		}
+		
+		return "";
+	}
+	
+	
+
+	public static bool HasMany(IOperation iOperation)
+	{
+		if (iOperation.Upper.Trim()=="*")
+			return true;
+		
+		int intCheck;
+		if (int.TryParse(iOperation.Upper,out intCheck))
+			if (intCheck>1)
+				return true;
+		
+		return false;
+	}
+	
+ 
+ 	public static string GetParameters(IOperation iOperation)
+ 	{
+ 		var ops=new StringBuilder();
+ 		
+ 		foreach(var para in iOperation.OwnedParameters)
+ 		{
+ 			
+ 			ops.Append(para.Type.TypeName("C#")+" "+para.Name.LowerFirst()+",");
+ 		
+		} 		
+ 		return ops.ToString().Substring(0, ops.Length - 1);
+ 	}
+ 	
+ 	public static IClass GetLookupObject(IOperation iOperation, IOutput output)
+ 	{
+ 		return (IClass)((IClass)iOperation.Type).RelatedClassifier;
+ 	}
+ 	
+ 	public static string GetWhere(IOperation iOperation, IOutput output)
+ 	{
+ 		var ops=new StringBuilder();
+ 	
+ 		foreach(var para in iOperation.OwnedParameters)
+ 		{
+ 		
+ 			foreach(var prop in ((IClass)para.Type).OwnedProperties)
+ 			{
+ 			   
+				output.WriteLine(prop["Query","IsWhere"].AsString());
+				if (prop["Query Metadata","IsWhere"].AsString()=="True")
+	 			{
+	 				output.WriteLine(prop.RelatedField.Class.Name);
+	 				output.WriteLine(((IClass)iOperation.Type).Name);
+	 			
+	 				if (prop.RelatedField.Class.Name==((IClass)iOperation.Type).RelatedClassifier.Name)
+	 				{
+	 					ops.Append("w."+prop.RelatedField.Name+"=="+para.Name.LowerFirst()+"."+prop.Name+" && ");
+	 				}
+	 				else
+	 				{
+	 					ops.Append("w."+prop.RelatedField.Class.Name+"."+prop.RelatedField.Name+"=="+para.Name.LowerFirst()+"."+prop.Name+" && ");
+	 				}
+	 			}
+ 			}
+		} 
+		
+		if (ops.Length <5) return "";
+		
+		return ops.ToString().Substring(0, ops.Length - 4);
+ 	}
+ 	
+ 	
+ 
+    public static string GetPrimaryKey(IClassifier umlClass)
+    {
+    	foreach (var att in umlClass.Attributes())
+		{
+			if (att["Database General Metadata","Primary Key"].AsString()=="True")
+			{
+				return att.Name;
+			}
+		}    	
+    	return "";
+    }
+    
+    public static string GetDbContext(IOperation iOperation, IOutput output)
+ 	{
+ 		foreach(var para in iOperation.OwnedParameters)
+ 		{
+ 		
+ 			foreach(var prop in ((IClass)para.Type).OwnedProperties)
+ 			{
+ 			   
+				output.WriteLine(prop["Query","IsWhere"].AsString());
+				if (prop["Query Metadata","IsWhere"].AsString()=="True")
+	 			{
+	 			 
+	 				return prop.RelatedField.Class.GetModel()["Entity Framework Core","DBContextName"].AsString();
+	 			}
+ 			}
+		} 
+		
+		return "";
+ 	}
+
+	 public static string GetDbContext(IClassifier iClassifier, IOutput output)
+ 	{
+ 		var model=iClassifier.GetModel();
+		
+		return model["Entity Framework Core","DBContextName"].AsString();
+		
+		
+ 	}
+ 	public static string GetWhereForClassifier(string operation,IClassifier iClassifier,IClassifier queryClass, IOutput output)
+ 	{
+ 		var where=GetWhereForClassifier(iClassifier,queryClass, output);
+ 		
+ 		if (string.IsNullOrWhiteSpace(where)) return "";
+ 		
+ 		return "."+operation+"(w=>"+where+")";
+ 	}
+ 	
+ 	
+ 	public static string GetWhereForClassifier(IClassifier iClassifier,IClassifier queryClass, IOutput output)
+ 	{
+ 		var where="";
+ 		try
+ 		{
+	 		foreach (var att in iClassifier.AllAttributes())
+	 		{
+	 			if (att["Query Metadata","IsWhere"].AsString()=="True" && att.RelatedField.ElementId!=null)
+	 			{
+	 				if(!string.IsNullOrWhiteSpace(where)) where=where+" && "; 
+	 				if (att.RelatedField.Class.Name==queryClass.Name)
+	 				{
+	 					where=where+" w."+att.RelatedField.Name+" "+GetCSharpOperator(att)+" "+iClassifier.Name.LowerFirst()+"."+att.Name;
+	 				}
+	 				else
+	 				{
+	 					if (CheckWhereInheritance(queryClass,att.RelatedField.Class))
+	 					{
+	 						where=where+" w." +att.RelatedField.Name+" "+GetCSharpOperator(att)+" "+iClassifier.Name.LowerFirst()+"."+att.Name; 				 					
+	 					}
+	 					else
+	 					{
+	 						where=where+" w."+att.RelatedField.Class.Name+"." +att.RelatedField.Name+" "+GetCSharpOperator(att)+" "+iClassifier.Name.LowerFirst()+"."+att.Name; 				
+	 				    } 
+	 				}
+	 			}
+	 		}
+	 		
+	       	if (queryClass.GetModel()["Multi Tenant Metadata","Use Multi Tenant"].AsBoolean())
+	    	{
+	    		   if(!string.IsNullOrWhiteSpace(where)) where=where+" && "; 
+	               where=where+"w.__MultiTenantId == "+iClassifier.Name.LowerFirst()+".__MultiTenantId";
+	        }
+	     }
+		catch (Exception ex)
+		{
+ 			output.WriteError(ex.ToString());
+ 		}
+ 		
+ 		return where;
+ 	}
+ 	
+ 	public static bool CheckWhereInheritance(IClassifier umlClass,IClassifier checkClass)
+    {
+    	
+    	var generals=umlClass.GetSourceGeneralizations();
+    	    	
+    	foreach(var gen in generals)
+    	{
+    		var parent=(IClassifier)gen.Source;
+    		if (parent.Name==checkClass.Name) return true; 
+    	}
+    	
+    	foreach(var gen in generals)
+    	{
+    		var parent=(IClassifier)gen.Source;
+    		CheckWhereInheritance(parent,checkClass);
+    	}
+    	
+    	return false;
+    }
+ 	
+ 	
+ 	public static string GetCSharpOperator(IProperty prop)
+ 	{
+ 		switch (prop["Query Metadata","Operator"].AsString())
+ 		{
+ 		 case "<": return "<";
+ 		 case "<=": return "<=";
+ 		 case "<>": return "<>";
+ 		 case ">": return ">";
+ 		 case ">=": return ">=";
+ 		 case "=":
+ 		 default:
+ 		 	return "==";
+ 		}
+ 	}
+
+
+
+    
+}
